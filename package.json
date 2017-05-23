@@ -10,7 +10,8 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "repl": "lein run -m clojure.main node_repl.clj"
+    "repl": "lein run -m clojure.main node_repl.clj",
+    "nodemon": "nodemon -e clj,cljs,cljc app.js"
   },
   "author": "",
   "license": "ISC"
