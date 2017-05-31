@@ -1,6 +1,0 @@
-// Compiled by ClojureScript 1.7.228 {}
-goog.provide('node_test.static_data');
-goog.require('cljs.core');
-node_test.static_data.be_response_mock = "{\"default\":\n     {\"timelineData\":\n\n       [{\"time\":\"1072915200\",\n         \"formattedTime\":\"Jan 2004\",\n         \"formattedAxisTime\":\"Jan 1, 2004\",\n         \"value\":[26],\n         \"formattedValue\":[\"26\"]},\n\n        {\"time\":\"1075593600\",\n         \"formattedTime\":\"Feb 2004\",\n         \"formattedAxisTime\":\"Feb 1, 2004\",\n         \"value\":[74],\n         \"formattedValue\":[\"74\"]},\n\n        {\"time\":\"1483228800\",\n         \"formattedTime\":\"Jan 2017\",\n         \"formattedAxisTime\":\"Jan 1, 2017\",\n         \"value\":[18],\n         \"formattedValue\":[\"18\"]},\n\n        {\"time\":\"1485907200\",\n         \"formattedTime\":\"Feb 2017\",\n         \"formattedAxisTime\":\"Feb 1, 2017\",\n         \"value\":[72],\n         \"formattedValue\":[\"72\"]}],\n\n       \"averages\":[]}}";
-
-//# sourceMappingURL=static_data.js.map

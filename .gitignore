@@ -1,3 +1,4 @@
+.cljs_rhino_repl/
 index.js
 
 # Created by https://www.gitignore.io/api/vim,node,clojure,leiningen,intellij+iml
