@@ -1,8 +1,11 @@
-# node-cljs
-Initlal node project for node apps with updated dependencies
+# cljs + cljc + speclj
+Proberly I will rename this if I'll succeed. If it won't depricate. Yes, I know about the two grammar errors I just wanted to type them.
 
-I went through this guide: https://cb.codes/setting-up-a-node-cljs-project-with-leiningen-and-npm/ and updated the dependencies as well as I could.
-
-auto build: 
+auto build:
 lein cljsbuild auto
-npm run-script nodemon
+
+specs:
+lein spec -a
+
+html:
+index.html
