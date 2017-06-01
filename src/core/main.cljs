@@ -1,20 +1,27 @@
 (ns core.main
-  (:require #_[cljs.nodejs :as node]
-            [cljs.core.async :refer [timeout <!]]
-            [core.fabric :refer [smth]]
-            [core.core :refer [function]]
+  (:require-macros [cljs.core.async.macros :refer [go-loop]])
+  (:require [cljs.core.async :refer [timeout <!]]
+            [core.field :as fi]
+            [core.core :refer [create-change-listener]]
             [core.keys :refer [setup-key-listener]]))
 
 (enable-console-print!)
 
-(defn key-listener [char-code]
-  (println "key pressed:" char-code))
+(defn game-loop []
+  (go-loop
+    []
+    (let [piece-state (<! fi/current-piece-pipe)]
+      (println "piece-state" piece-state)
+      (fi/show piece-state)
+      (when piece-state (recur)))))
 
 (defn -main []
-  (println "it workd!")
-  #_(println function)
-  #_(println smth)
-  (setup-key-listener key-listener))
+  (game-loop)
+  (setup-key-listener
+    (create-change-listener
+      fi/get-curr-piece
+      fi/get-field-blocks
+      fi/current-piece-pipe)))
 
 (-main)
 
