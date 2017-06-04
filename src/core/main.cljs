@@ -4,7 +4,9 @@
             [core.field :as fi]
             [core.core :refer [create-change-listener]]
             [core.keys :refer [setup-key-listener]]
-            [core.state :as state]))
+            [core.state :as state]
+            [core.piece-validators :as v]
+            [core.constants :as c]))
 
 (enable-console-print!)
 
@@ -21,7 +23,8 @@
   (setup-key-listener
     (create-change-listener
       state/moving-piece
-      state/before-save-piece-ch)))
+      state/before-save-piece-ch
+      (partial v/possible-placement? c/field-width c/field-height))))
 
 (-main)
 

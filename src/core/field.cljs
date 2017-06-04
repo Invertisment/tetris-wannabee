@@ -4,7 +4,6 @@
 (enable-console-print!)
 
 (def block-size-px 25)
-(def field-size-in-blocks [10 22])
 
 (def canvas
   (new js/fabric.Canvas "game-canvas"))

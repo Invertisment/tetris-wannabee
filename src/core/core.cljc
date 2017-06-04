@@ -10,37 +10,41 @@
       [(x-fn x) (y-fn y)])
     blocks))
 
-(defn nop [_ _ _])
 (defn right [piece]
   (coords-op-scalar piece inc identity))
 (defn left [piece]
   (coords-op-scalar piece dec identity))
 (defn bottom [piece]
   (coords-op-scalar piece identity inc))
+
 (defn rotate [piece]
   (println "rotate")
   (coords-op-scalar piece identity dec))
+(defn nop [& _])
 
 (defn send-the-move [output-chan move]
-  (when
-    move
+  (when move
     (go (>! output-chan move))))
 
-(defn change-listener [piece new-piece-chan char-code]
-  #_(println "key-press" piece new-piece-chan char-code)
-  (send-the-move
-    new-piece-chan
-    ((case char-code
-      "KeyA" left
-      "KeyD" right
-      "KeyW" rotate
-      "KeyS" bottom
-      nop) @piece)))
+(defn change-listener [piece new-piece-chan block-valid? char-code]
+  (let
+    [moved-piece ((case char-code
+                    "KeyA" left
+                    "KeyD" right
+                    "KeyW" rotate
+                    "KeyS" bottom
+                    nop) @piece)]
+    (if
+      (block-valid? (set moved-piece) #{})
+      (send-the-move
+        new-piece-chan
+        moved-piece)
+      (println "invalid"))))
 
-(defn create-change-listener [piece-atom new-piece-chan]
-  #_(println "create-change-listener" piece-atom)
+(defn create-change-listener [piece-atom new-piece-chan block-valid?]
   (partial
     change-listener
     piece-atom
-    new-piece-chan))
+    new-piece-chan
+    block-valid?))
 
