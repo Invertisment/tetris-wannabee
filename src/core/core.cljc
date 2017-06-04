@@ -11,36 +11,35 @@
     blocks))
 
 (defn nop [_ _ _])
-(defn right [current-piece field-nodes piece-pipe]
+(defn right [current-piece piece-pipe]
   (println "right" piece-pipe (tamper-coords current-piece inc identity))
   (go (>!
         piece-pipe
         (tamper-coords current-piece inc identity))))
-(defn left [current-piece field-nodes piece-pipe]
+(defn left [current-piece piece-pipe]
   (println "left")
   (map
     (fn [[x y]]
       [(dec x) y])
     current-piece))
-(defn bottom [current-piece field-nodes piece-pipe]
+(defn bottom [current-piece piece-pipe]
   (println "bottom"))
-(defn rotate [current-piece field-nodes piece-pipe]
+(defn rotate [current-piece piece-pipe]
   (println "rotate"))
 
-(defn change-listener [current-piece field-nodes piece-pipe char-code]
-  #_(println "key-press" current-piece field-nodes piece-pipe char-code)
+(defn change-listener [current-piece piece-pipe char-code]
+  #_(println "key-press" current-piece piece-pipe char-code)
   ((case char-code
      "KeyA" left
      "KeyD" right
      "KeyW" rotate
      "KeyS" bottom
-     nop) current-piece field-nodes piece-pipe))
+     nop) @current-piece piece-pipe))
 
-(defn create-change-listener [get-current-piece-fn get-field-nodes-fn current-piece-pipe]
-  #_(println "create-change-listener")
+(defn create-change-listener [get-current-piece-atom current-piece-pipe]
+  #_(println "create-change-listener" get-current-piece-atom)
   (partial
     change-listener
-    (get-current-piece-fn)
-    (get-field-nodes-fn)
+    get-current-piece-atom
     current-piece-pipe))
 

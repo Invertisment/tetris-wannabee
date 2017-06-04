@@ -1,24 +1,13 @@
 (ns core.field
-  (:require cljsjs.fabric
-            [cljs.core.async :refer [chan]]))
+  (:require cljsjs.fabric))
 
 (enable-console-print!)
 
-(def current-piece-pipe (chan 5))
-
-(def block-size-px 50)
+(def block-size-px 25)
 (def field-size-in-blocks [10 22])
 
 (def canvas
   (new js/fabric.Canvas "game-canvas"))
-
-(def field-blocks #{})
-(def curr-piece #{[1 1] [1 2] [1 3] [2 1]})
-
-(defn get-field-blocks []
-  field-blocks)
-(defn get-curr-piece []
-  curr-piece)
 
 (defn create-rect [[x y]]
   (new
@@ -29,10 +18,11 @@
             "width" block-size-px
             "height" block-size-px)))
 
-(defn show [coords]
-  (println "showing" coords)
+(defn show [[old-coords new-coords]]
+  #_(println "showing" old-coords new-coords)
+  (.clear canvas)
   (reduce
     #(.add %1 %2)
     canvas
-    (map create-rect coords)))
+    (map create-rect new-coords)))
 

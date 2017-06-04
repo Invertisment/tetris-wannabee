@@ -3,25 +3,26 @@
   (:require [cljs.core.async :refer [timeout <!]]
             [core.field :as fi]
             [core.core :refer [create-change-listener]]
-            [core.keys :refer [setup-key-listener]]))
+            [core.keys :refer [setup-key-listener]]
+            [core.state :as state]))
 
 (enable-console-print!)
 
 (defn game-loop []
+  (state/before-save-piece-loop)
   (go-loop
     []
-    (let [piece-state (<! fi/current-piece-pipe)]
-      (println "piece-state" piece-state)
-      (fi/show piece-state)
-      (when piece-state (recur)))))
+    (let [piece-change (<! state/after-save-piece-ch)]
+      (println "piece-state" piece-change)
+      (fi/show piece-change)
+      (when piece-change (recur)))))
 
 (defn -main []
   (game-loop)
   (setup-key-listener
     (create-change-listener
-      fi/get-curr-piece
-      fi/get-field-blocks
-      fi/current-piece-pipe)))
+      state/moving-piece
+      state/before-save-piece-ch)))
 
 (-main)
 
