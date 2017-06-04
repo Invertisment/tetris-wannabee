@@ -12,29 +12,30 @@
 
 (defn nop [_ _ _])
 (defn right [current-piece piece-pipe]
-  (println "right" piece-pipe (tamper-coords current-piece inc identity))
-  (go (>!
-        piece-pipe
-        (tamper-coords current-piece inc identity))))
+  (tamper-coords current-piece inc identity))
 (defn left [current-piece piece-pipe]
-  (println "left")
-  (map
-    (fn [[x y]]
-      [(dec x) y])
-    current-piece))
+  (tamper-coords current-piece dec identity))
 (defn bottom [current-piece piece-pipe]
-  (println "bottom"))
+  (tamper-coords current-piece identity inc))
 (defn rotate [current-piece piece-pipe]
-  (println "rotate"))
+  (println "rotate")
+  (tamper-coords current-piece identity dec))
+
+(defn send-the-move [output-chan data]
+  (when
+    data
+    (go (>! output-chan data))))
 
 (defn change-listener [current-piece piece-pipe char-code]
   #_(println "key-press" current-piece piece-pipe char-code)
-  ((case char-code
-     "KeyA" left
-     "KeyD" right
-     "KeyW" rotate
-     "KeyS" bottom
-     nop) @current-piece piece-pipe))
+  (send-the-move
+    piece-pipe
+    ((case char-code
+      "KeyA" left
+      "KeyD" right
+      "KeyW" rotate
+      "KeyS" bottom
+      nop) @current-piece piece-pipe)))
 
 (defn create-change-listener [get-current-piece-atom current-piece-pipe]
   #_(println "create-change-listener" get-current-piece-atom)

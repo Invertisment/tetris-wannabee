@@ -14,5 +14,4 @@
           new-piece (<! before-save-piece-ch)]
       (reset! moving-piece new-piece)
       (>! after-save-piece-ch [prev-piece new-piece])
-      #_(println moving-piece a)
       (when new-piece (recur)))))

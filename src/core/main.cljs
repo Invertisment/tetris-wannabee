@@ -13,7 +13,6 @@
   (go-loop
     []
     (let [piece-change (<! state/after-save-piece-ch)]
-      (println "piece-state" piece-change)
       (fi/show piece-change)
       (when piece-change (recur)))))
 
