@@ -1,46 +1,46 @@
 (ns core.core
   #?(:cljs (:require-macros [cljs.core.async.macros :refer [go]]))
   #?(:cljs (:require [cljs.core.async :refer [>!]]))
-  #?(:clj (:require [clojure.core.async :refer [go >!]]))
-)
+  #?(:clj (:require [clojure.core.async :refer [go >!]])))
 
-(defn tamper-coords [blocks x-fn y-fn]
+(defn coords-op-scalar [blocks x-fn y-fn]
+  #_(println "get rekt")
   (map
     (fn [[x y]]
       [(x-fn x) (y-fn y)])
     blocks))
 
 (defn nop [_ _ _])
-(defn right [current-piece piece-pipe]
-  (tamper-coords current-piece inc identity))
-(defn left [current-piece piece-pipe]
-  (tamper-coords current-piece dec identity))
-(defn bottom [current-piece piece-pipe]
-  (tamper-coords current-piece identity inc))
-(defn rotate [current-piece piece-pipe]
+(defn right [piece]
+  (coords-op-scalar piece inc identity))
+(defn left [piece]
+  (coords-op-scalar piece dec identity))
+(defn bottom [piece]
+  (coords-op-scalar piece identity inc))
+(defn rotate [piece]
   (println "rotate")
-  (tamper-coords current-piece identity dec))
+  (coords-op-scalar piece identity dec))
 
-(defn send-the-move [output-chan data]
+(defn send-the-move [output-chan move]
   (when
-    data
-    (go (>! output-chan data))))
+    move
+    (go (>! output-chan move))))
 
-(defn change-listener [current-piece piece-pipe char-code]
-  #_(println "key-press" current-piece piece-pipe char-code)
+(defn change-listener [piece new-piece-chan char-code]
+  #_(println "key-press" piece new-piece-chan char-code)
   (send-the-move
-    piece-pipe
+    new-piece-chan
     ((case char-code
       "KeyA" left
       "KeyD" right
       "KeyW" rotate
       "KeyS" bottom
-      nop) @current-piece piece-pipe)))
+      nop) @piece)))
 
-(defn create-change-listener [get-current-piece-atom current-piece-pipe]
-  #_(println "create-change-listener" get-current-piece-atom)
+(defn create-change-listener [piece-atom new-piece-chan]
+  #_(println "create-change-listener" piece-atom)
   (partial
     change-listener
-    get-current-piece-atom
-    current-piece-pipe))
+    piece-atom
+    new-piece-chan))
 
