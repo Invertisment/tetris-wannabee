@@ -1,50 +1,28 @@
 (ns core.core
   #?(:cljs (:require-macros [cljs.core.async.macros :refer [go]]))
-  #?(:cljs (:require [cljs.core.async :refer [>!]]))
-  #?(:clj (:require [clojure.core.async :refer [go >!]])))
+  (:require
+    #?(:cljs [cljs.core.async :refer [>!]])
+    #?(:clj [clojure.core.async :refer [go >!]])
+    [core.actions.move :refer [move-piece]]))
 
-(defn coords-op-scalar [blocks x-fn y-fn]
-  #_(println "get rekt")
-  (map
-    (fn [[x y]]
-      [(x-fn x) (y-fn y)])
-    blocks))
-
-(defn right [piece]
-  (coords-op-scalar piece inc identity))
-(defn left [piece]
-  (coords-op-scalar piece dec identity))
-(defn bottom [piece]
-  (coords-op-scalar piece identity inc))
-
-(defn rotate [piece]
-  (println "rotate")
-  (coords-op-scalar piece identity dec))
-(defn nop [& _])
-
-(defn send-the-move [output-chan move]
+(defn send-the-move! [output-chan move]
   (when move
     (go (>! output-chan move))))
 
-(defn change-listener [piece new-piece-chan block-valid? char-code]
+(defn change-listener [piece new-piece-chan piece-valid? char-code]
   (let
-    [moved-piece ((case char-code
-                    "KeyA" left
-                    "KeyD" right
-                    "KeyW" rotate
-                    "KeyS" bottom
-                    nop) @piece)]
+    [moved-piece (move-piece piece char-code)]
     (if
-      (block-valid? (set moved-piece) #{})
-      (send-the-move
+      (piece-valid? (set moved-piece) #{})
+      (send-the-move!
         new-piece-chan
         moved-piece)
       (println "invalid"))))
 
-(defn create-change-listener [piece-atom new-piece-chan block-valid?]
+(defn create-change-listener [piece-atom new-piece-chan piece-valid?]
   (partial
     change-listener
     piece-atom
     new-piece-chan
-    block-valid?))
+    piece-valid?))
 
