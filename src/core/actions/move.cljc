@@ -1,4 +1,5 @@
-(ns core.actions.move)
+(ns core.actions.move
+  (:require [core.constants :as const]))
 
 (defn coords-op-scalar [blocks x-fn y-fn]
   (set (map
@@ -12,24 +13,32 @@
 (defn left [piece]
   (coords-op-scalar piece dec identity))
 
-(defn bottom [piece]
+(defn down [piece]
   (coords-op-scalar piece identity inc))
 
 (defn rotate [piece]
   (println "rotate")
   (coords-op-scalar piece identity dec))
 
+(defn bottom [piece]
+  (println "bottom")
+  (coords-op-scalar piece identity inc))
+
 (defn nop [& _])
 
-(defn move-piece [piece char-code]
-  ((case char-code
-     "KeyA" left
-     "KeyD" right
-     "KeyW" rotate
-     "KeyS" bottom
-     nop) piece))
+(defn direction [const-value]
+  (condp = const-value
+    const/rotate #'rotate
+    const/left #'left
+    const/right #'right
+    const/down #'down
+    const/bottom #'bottom
+    #'nop))
 
-(defn next-field-state [state char-code]
+(defn move-piece [piece key-code]
+  ((direction key-code) piece))
+
+(defn next-field-state [state key-code]
   (let
     [at-state @state]
     (assoc
@@ -38,5 +47,5 @@
       (move-piece
         (:piece
           at-state)
-        char-code))))
+        key-code))))
 
