@@ -9,20 +9,20 @@
   (when move
     (go (>! output-chan move))))
 
-(defn change-listener [piece new-piece-chan piece-valid? char-code]
+(defn change-listener [state-atom piece-valid? char-code]
   (let
-    [moved-piece (move-piece piece char-code)]
+    [moved-piece (move-piece state-atom char-code)]
     (if
-      (piece-valid? (set moved-piece) #{})
-      (send-the-move!
-        new-piece-chan
-        moved-piece)
+      (piece-valid? moved-piece #{})
+      moved-piece
       (println "invalid"))))
 
-(defn create-change-listener [piece-atom new-piece-chan piece-valid?]
-  (partial
-    change-listener
-    piece-atom
-    new-piece-chan
-    piece-valid?))
+(defn create-change-listener [state-atom next-state-chan piece-valid?]
+  (fn [char-code]
+    (send-the-move!
+      next-state-chan
+      (change-listener
+        state-atom
+        piece-valid?
+        char-code))))
 
