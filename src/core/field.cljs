@@ -8,20 +8,31 @@
 (def canvas
   (new js/fabric.Canvas "game-canvas"))
 
-(defn create-rect [[x y]]
+(defn create-rect [color [x y]]
   (new
     js/fabric.Rect
     (js-obj "left" (* x block-size-px)
             "top" (* y block-size-px)
-            "fill" "rebeccapurple"
+            "fill" color
             "width" block-size-px
             "height" block-size-px)))
 
-(defn show [[old-coords new-coords]]
-  #_(println "showing" old-coords new-coords)
+(defn create-rects [color li]
+  (map
+    (partial create-rect color)
+    li))
+
+(defn show! [[old-state new-state]]
+  #_(println "showing " old-state new-state)
   (.clear canvas)
   (reduce
     #(.add %1 %2)
     canvas
-    (map create-rect new-coords)))
+    (concat
+      (create-rects
+        "rebeccapurple"
+        (:piece new-state))
+      (create-rects
+        "dodgerblue"
+        (:field new-state)))))
 

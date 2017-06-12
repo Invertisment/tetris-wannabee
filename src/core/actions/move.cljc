@@ -1,10 +1,10 @@
 (ns core.actions.move)
 
 (defn coords-op-scalar [blocks x-fn y-fn]
-  (map
-    (fn [[x y]]
-      [(x-fn x) (y-fn y)])
-    blocks))
+  (set (map
+         (fn [[x y]]
+           [(x-fn x) (y-fn y)])
+         blocks)))
 
 (defn right [piece]
   (coords-op-scalar piece inc identity))
@@ -27,4 +27,16 @@
      "KeyD" right
      "KeyW" rotate
      "KeyS" bottom
-     nop) @piece))
+     nop) piece))
+
+(defn next-field-state [state char-code]
+  (let
+    [at-state @state]
+    (assoc
+      at-state
+      :piece
+      (move-piece
+        (:piece
+          at-state)
+        char-code))))
+

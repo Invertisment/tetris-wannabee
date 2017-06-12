@@ -37,3 +37,12 @@
   (it "bad coords"
       (should-not (v/possible-placement? 1 1 #{[0 0]} #{[0 -2]}))))
 
+(describe
+  "field-valid?"
+  (it "happy path"
+      (should (v/field-valid? {:width 1 :height 2  :piece #{[0 1]} :field #{[0 0]}})))
+  (it "not valid"
+      (should-not (v/field-valid? {:width 1 :height 1 :piece #{[0 0]} :field #{[0 0]}})))
+  (it "bad coords"
+      (should-not (v/field-valid? {:width 1 :height 1 :piece #{[0 0]} :field #{[0 -2]}}))))
+

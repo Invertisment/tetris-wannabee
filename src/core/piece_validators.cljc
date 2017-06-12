@@ -11,7 +11,13 @@
   (some shape-a shape-b))
 
 (defn possible-placement? [map-width map-height shape-a shape-b]
-  (and
-    (every? (partial coord? map-width map-height) shape-b)
-    (every? (partial coord? map-width map-height) shape-a)
-    (not (some shape-a shape-b))))
+  (let
+    [valid? (partial coord? map-width map-height)]
+    (and
+      (every? valid? shape-b)
+      (every? valid? shape-a)
+      (not (some shape-a shape-b)))))
+
+(defn field-valid? [{:keys [width height piece field]}]
+  (possible-placement? width height piece field))
+

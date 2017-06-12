@@ -15,16 +15,16 @@
   (go-loop
     []
     (let [piece-change (<! state/after-save-piece-ch)]
-      (fi/show piece-change)
+      (fi/show! piece-change)
       (when piece-change (recur)))))
 
 (defn -main []
   (game-loop)
   (setup-key-listener
     (create-change-listener
-      state/moving-piece
+      state/field
       state/before-save-piece-ch
-      (partial v/possible-placement? c/field-width c/field-height))))
+      v/field-valid?)))
 
 (-main)
 

@@ -3,18 +3,18 @@
   (:require
     #?(:cljs [cljs.core.async :refer [>!]])
     #?(:clj [clojure.core.async :refer [go >!]])
-    [core.actions.move :refer [move-piece]]))
+    [core.actions.move :refer [next-field-state]]))
 
 (defn send-the-move! [output-chan move]
   (when move
     (go (>! output-chan move))))
 
-(defn change-listener [state-atom piece-valid? char-code]
+(defn change-listener [state-atom state-valid? char-code]
   (let
-    [moved-piece (move-piece state-atom char-code)]
+    [new-state (next-field-state state-atom char-code)]
     (if
-      (piece-valid? moved-piece #{})
-      moved-piece
+      (state-valid? new-state)
+      new-state
       (println "invalid"))))
 
 (defn create-change-listener [state-atom next-state-chan piece-valid?]
