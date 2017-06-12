@@ -44,5 +44,13 @@
   (it "not valid"
       (should-not (v/field-valid? {:width 1 :height 1 :piece #{[0 0]} :field #{[0 0]}})))
   (it "bad coords"
-      (should-not (v/field-valid? {:width 1 :height 1 :piece #{[0 0]} :field #{[0 -2]}}))))
+      (should-not (v/field-valid? {:width 1 :height 1 :piece #{[0 0]} :field #{[0 -2]}})))
+  (it "nil is not valid :width"
+      (should-not (v/field-valid? {:width nil :height 1 :piece #{[0 0]} :field #{[0 -2]}})))
+  (it "nil is not valid :height"
+      (should-not (v/field-valid? {:width 1 :height nil :piece #{[0 0]} :field #{[0 -2]}})))
+  (it "nil is not valid :piece"
+      (should-not (v/field-valid? {:width 1 :height 1 :piece nil :field #{[0 -2]}})))
+  (it "nil is not valid :field"
+      (should-not (v/field-valid? {:width 1 :height 1 :piece #{[0 0]} :field nil}))))
 

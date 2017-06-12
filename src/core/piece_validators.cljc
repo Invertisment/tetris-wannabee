@@ -18,6 +18,8 @@
       (every? valid? shape-a)
       (not (some shape-a shape-b)))))
 
-(defn field-valid? [{:keys [width height piece field]}]
-  (possible-placement? width height piece field))
+(defn field-valid? [{:keys [width height piece field] :as state}]
+  (when
+    (not-any? nil? (vals state))
+    (possible-placement? width height piece field)))
 
