@@ -40,7 +40,7 @@
 
 (defn next-field-state [state key-code]
   (let
-    [at-state @state]
+    [at-state state]
     (assoc
       at-state
       :piece
