@@ -3,31 +3,23 @@
   (:require
     #?(:cljs [cljs.core.async :refer [>!]])
     #?(:clj [clojure.core.async :refer [go >!]])
-    [core.actions.move :refer [next-field-state]]
-    [core.actions.invalid-position :refer [build-recover-bad-placement]]))
+    [core.actions.move :refer [next-field-state]]))
 
 (defn send-the-move! [output-chan move]
   (when move
     (go (>! output-chan move))))
 
-(defn change-listener [transition-fn state-atom valid? recov-fn char-code]
-  (let
-    [state @state-atom
-     new-state (transition-fn state char-code)]
-    (if
-      (valid? new-state)
-      new-state
-      (recov-fn char-code state))))
+(defn change-listener [transition-fn state-atom valid? char-code]
+   (transition-fn valid? @state-atom char-code))
 
 (defn create-change-listener
-  [state-atom next-state-chan piece-valid?]
+  [state-atom next-state-chan valid?]
   (fn [char-code]
     (send-the-move!
       next-state-chan
       (change-listener
         next-field-state
         state-atom
-        piece-valid?
-        (build-recover-bad-placement (constantly #{}))
+        valid?  
         char-code))))
 

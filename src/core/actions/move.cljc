@@ -1,28 +1,29 @@
 (ns core.actions.move
-  (:require [core.constants :as const]))
+  (:require [core.constants :as const]
+            [core.actions.piece-ops :refer [piece-op-scalar-valid]]
+            [core.actions.stick :refer [stick-piece]]))
 
-(defn coords-op-scalar [blocks x-fn y-fn]
-  (set (map
-         (fn [[x y]]
-           [(x-fn x) (y-fn y)])
-         blocks)))
+(defn right [valid? state]
+  (piece-op-scalar-valid valid? state inc identity))
 
-(defn right [piece]
-  (coords-op-scalar piece inc identity))
+(defn left [valid? state]
+  (piece-op-scalar-valid valid? state dec identity))
 
-(defn left [piece]
-  (coords-op-scalar piece dec identity))
+(defn down [valid? state]
+  (let
+    [new-state (piece-op-scalar-valid valid? state identity inc)]
+    (if
+      new-state
+      new-state
+      (stick-piece (constantly #{[1 1]}) state))))
 
-(defn down [piece]
-  (coords-op-scalar piece identity inc))
-
-(defn rotate [piece]
+(defn rotate [valid? state]
   (println "rotate")
-  (coords-op-scalar piece identity dec))
+  (piece-op-scalar-valid valid? state identity dec))
 
-(defn bottom [piece]
+(defn bottom [valid? state]
   (println "bottom")
-  (coords-op-scalar piece identity inc))
+  (piece-op-scalar-valid valid? state identity inc))
 
 (defn nop [& _])
 
@@ -35,17 +36,9 @@
     const/bottom #'bottom
     #'nop))
 
-(defn move-piece [piece key-code]
-  ((direction key-code) piece))
+(defn move [valid? state key-code]
+  ((direction key-code) valid? state))
 
-(defn next-field-state [state key-code]
-  (let
-    [at-state state]
-    (assoc
-      at-state
-      :piece
-      (move-piece
-        (:piece
-          at-state)
-        key-code))))
+(defn next-field-state [valid? state key-code]
+  (move valid? state key-code))
 
