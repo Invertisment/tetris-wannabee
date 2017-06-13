@@ -4,7 +4,7 @@
     #?(:cljs [cljs.core.async :refer [>!]])
     #?(:clj [clojure.core.async :refer [go >!]])
     [core.actions.move :refer [next-field-state]]
-    [core.actions.invalid-position :refer [recover-bad-placement]]))
+    [core.actions.invalid-position :refer [build-recover-bad-placement]]))
 
 (defn send-the-move! [output-chan move]
   (when move
@@ -28,6 +28,6 @@
         next-field-state
         state-atom
         piece-valid?
-        recover-bad-placement
+        (build-recover-bad-placement (constantly #{}))
         char-code))))
 
