@@ -25,19 +25,19 @@
 
 ; Pieces
 (def line-piece
-  {:piece #{[3 1] [4 1] [5 1] [6 1]} :bounds bounds-4x4})
+  {:piece #{[3 1] [4 1] [5 1] [6 1]} :bounds bounds-4x4 :color "cyan"})
 (def j-piece
-  {:piece #{[3 0] [3 1] [4 1] [5 1]} :bounds bounds-3x3})
+  {:piece #{[3 0] [3 1] [4 1] [5 1]} :bounds bounds-3x3 :color "royalblue"})
 (def l-piece
-  {:piece #{[3 1] [4 1] [5 1] [5 0]} :bounds bounds-3x3})
+  {:piece #{[3 1] [4 1] [5 1] [5 0]} :bounds bounds-3x3 :color "darkorange"})
 (def square-piece
-  {:piece #{[4 0] [5 0] [4 1] [5 1]} :bounds bounds-2x2})
+  {:piece #{[4 0] [5 0] [4 1] [5 1]} :bounds bounds-2x2 :color "gold"})
 (def z-reverse-piece
-  {:piece #{[4 0] [5 0] [3 1] [4 1]} :bounds bounds-3x3})
+  {:piece #{[4 0] [5 0] [3 1] [4 1]} :bounds bounds-3x3 :color "limegreen"})
 (def t-piece
-  {:piece #{[4 0] [3 1] [4 1] [5 1]} :bounds bounds-3x3})
+  {:piece #{[4 0] [3 1] [4 1] [5 1]} :bounds bounds-3x3 :color "rebeccapurple"})
 (def z-piece
-  {:piece #{[3 0] [4 0] [4 1] [5 1]} :bounds bounds-3x3})
+  {:piece #{[3 0] [4 0] [4 1] [5 1]} :bounds bounds-3x3 :color "orangered"})
 
 (def pieces
   "These coordinated specify where tetrominoes

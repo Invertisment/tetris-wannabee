@@ -28,7 +28,7 @@
   (when
     true
     (create-rects
-      "orangered"
+      "black"
       (let
         [{:keys [x-range y-range]} (:piece-bounds state)]
         (difference
@@ -46,7 +46,7 @@
     canvas
     (concat
       (create-rects
-        "rebeccapurple"
+        (:piece-color new-state)
         (:piece new-state))
       (produce-debug-piece-overlay new-state)
       (create-rects

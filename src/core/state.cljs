@@ -4,6 +4,7 @@
             [core.constants :refer [field-width field-height]]))
 
 (def field (atom {:piece #{[1 1] [1 2] [1 3] [2 1]}
+                  :piece-color "chartreuse"
                   :piece-bounds {:x-range [0 3]
                                  :y-range [1 4]}
                   :field #{}
