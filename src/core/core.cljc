@@ -20,6 +20,6 @@
       (change-listener
         next-field-state
         state-atom
-        valid?  
+        valid?
         char-code))))
 

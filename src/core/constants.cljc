@@ -9,3 +9,5 @@
 (def down "KeyS")
 (def bottom "Space")
 
+(def debug true)
+

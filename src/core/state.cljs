@@ -4,6 +4,8 @@
             [core.constants :refer [field-width field-height]]))
 
 (def field (atom {:piece #{[1 1] [1 2] [1 3] [2 1]}
+                  :piece-bounds {:x-range [0 3]
+                                 :y-range [1 4]}
                   :field #{[5 5]}
                   :width field-width
                   :height field-height}))

@@ -1,5 +1,7 @@
 (ns core.field
-  (:require cljsjs.fabric))
+  (:require cljsjs.fabric
+            [core.constants :refer [debug]]
+            [clojure.set :refer [difference]]))
 
 (enable-console-print!)
 
@@ -22,6 +24,20 @@
     (partial create-rect color)
     li))
 
+(defn produce-debug-piece-overlay [state]
+  (when
+    true
+    (create-rects
+      "orangered"
+      (let
+        [{:keys [x-range y-range]} (:piece-bounds state)]
+        (difference
+          (set
+            (for [x (apply range x-range)
+                  y (apply range y-range)]
+              [x y]))
+          (:piece state))))))
+
 (defn show! [[old-state new-state]]
   #_(println "showing " old-state new-state)
   (.clear canvas)
@@ -32,6 +48,7 @@
       (create-rects
         "rebeccapurple"
         (:piece new-state))
+      (produce-debug-piece-overlay new-state)
       (create-rects
         "dodgerblue"
         (:field new-state)))))
