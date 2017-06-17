@@ -1,7 +1,8 @@
 (ns core.actions.move
   (:require [core.constants :as const]
             [core.actions.piece-ops :refer [piece-op-scalar-valid]]
-            [core.actions.stick :refer [stick-piece]]))
+            [core.actions.stick :refer [stick-piece]]
+            [core.actions.piece-gen :refer [generate-new-piece]]))
 
 (defn right [valid? state]
   (piece-op-scalar-valid valid? state inc identity))
@@ -16,10 +17,7 @@
       new-state
       new-state
       (stick-piece
-        (constantly
-          {:piece #{[1 1] [2 1] [2 2] [3 2]}
-           :bounds {:x-range [1 4]
-                    :y-range [1 4]}})
+        (partial generate-new-piece const/pieces)
         state))))
 
 (defn rotate [valid? state]
