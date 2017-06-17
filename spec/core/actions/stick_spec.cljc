@@ -9,40 +9,27 @@
       (should=
         {:piece #{}
          :field #{"piece" "field"}
-         :piece-bounds #{}
-         :piece-color :color}
+         :piece-bounds #{}}
         (stick/stick-piece
-          (constantly {:piece #{} :bounds #{} :color :color})
+          (constantly {:piece #{} :bounds #{}})
           {:piece #{"piece"}
            :field #{"field"}})))
   (it "should produce new piece from factory fn"
       (should=
         {:piece #{"new piece"}
          :field #{"piece" "field"}
-         :piece-bounds #{}
-         :piece-color :color}
+         :piece-bounds #{}}
         (stick/stick-piece
-          (constantly {:piece #{"new piece"} :bounds #{} :color :color})
+          (constantly {:piece #{"new piece"} :bounds #{}})
           {:piece #{"piece"}
            :field #{"field"}})))
   (it "should set piece bounds using bounds-fn"
       (should=
         {:piece #{}
          :field #{"piece" "field"}
-         :piece-bounds "expected piece bounds"
-         :piece-color :color}
+         :piece-bounds "expected piece bounds"}
         (stick/stick-piece
-          (constantly {:piece #{} :bounds "expected piece bounds" :color :color})
-          {:piece #{"piece"}
-           :field #{"field"}})))
-  (it "should set piece bounds using bounds-fn"
-      (should=
-        {:piece #{}
-         :field #{"piece" "field"}
-         :piece-bounds "expected piece bounds"
-         :piece-color "rebeccapurple"}
-        (stick/stick-piece
-          (constantly {:piece #{} :bounds "expected piece bounds" :color "rebeccapurple"})
+          (constantly {:piece #{} :bounds "expected piece bounds"})
           {:piece #{"piece"}
            :field #{"field"}}))))
 

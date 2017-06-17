@@ -39,14 +39,25 @@
 (def z-piece
   {:piece #{[3 0] [4 0] [4 1] [5 1]} :bounds bounds-3x3 :color "orangered"})
 
+(defn apply-color [{:keys [piece color] :as piece-data}]
+  (assoc
+    piece-data
+    :piece (set (map
+                  (fn [coord]
+                    {:coord coord
+                     :color color})
+                  piece))))
+
 (def pieces
   "These coordinated specify where tetrominoes
   spawn and their initial rotation"
-  [line-piece
-   j-piece
-   l-piece
-   square-piece
-   z-reverse-piece
-   t-piece
-   z-piece])
+  (map
+    apply-color
+    [line-piece
+     j-piece
+     l-piece
+     square-piece
+     z-reverse-piece
+     t-piece
+     z-piece]))
 

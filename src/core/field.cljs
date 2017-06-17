@@ -1,7 +1,8 @@
 (ns core.field
   (:require cljsjs.fabric
             [core.constants :refer [debug]]
-            [clojure.set :refer [difference]]))
+            [clojure.set :refer [difference]]
+            [core.constants :as const]))
 
 (enable-console-print!)
 
@@ -19,37 +20,42 @@
             "width" block-size-px
             "height" block-size-px)))
 
-(defn create-rects [color li]
+(defn create-rect-from-colored-pixel [{:keys [coord color]}]
+  (create-rect color coord))
+
+(defn create-rects [li]
   (map
-    (partial create-rect color)
+    create-rect-from-colored-pixel
     li))
 
 (defn produce-debug-piece-overlay [state]
   (when
-    true
+    const/debug
     (create-rects
-      "black"
       (let
         [{:keys [x-range y-range]} (:piece-bounds state)]
         (difference
           (set
-            (for [x (apply range x-range)
-                  y (apply range y-range)]
-              [x y]))
-          (:piece state))))))
+            (for [x (when (not-empty x-range) (apply range x-range))
+                  y (when (not-empty y-range) (apply range y-range))]
+              (do
+              {:coord [x y] :color "black"})))
+          (map
+            (fn [m]
+              (assoc m :color "black"))
+            (:piece state)))))))
 
 (defn show! [[old-state new-state]]
-  #_(println "showing " old-state new-state)
+  #_(println "showing " #_old-state new-state)
   (.clear canvas)
   (reduce
     #(.add %1 %2)
     canvas
     (concat
-      (create-rects
-        (:piece-color new-state)
-        (:piece new-state))
+      (create-rects (:piece new-state))
       (produce-debug-piece-overlay new-state)
-      (create-rects
+      (create-rects (:field new-state))
+      #_(create-rects
         "dodgerblue"
         (:field new-state)))))
 

@@ -1,7 +1,10 @@
 (ns core.actions.piece-ops)
 
-(defn coords-op [x-fn y-fn [x y]]
-  [(x-fn x) (y-fn y)])
+(defn coords-op [x-fn y-fn {:keys [coord] :as data}]
+  (let
+    [[x y] coord]
+    (assoc data
+           :coord [(x-fn x) (y-fn y)])))
 
 (defn coords-op-scalar-piece [x-fn y-fn piece]
   (set (map
@@ -24,5 +27,6 @@
     field))
 
 (defn piece-op-scalar-valid [valid? field x-fn y-fn]
+  #_(println "piece-op-scalar-valid")
   (validate valid? (coords-op-scalar x-fn y-fn field )))
 
