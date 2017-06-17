@@ -3,21 +3,6 @@
             [core.actions.piece-ops :as ops]))
 
 (describe
-  "get-piece-bounds"
-  (it "should give min and max bounds"
-      (should=
-        {:x-range [2 5]
-         :y-range [2 5]}
-        (ops/get-piece-bounds
-          #{[2 4] [3 3] [4 2] [5 1]})))
-  (it "should give min and max bounds"
-      (should=
-        {:x-range [1 4]
-         :y-range [2 6]}
-        (ops/get-piece-bounds
-          #{[2 1] [1 3] [4 5] [3 1]}))))
-
-(describe
   "coords-op"
   (it "should apply fn to coord"
       (should=

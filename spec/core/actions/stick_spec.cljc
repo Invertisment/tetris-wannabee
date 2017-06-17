@@ -9,20 +9,18 @@
       (should=
         {:piece #{}
          :field #{"piece" "field"}
-         :piece-bounds "piece bounds"}
+         :piece-bounds #{}}
         (stick/stick-piece
-          (constantly #{})
-          (constantly "piece bounds")
+          (constantly {:piece #{} :bounds #{}})
           {:piece #{"piece"}
            :field #{"field"}})))
   (it "should produce new piece from factory fn"
       (should=
         {:piece #{"new piece"}
          :field #{"piece" "field"}
-         :piece-bounds "piece bounds"}
+         :piece-bounds #{}}
         (stick/stick-piece
-          (constantly #{"new piece"})
-          (constantly "piece bounds")
+          (constantly {:piece #{"new piece"} :bounds #{}})
           {:piece #{"piece"}
            :field #{"field"}})))
   (it "should set piece bounds using bounds-fn"
@@ -31,8 +29,7 @@
          :field #{"piece" "field"}
          :piece-bounds "expected piece bounds"}
         (stick/stick-piece
-          (constantly #{})
-          (constantly "expected piece bounds")
+          (constantly {:piece #{} :bounds "expected piece bounds"})
           {:piece #{"piece"}
            :field #{"field"}}))))
 

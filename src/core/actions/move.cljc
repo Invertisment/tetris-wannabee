@@ -1,6 +1,6 @@
 (ns core.actions.move
   (:require [core.constants :as const]
-            [core.actions.piece-ops :refer [piece-op-scalar-valid get-piece-bounds]]
+            [core.actions.piece-ops :refer [piece-op-scalar-valid]]
             [core.actions.stick :refer [stick-piece]]))
 
 (defn right [valid? state]
@@ -15,7 +15,12 @@
     (if
       new-state
       new-state
-      (stick-piece (constantly #{[1 1]}) get-piece-bounds state))))
+      (stick-piece
+        (constantly
+          {:piece #{[1 1] [2 1] [2 2] [3 2]}
+           :bounds {:x-range [1 4]
+                    :y-range [1 4]}})
+        state))))
 
 (defn rotate [valid? state]
   (println "rotate")

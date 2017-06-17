@@ -1,23 +1,5 @@
 (ns core.actions.piece-ops)
 
-(defn min-max-range [key-name li]
-  [key-name
-   ((juxt
-      (partial reduce min)
-      (partial reduce max))
-    li)])
-
-(defn get-piece-bounds [piece]
-  (into {}
-         ((juxt (comp
-                  (partial min-max-range :x-range)
-                  first)
-                (comp
-                  (partial min-max-range :y-range)
-                  (partial map inc)
-                  second))
-          (apply map vector piece))))
-
 (defn coords-op [x-fn y-fn [x y]]
   [(x-fn x) (y-fn y)])
 
