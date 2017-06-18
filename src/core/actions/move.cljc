@@ -7,14 +7,14 @@
             [core.piece-validators :refer [validate]]))
 
 (defn right [valid? state]
-  (piece-op-scalar valid? state inc identity))
+  (piece-op-scalar inc identity state))
 
 (defn left [valid? state]
-  (piece-op-scalar valid? state dec identity))
+  (piece-op-scalar dec identity state))
 
 (defn down [valid? state]
   (let
-    [new-state (piece-op-scalar valid? state identity inc)]
+    [new-state (piece-op-scalar identity inc state)]
     (if (valid? new-state)
       new-state
       (stick-piece
@@ -25,16 +25,19 @@
   (rot/rotate-piece-clockwise state))
 
 (defn rotate-counter-clockwise [valid? state]
-  (rot/rotate-piece-counter-clockwise state)) 
+  (rot/rotate-piece-counter-clockwise state))
 
 (defn bottom [valid? state]
-  (println "bottom")
-  (piece-op-scalar valid? state identity inc))
+  (down
+    valid?
+    (last (take-while
+            valid?
+            (iterate (partial piece-op-scalar identity inc) state)))))
 
 (defn nop [& _])
 
 (defn direction [const-value]
-  (condp = const-value 
+  (condp = const-value
     const/rotate #'rotate
     const/left #'left
     const/right #'right
