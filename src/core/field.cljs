@@ -18,7 +18,8 @@
             "top" (* y block-size-px)
             "fill" color
             "width" block-size-px
-            "height" block-size-px)))
+            "height" block-size-px
+            "selectable" false)))
 
 (defn create-rect-from-colored-pixel [{:keys [coord color]}]
   (create-rect color coord))
