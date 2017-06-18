@@ -3,14 +3,14 @@
             [clojure.set :refer [union]]))
 
 (defn stick-piece [new-piece-fn state]
-  #_(println "stick-piece" state)
   (let
-    [{:keys [piece bounds]} (new-piece-fn)]
+    [{:keys [piece piece-bounds]} (new-piece-fn)]
+    (println piece piece-bounds)
     (assoc state
            :field (union
                     (:field state)
                     (:piece state))
            :piece piece
-           :piece-bounds bounds)))
+           :piece-bounds piece-bounds)))
 
 

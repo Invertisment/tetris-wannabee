@@ -21,12 +21,6 @@
            :piece (coords-op-scalar-piece x-fn y-fn piece)
            :piece-bounds (coords-op-scalar-piece-bounds x-fn y-fn piece-bounds)))
 
-(defn validate [valid? field]
-  (when
-    (valid? field)
-    field))
-
-(defn piece-op-scalar-valid [valid? field x-fn y-fn]
-  #_(println "piece-op-scalar-valid")
-  (validate valid? (coords-op-scalar x-fn y-fn field )))
+(defn piece-op-scalar [valid? field x-fn y-fn]
+  (coords-op-scalar x-fn y-fn field ))
 

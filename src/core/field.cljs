@@ -54,8 +54,5 @@
     (concat
       (create-rects (:piece new-state))
       (produce-debug-piece-overlay new-state)
-      (create-rects (:field new-state))
-      #_(create-rects
-        "dodgerblue"
-        (:field new-state)))))
+      (create-rects (:field new-state)))))
 

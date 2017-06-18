@@ -7,6 +7,8 @@
 (def left "KeyA")
 (def right "KeyD")
 (def rotate "KeyW")
+(def rotate-clockwise "KeyE")
+(def rotate-counter-clockwise "KeyQ")
 (def down "KeyS")
 (def bottom "Space")
 
@@ -25,19 +27,19 @@
 
 ; Pieces
 (def line-piece
-  {:piece #{[3 1] [4 1] [5 1] [6 1]} :bounds bounds-4x4 :color "cyan"})
+  {:piece #{[3 1] [4 1] [5 1] [6 1]} :piece-bounds bounds-4x4 :color "cyan"})
 (def j-piece
-  {:piece #{[3 0] [3 1] [4 1] [5 1]} :bounds bounds-3x3 :color "royalblue"})
+  {:piece #{[3 0] [3 1] [4 1] [5 1]} :piece-bounds bounds-3x3 :color "royalblue"})
 (def l-piece
-  {:piece #{[3 1] [4 1] [5 1] [5 0]} :bounds bounds-3x3 :color "darkorange"})
+  {:piece #{[3 1] [4 1] [5 1] [5 0]} :piece-bounds bounds-3x3 :color "darkorange"})
 (def square-piece
-  {:piece #{[4 0] [5 0] [4 1] [5 1]} :bounds bounds-2x2 :color "gold"})
+  {:piece #{[4 0] [5 0] [4 1] [5 1]} :piece-bounds bounds-2x2 :color "gold"})
 (def z-reverse-piece
-  {:piece #{[4 0] [5 0] [3 1] [4 1]} :bounds bounds-3x3 :color "limegreen"})
+  {:piece #{[4 0] [5 0] [3 1] [4 1]} :piece-bounds bounds-3x3 :color "limegreen"})
 (def t-piece
-  {:piece #{[4 0] [3 1] [4 1] [5 1]} :bounds bounds-3x3 :color "rebeccapurple"})
+  {:piece #{[4 0] [3 1] [4 1] [5 1]} :piece-bounds bounds-3x3 :color "rebeccapurple"})
 (def z-piece
-  {:piece #{[3 0] [4 0] [4 1] [5 1]} :bounds bounds-3x3 :color "orangered"})
+  {:piece #{[3 0] [4 0] [4 1] [5 1]} :piece-bounds bounds-3x3 :color "orangered"})
 
 (defn apply-color [{:keys [piece color] :as piece-data}]
   (assoc

@@ -3,14 +3,15 @@
   (:require
     #?(:cljs [cljs.core.async :refer [>!]])
     #?(:clj [clojure.core.async :refer [go >!]])
-    [core.actions.move :refer [next-field-state]]))
+    [core.actions.move :refer [next-field-state]]
+    [core.constants :as const]))
 
 (defn send-the-move! [output-chan move]
   (when move
     (go (>! output-chan move))))
 
 (defn change-listener [transition-fn state-atom valid? char-code]
-   (transition-fn valid? @state-atom char-code))
+  (transition-fn valid? @state-atom char-code))
 
 (defn create-change-listener
   [state-atom next-state-chan valid?]

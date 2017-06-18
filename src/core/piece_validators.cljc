@@ -24,8 +24,11 @@
       (not (overlay? shape-a shape-b)))))
 
 (defn field-valid? [{:keys [width height piece field] :as state}]
-  #_(println "field-valid?" state)
   (when
     (not-any? nil? (vals state))
     (possible-placement? width height piece field)))
 
+(defn validate [valid? field]
+  (when
+    (valid? field)
+    field))
