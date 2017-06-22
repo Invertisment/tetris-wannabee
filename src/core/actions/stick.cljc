@@ -5,7 +5,6 @@
 (defn stick-piece [new-piece-fn state]
   (let
     [{:keys [piece piece-bounds]} (new-piece-fn)]
-    (println piece piece-bounds)
     (assoc state
            :field (union
                     (:field state)

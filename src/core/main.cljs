@@ -14,9 +14,9 @@
   (state/before-save-piece-loop)
   (go-loop
     []
-    (let [piece-change (<! state/after-save-piece-ch)]
-      (fi/show! piece-change)
-      (when piece-change (recur)))))
+    (let [state (<! state/after-save-piece-ch)]
+      (fi/show! state/field-pixels state)
+      (when state (recur)))))
 
 (defn -main []
   (game-loop)

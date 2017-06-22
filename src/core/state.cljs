@@ -13,14 +13,15 @@
                   :width field-width
                   :height field-height}))
 
+(def field-pixels (atom {}))
+
 (def before-save-piece-ch (chan (sliding-buffer 1)))
 (def after-save-piece-ch (chan (sliding-buffer 1)))
 
 (defn before-save-piece-loop []
   (go-loop
     []
-    (let [prev-piece @field
-          new-piece (<! before-save-piece-ch)]
+    (let [new-piece (<! before-save-piece-ch)]
       (reset! field new-piece)
-      (>! after-save-piece-ch [prev-piece new-piece])
+      (>! after-save-piece-ch new-piece)
       (when new-piece (recur)))))

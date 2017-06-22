@@ -25,35 +25,56 @@
   (create-rect color coord))
 
 (defn create-rects [li]
-  (map
-    create-rect-from-colored-pixel
-    li))
+  (into {} (map
+             (juxt identity create-rect-from-colored-pixel)
+             li)))
 
-(defn produce-debug-piece-overlay [state]
+(defn get-debug-overlay [state]
   (when
     const/debug
-    (create-rects
-      (let
-        [{:keys [x-range y-range]} (:piece-bounds state)]
-        (difference
-          (set
-            (for [x (when (not-empty x-range) (apply range x-range))
-                  y (when (not-empty y-range) (apply range y-range))]
-              (do
+    (let
+      [{:keys [x-range y-range]} (:piece-bounds state)]
+      (difference
+        (set
+          (for [x (when (not-empty x-range) (apply range x-range))
+                y (when (not-empty y-range) (apply range y-range))]
+            (do
               {:coord [x y] :color "black"})))
-          (map
-            (fn [m]
-              (assoc m :color "black"))
-            (:piece state)))))))
+        (map
+          (fn [m]
+            (assoc m :color "black"))
+          (:piece state))))))
 
-(defn show! [[old-state new-state]]
-  #_(println "showing " #_old-state new-state)
-  (.clear canvas)
-  (reduce
-    #(.add %1 %2)
-    canvas
-    (concat
-      (create-rects (:piece new-state))
-      (produce-debug-piece-overlay new-state)
-      (create-rects (:field new-state)))))
+(defn get-blocks [state]
+  (concat
+    (:piece state)
+    (get-debug-overlay state)
+    (:field state)))
+
+(defn get-diff [old-visibles new-visibles]
+  (let
+    [o-set (set old-visibles)
+     n-set (set new-visibles)]
+    {:show (difference n-set o-set)
+     :hide (difference o-set n-set)}))
+
+(defn show! [field-pixels-atom state]
+  (let
+    [field-pixels @field-pixels-atom
+     {:keys [show hide]} (get-diff (keys field-pixels) (get-blocks state))
+     keyed-rects-to-show (create-rects show)
+     to-remove (select-keys field-pixels hide) ]
+    (reset!
+      field-pixels-atom
+      (merge
+        (apply dissoc field-pixels hide)
+        keyed-rects-to-show))
+    (reduce
+      #(.add %1 %2)
+      canvas
+      (vals keyed-rects-to-show))
+    (reduce
+      #(.remove %1 %2)
+      canvas
+      (vals to-remove))))
 
