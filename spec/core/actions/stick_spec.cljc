@@ -12,6 +12,7 @@
          :piece-bounds #{}}
         (stick/stick-piece
           (constantly {:piece #{} :piece-bounds #{}})
+          identity
           {:piece #{"piece"}
            :field #{"field"}})))
   (it "should produce new piece from factory fn"
@@ -21,6 +22,7 @@
          :piece-bounds #{}}
         (stick/stick-piece
           (constantly {:piece #{"new piece"} :piece-bounds #{}})
+          identity
           {:piece #{"piece"}
            :field #{"field"}})))
   (it "should set piece bounds using bounds-fn"
@@ -30,6 +32,7 @@
          :piece-bounds "expected piece bounds"}
         (stick/stick-piece
           (constantly {:piece #{} :piece-bounds "expected piece bounds"})
+          identity
           {:piece #{"piece"}
            :field #{"field"}}))))
 

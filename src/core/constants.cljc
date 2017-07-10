@@ -12,7 +12,7 @@
 (def down "KeyS")
 (def bottom "Space")
 
-(def debug true)
+(def debug false)
 
 ; Bounds
 (def bounds-2x2

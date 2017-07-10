@@ -4,7 +4,8 @@
             [core.actions.rotate :as rot]
             [core.actions.stick :refer [stick-piece]]
             [core.actions.piece-gen :refer [generate-new-piece]]
-            [core.piece-validators :refer [validate]]))
+            [core.piece-validators :refer [validate]]
+            [core.actions.clear-lines :refer [remove-full-lines]]))
 
 (defn right [valid? state]
   (piece-op-scalar inc identity state))
@@ -19,6 +20,7 @@
       new-state
       (stick-piece
         (partial generate-new-piece const/pieces)
+        remove-full-lines
         state))))
 
 (defn rotate [valid? state]
