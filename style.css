@@ -1,0 +1,22 @@
+.canvas-container {
+  display: inline-block;
+}
+
+#game {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+
+.canvas-container, #info {
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+p, h3 {
+    display: block;
+}
+
+.dot-border {
+  border-style: dotted;
+}

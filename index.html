@@ -1,12 +1,18 @@
 <html>
     <head>
         <title>wut</title>
-        <!--link href='./style.css' rel='stylesheet' /-->
+        <link href='./style.css' rel='stylesheet' />
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body id="doc-body">
-        <div>
-            <canvas style="border-style: dotted;" width=250 height=550 id='game-canvas'></canvas>
+        <div id="nil">
+            <div id="game">
+                <canvas width=250 height=550 class="dot-border" id='game-canvas'></canvas>
+                <section id=info>
+                    <h4>Controls</h4>
+                    <p>wasd+space</p>
+                </section>
+            </div>
         </div>
         <script src="out/goog/base.js" type="text/javascript"></script>
         <script src="index.js" type="text/javascript"></script>
