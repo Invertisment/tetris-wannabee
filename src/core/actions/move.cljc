@@ -5,7 +5,8 @@
             [core.actions.stick :refer [stick-piece]]
             [core.actions.piece-gen :refer [generate-new-piece]]
             [core.piece-validators :refer [validate]]
-            [core.actions.clear-lines :refer [remove-full-lines]]))
+            [core.actions.clear-lines :refer [remove-full-lines]]
+            [core.actions.new-piece :refer [new-piece]]))
 
 (defn right [valid? state]
   (piece-op-scalar inc identity state))
@@ -18,10 +19,12 @@
     [new-state (piece-op-scalar identity inc state)]
     (if (valid? new-state)
       new-state
-      (stick-piece
+      (new-piece
+        valid?
         (partial generate-new-piece const/pieces)
-        remove-full-lines
-        state))))
+        (stick-piece
+          remove-full-lines
+          state)))))
 
 (defn rotate [valid? state]
   (rot/rotate-piece-clockwise state))
@@ -30,11 +33,19 @@
   (rot/rotate-piece-counter-clockwise state))
 
 (defn bottom [valid? state]
-  (down
-    valid?
-    (last (take-while
-            valid?
-            (iterate (partial piece-op-scalar identity inc) state)))))
+  (when
+    (:piece state)
+    (down
+      valid?
+      (last (take-while
+              valid?
+              (iterate (partial piece-op-scalar identity inc) state))))))
+
+(defn new-game [valid? state]
+  (merge
+    (assoc state
+           :field #{})
+    (generate-new-piece const/pieces)))
 
 (defn nop [& _])
 
@@ -47,6 +58,7 @@
     const/bottom #'bottom
     const/rotate-clockwise #'rotate
     const/rotate-counter-clockwise #'rotate-counter-clockwise
+    const/new-game #'new-game
     #'nop))
 
 (defn move [valid? state key-code]

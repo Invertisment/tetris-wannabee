@@ -11,6 +11,7 @@
 (def rotate-counter-clockwise "KeyQ")
 (def down "KeyS")
 (def bottom "Space")
+(def new-game "KeyN")
 
 (def debug false)
 

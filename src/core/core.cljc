@@ -24,3 +24,12 @@
         valid?
         char-code))))
 
+(defn start-game [state-atom next-state-chan]
+  (send-the-move!
+    next-state-chan
+    (change-listener
+      next-field-state
+      state-atom
+      (constantly true)
+      const/new-game)))
+

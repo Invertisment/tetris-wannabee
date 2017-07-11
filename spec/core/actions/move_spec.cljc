@@ -18,4 +18,7 @@
   (it "should have default case"
       (should= #'core.actions.move/nop (move/direction "anything else"))))
 
-
+(describe
+  "bottom"
+  (it "should not do infinite loop on no :piece"
+      (should= nil (move/bottom (constantly true) {}))))

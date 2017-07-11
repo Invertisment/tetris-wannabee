@@ -3,16 +3,6 @@
             [core.actions.clear-lines :as cl]
             [core.constants :as const]))
 
-#_{:piece #{{:coord [1 0] :color "chartreuse"}
-            {:coord [1 1] :color "chartreuse"}
-            {:coord [1 2] :color "chartreuse"}
-            {:coord [2 0] :color "chartreuse"}}
-   :piece-bounds {:x-range [0 3]
-                  :y-range [0 3]}
-   :field #{}
-   :width field-width
-   :height field-height}
-
 (describe
   "group-into-lines"
   (it "should group by y index"

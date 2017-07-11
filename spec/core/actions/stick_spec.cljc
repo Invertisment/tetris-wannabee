@@ -7,32 +7,16 @@
   "merge-piece-to-field"
   (it "should concat :piece with :field"
       (should=
-        {:piece #{}
-         :field #{"piece" "field"}
-         :piece-bounds #{}}
+        {:field #{::piece1 ::field1}}
         (stick/stick-piece
-          (constantly {:piece #{} :piece-bounds #{}})
           identity
-          {:piece #{"piece"}
-           :field #{"field"}})))
+          {:piece #{::piece1}
+           :field #{::field1}})))
   (it "should produce new piece from factory fn"
       (should=
-        {:piece #{"new piece"}
-         :field #{"piece" "field"}
-         :piece-bounds #{}}
+        {:field #{::piece2 ::field2}}
         (stick/stick-piece
-          (constantly {:piece #{"new piece"} :piece-bounds #{}})
           identity
-          {:piece #{"piece"}
-           :field #{"field"}})))
-  (it "should set piece bounds using bounds-fn"
-      (should=
-        {:piece #{}
-         :field #{"piece" "field"}
-         :piece-bounds "expected piece bounds"}
-        (stick/stick-piece
-          (constantly {:piece #{} :piece-bounds "expected piece bounds"})
-          identity
-          {:piece #{"piece"}
-           :field #{"field"}}))))
+          {:piece #{::piece2}
+           :field #{::field2}}))))
 
