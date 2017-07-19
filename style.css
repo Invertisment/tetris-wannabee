@@ -1,20 +1,25 @@
-.canvas-container {
-  display: inline-block;
+section {
+    display: inline-block;
+    width: auto;
 }
 
-#game {
+.horizontal {
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
 }
 
-.canvas-container, #info {
-    margin-left: 2em;
-    margin-right: 2em;
+.vertical {
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
 }
 
-p, h3 {
-    display: block;
+.margin {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: 2em;
+    margin-right: 2em;
 }
 
 .dot-border {

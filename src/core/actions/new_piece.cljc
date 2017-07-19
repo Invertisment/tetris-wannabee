@@ -4,7 +4,10 @@
 
 (defn new-piece [valid? new-piece-fn state]
   (let
-    [new-state (merge state (new-piece-fn))]
+    [new-state (merge
+                 state
+                 (:next-piece state)
+                 {:next-piece (new-piece-fn)})]
     (if
       (valid? new-state)
       new-state

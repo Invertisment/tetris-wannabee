@@ -44,7 +44,8 @@
 (defn new-game [valid? state]
   (merge
     (assoc state
-           :field #{})
+           :field #{}
+           :next-piece (generate-new-piece const/pieces))
     (generate-new-piece const/pieces)))
 
 (defn nop [& _])

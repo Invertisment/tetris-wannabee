@@ -22,3 +22,48 @@
   "bottom"
   (it "should not do infinite loop on no :piece"
       (should= nil (move/bottom (constantly true) {}))))
+
+(describe
+  "new-game"
+  (it "should create :piece"
+      (should= {:field #{}
+                :piece ::new-piece
+                :piece-bounds ::piece-bounds
+                :next-piece {:piece ::new-piece
+                             :piece-bounds ::piece-bounds}}
+               (with-redefs
+                 [core.actions.piece-gen/generate-new-piece
+                  (fn [_]
+                    {:piece ::new-piece
+                     :piece-bounds ::piece-bounds})]
+                 (move/new-game
+                   (constantly true)
+                   {}))))
+  (it "should generate two distinct pieces"
+      (should-not
+        (let
+          [{:keys [piece next-piece]}
+           (with-redefs
+             [core.actions.piece-gen/generate-new-piece
+              (fn [_]
+                {:piece (gensym "unique_for_testing_")
+                 :piece-bounds (gensym "unique_for_testing_")})]
+             (move/new-game
+               (constantly true)
+               {}))]
+          (= piece (:piece next-piece)))))
+  (it "should generate two distinct piece bounds"
+      (should-not
+        (let
+          [{:keys [piece-bounds next-piece]}
+           (with-redefs
+             [core.actions.piece-gen/generate-new-piece
+              (fn [_]
+                {:piece (gensym "unique_for_testing_")
+                 :piece-bounds (gensym "unique_for_testing_")})]
+             (move/new-game
+               (constantly true)
+               {}))
+           ]
+          (= piece-bounds (:piece-bounds next-piece))))))
+

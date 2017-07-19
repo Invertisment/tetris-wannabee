@@ -4,16 +4,27 @@
 
 (describe
   "coords-op"
-  (it "should return nil on no pieces"
+  (it "should generate a new piece to :next-piece"
       (should=
-        {:piece ::piece
-         :piece-bounds ::bouds
-         ::state ::le-state}
+        {::some-state ::le-state
+         :next-piece {:piece ::piece
+                      :piece-bounds ::bouds}}
         (new-piece
           (constantly true)
           (constantly {:piece ::piece
                        :piece-bounds ::bouds})
-          {::state ::le-state})))
+          {::some-state ::le-state
+           :next-piece {}})))
+  (it "should copy :piece from :next-piece"
+      (should=
+        {::some-state ::le-state
+         :prev-piece ::a
+         :next-piece ::next-piece}
+        (new-piece
+          (constantly true)
+          (constantly ::next-piece)
+          {::some-state ::le-state
+           :next-piece {:prev-piece ::a}})))
   (it "should end game if impossible to place"
       (should=
         {::state ::le-state

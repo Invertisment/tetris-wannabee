@@ -5,14 +5,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body id="doc-body">
-        <div id="nil">
-            <div id="game">
-                <canvas width=250 height=550 class="dot-border" id='game-canvas'></canvas>
-                <section id=info>
+        <div class="horizontal">
+            <section class="dot-border">
+                <canvas width=250 height=550 id='game-canvas'></canvas>
+            </section>
+            <section class="vertical">
+                <section>
+                    <p class=margin>Next piece:</p>
+                    <canvas width=250 height=50 id='next-piece-canvas'></canvas>
+                </section>
+                <section class=margin>
                     <h4>Controls</h4>
                     <p>wasd+space+n</p>
                 </section>
-            </div>
+            </section>
         </div>
         <script src="out/goog/base.js" type="text/javascript"></script>
         <script src="index.js" type="text/javascript"></script>
