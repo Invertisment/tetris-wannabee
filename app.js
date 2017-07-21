@@ -7,7 +7,7 @@ require('./index.js');
 // The core of our code
 require('./out/core/core');
 require('./out/core/fabric');
-require('./out/core/main'); 
+require('./out/core/main');
 
 // The core of cljs
 require('./out/cljs/core');

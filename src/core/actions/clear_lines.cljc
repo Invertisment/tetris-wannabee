@@ -43,25 +43,31 @@
     line))
 
 (defn compute-line-shifts
-  [{:keys [full-line-ids lines]}]
-  {:line-shifts (group-upper-line-ids full-line-ids)
-   :lines lines})
+  [{:keys [full-line-ids lines] :as data}]
+  (merge
+    data
+    {:line-shifts (group-upper-line-ids full-line-ids)}))
 
-(defn move-lines [{:keys [line-shifts lines]}]
-  (into #{} (mapcat
-              (fn [[line-id line]]
-                (move-single-line
-                  line
-                  (partial + (or (get line-shifts line-id) 0))))
-              lines)))
+(defn move-lines [{:keys [line-shifts lines] :as data}]
+  (merge
+    data
+    {:lines
+     (into #{} (mapcat
+                 (fn [[line-id line]]
+                   (move-single-line
+                     line
+                     (partial + (or (get line-shifts line-id) 0))))
+                 lines))}))
 
 (defn remove-full-lines [field]
-  (assoc
-    field
-    :field
-    (->> field
-         group-into-lines
-         (find-full-lines field)
-         compute-line-shifts
-         move-lines)))
+  (let [{:keys [lines full-line-ids] :as moved}
+        (->> field
+             group-into-lines
+             (find-full-lines field)
+             compute-line-shifts
+             move-lines)]
+    (assoc
+      field
+      :field lines
+      :line-clear-data {:full-line-ids full-line-ids})))
 

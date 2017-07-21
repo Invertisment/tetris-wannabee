@@ -78,23 +78,6 @@
     {:keyed-rects-to-show keyed-rects-to-show
      :to-remove to-remove}))
 
-#_(defn show! [field-pixels-atom state]
-  (let
-    [field-pixels (:field @field-pixels-atom)
-     {:keys [show hide]} (get-diff (keys field-pixels) (get-blocks state))
-     keyed-rects-to-show (create-rects show)
-     to-remove (select-keys field-pixels hide)]
-    (reset!
-      field-pixels-atom
-      {:field
-       (merge
-         (apply dissoc field-pixels hide)
-         keyed-rects-to-show)})
-    (show-on-canvas!
-      main-canvas
-      (vals keyed-rects-to-show)
-      (vals to-remove))))
-
 (defn get-diff-blocks [field-pixels blocks]
   (let
     [{:keys [show hide]} (get-diff (keys field-pixels) blocks)

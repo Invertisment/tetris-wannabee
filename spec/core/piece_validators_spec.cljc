@@ -33,8 +33,8 @@
                 #{{:coord [1 1] :color :blue}})))
   (it "no connections"
       (should-not (v/overlay?
-                #{{:coord [2 1] :color :red}}
-                #{{:coord [1 1] :color :blue}}))))
+                    #{{:coord [2 1] :color :red}}
+                    #{{:coord [1 1] :color :blue}}))))
 
 (describe
   "possible-placement?"

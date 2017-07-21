@@ -6,7 +6,9 @@
             [core.actions.piece-gen :refer [generate-new-piece]]
             [core.piece-validators :refer [validate]]
             [core.actions.clear-lines :refer [remove-full-lines]]
-            [core.actions.new-piece :refer [new-piece]]))
+            [core.actions.new-piece :refer [new-piece]]
+            [core.actions.count-score :refer [count-score]]
+            [core.ui.score :as score]))
 
 (defn right [valid? state]
   (piece-op-scalar inc identity state))
@@ -22,9 +24,11 @@
       (new-piece
         valid?
         (partial generate-new-piece const/pieces)
-        (stick-piece
-          remove-full-lines
-          state)))))
+        (score/show-score!
+          (count-score
+            (stick-piece
+              remove-full-lines
+              state)))))))
 
 (defn rotate [valid? state]
   (rot/rotate-piece-clockwise state))
@@ -42,11 +46,13 @@
               (iterate (partial piece-op-scalar identity inc) state))))))
 
 (defn new-game [valid? state]
-  (merge
-    (assoc state
-           :field #{}
-           :next-piece (generate-new-piece const/pieces))
-    (generate-new-piece const/pieces)))
+  (score/show-score!
+    (merge
+      (assoc state
+             :field #{}
+             :next-piece (generate-new-piece const/pieces)
+             :score {})
+      (generate-new-piece const/pieces))))
 
 (defn nop [& _])
 

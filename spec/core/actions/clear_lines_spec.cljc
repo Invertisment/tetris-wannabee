@@ -128,16 +128,19 @@
   "move-lines"
   (it "no lines"
       (should=
-        #{}
+        {:lines #{}
+         :line-shifts {0 0 1 1 2 2}}
         (cl/move-lines {:line-shifts
                         {0 0 1 1 2 2}
                         :lines {}})))
   (it "lines 1"
       (should=
-        #{{:coord [1 4] :color "chartreuse"}
-          {:coord [8 4] :color "chartreuse 1"}
-          {:coord [1 0] :color "chartreuse"}
-          {:coord [2 0] :color "chartreuse"}}
+        {:line-shifts {0 0 1 1 2 2}
+         :lines
+         #{{:coord [1 4] :color "chartreuse"}
+           {:coord [8 4] :color "chartreuse 1"}
+           {:coord [1 0] :color "chartreuse"}
+           {:coord [2 0] :color "chartreuse"}}}
         (cl/move-lines {:line-shifts
                         {0 0 1 1 2 2}
                         :lines
@@ -148,10 +151,12 @@
                        )))
   (it "lines 2"
       (should=
-        #{{:coord [0 6] :color "chartreuse"}
-          {:coord [4 2] :color "chartreuse 1"}
-          {:coord [1 2] :color "chartreuse"}
-          {:coord [2 9] :color "chartreuse"}}
+        {:line-shifts {0 0 1 1 2 2}
+         :lines
+         #{{:coord [0 6] :color "chartreuse"}
+           {:coord [4 2] :color "chartreuse 1"}
+           {:coord [1 2] :color "chartreuse"}
+           {:coord [2 9] :color "chartreuse"}}}
         (cl/move-lines {:line-shifts {0 0 1 1 2 2}
                         :lines
                         {2 [{:coord [0 4] :color "chartreuse"}
@@ -160,8 +165,10 @@
                             {:coord [2 8] :color "chartreuse"}]}})))
   (it "no NPE"
       (should=
-        #{{:coord [0 4] :color "chartreuse"}
-          {:coord [4 0] :color "chartreuse 1"}}
+        {:line-shifts {}
+         :lines
+         #{{:coord [0 4] :color "chartreuse"}
+           {:coord [4 0] :color "chartreuse 1"}}}
         (cl/move-lines {:line-shifts {}
                         :lines
                         {2 [{:coord [0 4] :color "chartreuse"}
@@ -178,7 +185,8 @@
                        4 1
                        5 1
                        6 1}
-         :lines :some-lines}
+         :lines :some-lines
+         :full-line-ids '(1 3 7)}
         (cl/compute-line-shifts
           {:full-line-ids '(1 3 7)
            :lines :some-lines})))
@@ -189,7 +197,8 @@
                        2 1
                        3 1
                        4 1}
-         :lines :some-lines}
+         :lines :some-lines
+         :full-line-ids '(2 5)}
         (cl/compute-line-shifts
           {:full-line-ids '(2 5)
            :lines :some-lines}))))
@@ -201,7 +210,8 @@
         {:field #{{:coord [0 0] :color "color q"}
                   {:coord [0 1] :color "color w"}}
          :width 2
-         :height 2}
+         :height 2
+         :line-clear-data {:full-line-ids ()}}
         (cl/remove-full-lines
           {:field #{{:coord [0 0] :color "color q"}
                     {:coord [0 1] :color "color w"}}
@@ -211,7 +221,8 @@
       (should=
         {:field #{}
          :width 2
-         :height 2}
+         :height 2
+         :line-clear-data {:full-line-ids '(0)}}
         (cl/remove-full-lines
           {:field #{{:coord [0 0] :color "color a"}
                     {:coord [1 0] :color "color b"}}
@@ -221,7 +232,8 @@
       (should=
         {:field #{{:coord [0 1] :color "color a"}}
          :width 2
-         :height 2}
+         :height 2
+         :line-clear-data {:full-line-ids '(0)}}
         (cl/remove-full-lines
           {:field #{{:coord [0 0] :color "color c"}
                     {:coord [1 0] :color "color b"}
@@ -232,13 +244,13 @@
       (should=
         {:field #{{:coord [0 1] :color "color c"}}
          :width 2
-         :height 2}
+         :height 2
+         :line-clear-data {:full-line-ids '(1)}}
         (cl/remove-full-lines
           {:field #{{:coord [0 0] :color "color c"}
                     {:coord [1 1] :color "color b"}
                     {:coord [0 1] :color "color a"}}
            :width 2
            :height 2}))))
-
 
 
