@@ -10,11 +10,11 @@
   (when move
     (go (>! output-chan move))))
 
-(defn change-listener [transition-fn state-atom valid? char-code]
-  (transition-fn valid? @state-atom char-code))
+(defn change-listener [transition-fn state-atom valid? update-score-fn char-code]
+  (transition-fn valid? update-score-fn @state-atom char-code))
 
 (defn create-change-listener
-  [state-atom next-state-chan valid?]
+  [state-atom next-state-chan valid? update-score-fn]
   (fn [char-code]
     (send-the-move!
       next-state-chan
@@ -22,14 +22,16 @@
         next-field-state
         state-atom
         valid?
+        update-score-fn
         char-code))))
 
-(defn start-game [state-atom next-state-chan]
+(defn start-game [state-atom next-state-chan update-score-fn]
   (send-the-move!
     next-state-chan
     (change-listener
       next-field-state
       state-atom
       (constantly true)
+      update-score-fn
       const/new-game)))
 

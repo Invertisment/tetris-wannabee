@@ -10,19 +10,22 @@
         (cs/add-cleared-lines {:score {:lines-cleared 0}})))
   (it "should add nothing if no lines"
       (should=
-        {:score {:lines-cleared 0}}
+        {:score {:lines-cleared 0}
+         :line-clear-data {:full-line-ids '()}}
         (cs/add-cleared-lines
           {:score {:lines-cleared 0}
            :line-clear-data {:full-line-ids '()}})))
   (it "should add lines to :lines-cleared"
       (should=
-        {:score {:lines-cleared 2}}
+        {:score {:lines-cleared 2}
+         :line-clear-data {:full-line-ids '(12313 123)}}
         (cs/add-cleared-lines
           {:score {:lines-cleared 0}
            :line-clear-data {:full-line-ids '(12313 123)}})))
   (it "should add lines to :lines-cleared (non zero prev)"
       (should=
-        {:score {:lines-cleared 8}}
+        {:score {:lines-cleared 8}
+         :line-clear-data {:full-line-ids '(0 12313 123)}}
         (cs/add-cleared-lines
           {:score {:lines-cleared 5}
            :line-clear-data {:full-line-ids '(0 12313 123)}}))))

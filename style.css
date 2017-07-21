@@ -25,3 +25,14 @@ section {
 .dot-border {
   border-style: dotted;
 }
+
+span, p, h1, h2, h3, h4, h5 {
+    font-family: sans-serif;
+}
+
+.score {
+    font-family: monospace;
+    font-size: 2.5em;
+    font-weight: bold;
+    display: block;
+}

@@ -21,7 +21,7 @@
 (describe
   "bottom"
   (it "should not do infinite loop on no :piece"
-      (should= nil (move/bottom (constantly true) {}))))
+      (should= nil (move/bottom (constantly true) identity {}))))
 
 (describe
   "new-game"
@@ -30,7 +30,8 @@
                 :piece ::new-piece
                 :piece-bounds ::piece-bounds
                 :next-piece {:piece ::new-piece
-                             :piece-bounds ::piece-bounds}}
+                             :piece-bounds ::piece-bounds}
+                :score {}}
                (with-redefs
                  [core.actions.piece-gen/generate-new-piece
                   (fn [_]
@@ -38,6 +39,7 @@
                      :piece-bounds ::piece-bounds})]
                  (move/new-game
                    (constantly true)
+                   identity
                    {}))))
   (it "should generate two distinct pieces"
       (should-not
@@ -50,6 +52,7 @@
                  :piece-bounds (gensym "unique_for_testing_")})]
              (move/new-game
                (constantly true)
+               identity
                {}))]
           (= piece (:piece next-piece)))))
   (it "should generate two distinct piece bounds"
@@ -63,6 +66,7 @@
                  :piece-bounds (gensym "unique_for_testing_")})]
              (move/new-game
                (constantly true)
+               identity
                {}))
            ]
           (= piece-bounds (:piece-bounds next-piece))))))

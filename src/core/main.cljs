@@ -6,7 +6,8 @@
             [core.keys :refer [setup-key-listener]]
             [core.state :as state]
             [core.piece-validators :as v]
-            [core.constants :as c]))
+            [core.constants :as c]
+            [core.ui.score :as score]))
 
 (enable-console-print!)
 
@@ -21,13 +22,15 @@
 (defn -main []
   (start-game
     state/field
-    state/before-save-piece-ch)
+    state/before-save-piece-ch
+    score/show-score!)
   (game-loop)
   (setup-key-listener
     (create-change-listener
       state/field
       state/before-save-piece-ch
-      v/field-valid?)))
+      v/field-valid?
+      score/show-score!)))
 
 (-main)
 
