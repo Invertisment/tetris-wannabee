@@ -25,4 +25,8 @@
                 :compiler {:output-dir "out"
                            :output-to "index.js"
                            :optimizations :none
-                           :source-map true}}]})
+                           :source-map true}}
+               {:id "prod"
+                :source-paths ["src"]
+                :compiler {:output-to "index-prod.js"
+                           :optimizations :advanced}}]})
