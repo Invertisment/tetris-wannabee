@@ -1,9 +1,6 @@
 (ns core.ui.time
   (:require [core.constants :refer [time-between-levels]]))
 
-(defn get-time []
-  (.getTime (js/Date.)))
-
 (defn setup-fall-progression [field-atom]
   (js/setInterval
     #(let

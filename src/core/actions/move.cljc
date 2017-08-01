@@ -56,7 +56,8 @@
       (assoc state
              :field #{}
              :next-piece (generate-new-piece const/pieces)
-             :score {})
+             :score {}
+             :levels const/gravity-intervals)
       (generate-new-piece const/pieces))))
 
 (defn gravity-down [& args]
