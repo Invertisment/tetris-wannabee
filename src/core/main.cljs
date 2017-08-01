@@ -7,7 +7,9 @@
             [core.state :as state]
             [core.piece-validators :as v]
             [core.constants :as c]
-            [core.ui.score :as score]))
+            [core.ui.score :as score]
+            [core.ui.time :as time-helper]
+            [core.actions.gravity :as gravity]))
 
 (enable-console-print!)
 
@@ -20,17 +22,21 @@
       (when state (recur)))))
 
 (defn -main []
-  (start-game
-    state/field
-    state/before-save-piece-ch
-    score/show-score!)
-  (game-loop)
-  (setup-key-listener
-    (create-change-listener
+  (let
+    [change-listener (create-change-listener
+                       state/field
+                       state/before-save-piece-ch
+                       v/field-valid?
+                       score/show-score!)]
+    (start-game
       state/field
       state/before-save-piece-ch
-      v/field-valid?
-      score/show-score!)))
+      score/show-score!)
+    (game-loop)
+    (setup-key-listener change-listener)
+    (time-helper/setup-fall
+      state/field
+      (gravity/create-pull-down-fn change-listener))))
 
 (-main)
 

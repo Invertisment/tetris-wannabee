@@ -7,8 +7,17 @@
             [core.piece-validators :refer [validate]]
             [core.actions.clear-lines :refer [remove-full-lines]]
             [core.actions.new-piece :refer [new-piece]]
-            [core.actions.count-score :refer [count-score]]
-            #_[core.ui.score :as score]))
+            [core.actions.count-score :refer [count-score]]))
+
+(defn- stick-and-generate-new-piece [valid? update-score-fn state]
+  (new-piece
+    valid?
+    (partial generate-new-piece const/pieces)
+    (update-score-fn
+      (count-score
+        (stick-piece
+          remove-full-lines
+          state)))))
 
 (defn right [valid? update-score-fn state]
   (piece-op-scalar inc identity state))
@@ -17,18 +26,13 @@
   (piece-op-scalar dec identity state))
 
 (defn down [valid? update-score-fn state]
-  (let
-    [new-state (piece-op-scalar identity inc state)]
-    (if (valid? new-state)
-      new-state
-      (new-piece
-        valid?
-        (partial generate-new-piece const/pieces)
-        (update-score-fn
-          (count-score
-            (stick-piece
-              remove-full-lines
-              state)))))))
+  (let [new-one
+        (let
+          [new-state (piece-op-scalar identity inc state)]
+          (if (valid? new-state)
+            new-state
+            (stick-and-generate-new-piece valid? update-score-fn state)))]
+    new-one))
 
 (defn rotate [valid? update-score-fn state]
   (rot/rotate-piece-clockwise state))
@@ -55,7 +59,11 @@
              :score {})
       (generate-new-piece const/pieces))))
 
-(defn nop [& _])
+(defn gravity-down [& args]
+  (apply down args))
+
+(defn nop [& args]
+  (println "Unknown direction:" args))
 
 (defn direction [const-value]
   (condp = const-value
@@ -67,6 +75,7 @@
     const/rotate-clockwise #'rotate
     const/rotate-counter-clockwise #'rotate-counter-clockwise
     const/new-game #'new-game
+    const/gravity-pull-down #'gravity-down
     #'nop))
 
 (defn move [valid? update-score-fn state key-code]

@@ -1,11 +1,13 @@
 (ns core.state
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [cljs.core.async :refer [chan sliding-buffer]]
-            [core.constants :refer [field-width field-height]]))
+            [core.constants :refer [field-width field-height gravity-intervals]]))
 
 (def field (atom {:field #{} :width field-width
                   :height field-height
-                  :game-state :not-started}))
+                  :game-state :not-started
+                  :levels gravity-intervals
+                  }))
 
 (def field-pixels (atom {:field-pixels {}
                          :next-piece-pixels {}}))
