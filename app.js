@@ -2,7 +2,7 @@
 //require('./out/goog/bootstrap/nodejs');
 
 // Our app compiled by cljsbuild
-require('./index.js');
+require('./index-dev.js');
 
 // The core of our code
 require('./out/core/core');

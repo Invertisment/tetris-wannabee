@@ -23,7 +23,7 @@
               [{:id "dev"
                 :source-paths ["src"]
                 :compiler {:output-dir "out"
-                           :output-to "index.js"
+                           :output-to "index-dev.js"
                            :optimizations :none
                            :source-map true}}
                {:id "prod"
