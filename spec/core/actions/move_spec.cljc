@@ -21,7 +21,7 @@
 (describe
   "bottom"
   (it "should not do infinite loop on no :piece"
-      (should= nil (move/bottom (constantly true) identity {}))))
+      (should= nil (move/bottom (constantly true) identity identity {}))))
 
 (describe
   "new-game"
@@ -42,6 +42,7 @@
                  (move/new-game
                    (constantly true)
                    identity
+                   identity
                    {}))))
   (it "should generate two distinct pieces"
       (should-not
@@ -54,6 +55,7 @@
                  :piece-bounds (gensym "unique_for_testing_")})]
              (move/new-game
                (constantly true)
+               identity
                identity
                {}))]
           (= piece (:piece next-piece)))))
@@ -68,6 +70,7 @@
                  :piece-bounds (gensym "unique_for_testing_")})]
              (move/new-game
                (constantly true)
+               identity
                identity
                {}))
            ]

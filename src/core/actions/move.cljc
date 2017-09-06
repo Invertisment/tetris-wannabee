@@ -9,7 +9,7 @@
             [core.actions.new-piece :refer [new-piece]]
             [core.actions.count-score :refer [count-score]]))
 
-(defn- stick-and-generate-new-piece [valid? update-score-fn state]
+(defn- stick-and-generate-new-piece [valid? update-score-fn gravity-restart-fn state]
   (new-piece
     valid?
     (partial generate-new-piece const/pieces)
@@ -19,38 +19,39 @@
           remove-full-lines
           state)))))
 
-(defn right [valid? update-score-fn state]
+(defn right [valid? update-score-fn gravity-restart-fn state]
   (piece-op-scalar inc identity state))
 
-(defn left [valid? update-score-fn state]
+(defn left [valid? update-score-fn gravity-restart-fn state]
   (piece-op-scalar dec identity state))
 
-(defn down [valid? update-score-fn state]
+(defn down [valid? update-score-fn gravity-restart-fn state]
   (let [new-one
         (let
           [new-state (piece-op-scalar identity inc state)]
           (if (valid? new-state)
             new-state
-            (stick-and-generate-new-piece valid? update-score-fn state)))]
+            (stick-and-generate-new-piece valid? update-score-fn gravity-restart-fn state)))]
     new-one))
 
-(defn rotate [valid? update-score-fn state]
+(defn rotate [valid? update-score-fn gravity-restart-fn state]
   (rot/rotate-piece-clockwise state))
 
-(defn rotate-counter-clockwise [valid? update-score-fn state]
+(defn rotate-counter-clockwise [valid? update-score-fn gravity-restart-fn state]
   (rot/rotate-piece-counter-clockwise state))
 
-(defn bottom [valid? update-score-fn state]
+(defn bottom [valid? update-score-fn gravity-restart-fn state]
   (when
     (:piece state)
     (down
       valid?
       update-score-fn
+      gravity-restart-fn
       (last (take-while
               valid?
               (iterate (partial piece-op-scalar identity inc) state))))))
 
-(defn new-game [valid? update-score-fn state]
+(defn new-game [valid? update-score-fn gravity-restart-fn state]
   (update-score-fn
     (merge
       (assoc state
@@ -82,7 +83,7 @@
 (defn move [valid? update-score-fn gravity-restart-fn state key-code]
   (validate
     valid?
-    ((direction key-code) valid? update-score-fn state)))
+    ((direction key-code) valid? update-score-fn gravity-restart-fn state)))
 
 (defn next-field-state [valid? update-score-fn gravity-restart-fn state key-code]
   (move valid? update-score-fn gravity-restart-fn state key-code))
