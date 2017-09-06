@@ -13,6 +13,9 @@
 
 (enable-console-print!)
 
+(when (not c/debug)
+  (set! *print-fn* (fn [& a])))
+
 (defn game-loop []
   (state/before-save-piece-loop)
   (go-loop

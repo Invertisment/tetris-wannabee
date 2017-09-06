@@ -4,8 +4,6 @@
             [clojure.set :refer [difference]]
             [core.constants :as const]))
 
-(enable-console-print!)
-
 (def block-size-px 25)
 
 (def main-canvas
