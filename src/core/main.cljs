@@ -22,21 +22,35 @@
       (when state (recur)))))
 
 (defn -main []
-  (let
-    [change-listener (create-change-listener
-                       state/field
-                       state/before-save-piece-ch
-                       v/field-valid?
-                       score/show-score!)]
-    (start-game
+  (letfn
+    [#_(change-listener []
+       (create-change-listener
+         state/field
+         state/before-save-piece-ch
+         v/field-valid?
+         score/show-score!
+         (fn [] (println "restart of gravity"))))
+     #_(gravity-restart-fn
+       []
+       (time-helper/setup-fall
+         state/field
+         (gravity/create-pull-down-fn change-listener)))])
+  (start-game
+    state/field
+    state/before-save-piece-ch
+    score/show-score!
+    (fn [] (println "restart of gravity")))
+  (game-loop)
+  (setup-key-listener
+    (create-change-listener
       state/field
       state/before-save-piece-ch
-      score/show-score!)
-    (game-loop)
-    (setup-key-listener change-listener)
-    (time-helper/setup-fall
+      v/field-valid?
+      score/show-score!
+      (fn [] (println "restart of gravity"))))
+  #_(time-helper/setup-fall
       state/field
-      (gravity/create-pull-down-fn change-listener))))
+      (gravity/create-pull-down-fn change-listener)))
 
 (-main)
 

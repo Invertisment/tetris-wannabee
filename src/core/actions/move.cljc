@@ -63,10 +63,10 @@
 (defn gravity-down [& args]
   (apply down args))
 
-(defn nop [& args]
-  (println "Unknown direction:" args))
+(defn nop [& args])
 
 (defn direction [const-value]
+  (println "const-value" const-value)
   (condp = const-value
     const/rotate #'rotate
     const/left #'left
@@ -79,11 +79,11 @@
     const/gravity-pull-down #'gravity-down
     #'nop))
 
-(defn move [valid? update-score-fn state key-code]
+(defn move [valid? update-score-fn gravity-restart-fn state key-code]
   (validate
     valid?
     ((direction key-code) valid? update-score-fn state)))
 
-(defn next-field-state [valid? update-score-fn state key-code]
-  (move valid? update-score-fn state key-code))
+(defn next-field-state [valid? update-score-fn gravity-restart-fn state key-code]
+  (move valid? update-score-fn gravity-restart-fn state key-code))
 

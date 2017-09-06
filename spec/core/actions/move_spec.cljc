@@ -29,6 +29,7 @@
       (should= {:field #{}
                 :piece ::new-piece
                 :piece-bounds ::piece-bounds
+                :levels ::levels
                 :next-piece {:piece ::new-piece
                              :piece-bounds ::piece-bounds}
                 :score {}}
@@ -36,7 +37,8 @@
                  [core.actions.piece-gen/generate-new-piece
                   (fn [_]
                     {:piece ::new-piece
-                     :piece-bounds ::piece-bounds})]
+                     :piece-bounds ::piece-bounds})
+                  core.constants/gravity-intervals ::levels]
                  (move/new-game
                    (constantly true)
                    identity

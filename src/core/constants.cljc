@@ -82,7 +82,7 @@
                     (* 1000)
                     (/ 60.0988)
                     int)})
-    gravity-frames-per-second))
+    (take 50 gravity-frames-per-second)))
 
 (def time-between-levels 10000)
 

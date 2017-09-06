@@ -25,6 +25,7 @@
     {:full-line-ids () :lines {}}
     grouped-lines))
 
+
 (defn find-upper-line-ids [line-number]
   (range 0 line-number))
 

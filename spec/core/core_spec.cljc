@@ -18,9 +18,10 @@
       (should=
         "valid state"
         (core/change-listener
-          (fn [_ _ _ _] "valid state")
+          (fn [_ _ _ _ _] "valid state")
           (atom nil)
           (fn [_] true)
+          identity
           identity
           "player action"))))
 
