@@ -3,6 +3,12 @@
             [core.actions.move :as move]
             [core.constants :as const]))
 
+(defmacro count-calls [fn-name body]
+  `(let [counter# (atom 0)
+         ~fn-name (fn [] (swap! counter# inc))         ]
+     ~body
+     @counter#))
+
 (describe
   "determine-direction"
   (it "should have left"
@@ -42,7 +48,7 @@
                  (move/new-game
                    (constantly true)
                    identity
-                   identity
+                   #()
                    {}))))
   (it "should generate two distinct pieces"
       (should-not
@@ -56,7 +62,7 @@
              (move/new-game
                (constantly true)
                identity
-               identity
+               #()
                {}))]
           (= piece (:piece next-piece)))))
   (it "should generate two distinct piece bounds"
@@ -71,8 +77,23 @@
              (move/new-game
                (constantly true)
                identity
-               identity
+               #()
                {}))
            ]
-          (= piece-bounds (:piece-bounds next-piece))))))
+          (= piece-bounds (:piece-bounds next-piece)))))
+  (it "should call gravity-restart-fn"
+      (should= 1
+               (with-redefs
+                 [core.actions.piece-gen/generate-new-piece
+                  (fn [_]
+                    {:piece ::new-piece
+                     :piece-bounds ::piece-bounds})
+                  core.constants/gravity-intervals ::levels]
+                 (count-calls
+                   gravity-fn-call-counter
+                   (move/new-game
+                     (constantly true)
+                     identity
+                     gravity-fn-call-counter
+                     {}))))))
 

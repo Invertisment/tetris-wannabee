@@ -14,7 +14,8 @@
 (def new-game "KeyN")
 (def gravity-pull-down "internal_gravity-pull")
 
-(def debug false)
+(def debug true)
+(def piece-overlay false)
 
 ; Bounds
 (def bounds-2x2

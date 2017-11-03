@@ -52,13 +52,15 @@
               (iterate (partial piece-op-scalar identity inc) state))))))
 
 (defn new-game [valid? update-score-fn gravity-restart-fn state]
+  (gravity-restart-fn)
   (update-score-fn
     (merge
       (assoc state
              :field #{}
              :next-piece (generate-new-piece const/pieces)
              :score {}
-             :levels const/gravity-intervals)
+             :levels const/gravity-intervals
+             :game-state :started)
       (generate-new-piece const/pieces))))
 
 (defn gravity-down [& args]
@@ -67,7 +69,6 @@
 (defn nop [& args])
 
 (defn direction [const-value]
-  (println "const-value" const-value)
   (condp = const-value
     const/rotate #'rotate
     const/left #'left

@@ -1,6 +1,5 @@
 (ns core.field
   (:require cljsjs.fabric
-            [core.constants :refer [debug]]
             [clojure.set :refer [difference]]
             [core.constants :as const]))
 
@@ -31,7 +30,7 @@
 
 (defn get-debug-overlay [state]
   (when
-    const/debug
+    const/piece-overlay
     (let
       [{:keys [x-range y-range]} (:piece-bounds state)]
       (difference

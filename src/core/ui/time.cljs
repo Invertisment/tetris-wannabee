@@ -1,6 +1,8 @@
 (ns core.ui.time
   (:require [core.constants :refer [time-between-levels]]))
 
+(def fall-progression-interval (atom nil))
+
 (defn setup-fall-progression [field-atom]
   (js/setInterval
     #(let
@@ -14,6 +16,9 @@
 (defn setup-fall [field-atom change-listener]
   (let [level-progression-interval
         (setup-fall-progression field-atom)]
+    (send fall-progression-interval (fn [old-interval]
+                                      (js/clearInterval old-interval)
+                                      fall-progression-interval))
    (letfn
      [(recurring-function []
         (let
