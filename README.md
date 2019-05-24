@@ -1,6 +1,6 @@
 # Clojure tetris
 Compiles to JavaScript.
-Playable on browser and control with keyboard.
+Playable on browser and controllable with keyboard.
 
 Playable on https://invertisment.github.io/tetris-wannabee/
 
