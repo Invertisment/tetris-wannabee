@@ -1,19 +1,20 @@
-# cljs + cljc + speclj
-Proberly I will rename this if I'll succeed. If it won't depricate. (Typos are intended. Why not?)
+# Clojure tetris
+Compiles to JavaScript.
+Playable on browser and control with keyboard.
 
 Playable on https://invertisment.github.io/tetris-wannabee/
 
-Controls:
-Piece control: w, a, s, d
-Hard-drop the current piece: Space
-New game (doesn't restart the time): n
+#### Controls:
+    Piece control: w, a, s, d
+    Hard-drop the current piece: Space
+    New game: n (doesn't restart piece falling, use reload to do it)
 
+#### Development
+##### Tools
+lein, cljs, speclj
 
-auto build:
+##### Auto build
 lein cljsbuild auto
 
-specs:
+##### Running tests
 lein spec -a
-
-html:
-index.html
