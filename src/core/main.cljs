@@ -1,6 +1,6 @@
 (ns core.main
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
-  (:require [cljs.core.async :refer [timeout <!]]
+  (:require [cljs.core.async :refer [timeout <! chan dropping-buffer]]
             [core.field :as fi]
             [core.core :refer [create-change-listener start-game]]
             [core.keys :refer [setup-key-listener]]
@@ -19,51 +19,37 @@
 (defn game-loop []
   (state/before-save-piece-loop)
   (go-loop
-    []
+      []
     (let [state (<! state/after-save-piece-ch)]
       (fi/show! state/field-pixels state)
       (when state (recur)))))
 
+(defn time-loop [time-tick-ch on-tick-listener]
+  (go-loop []
+    (let [tick (<! time-tick-ch)]
+      (println tick)
+      (on-tick-listener)
+      (when tick (recur)))))
+
 (defn -main []
-  (letfn
-    [#_(change-listener []
-         (create-change-listener
-           state/field
-           state/before-save-piece-ch
-           v/field-valid?
-           score/show-score!
-           (fn [] (println "restart of gravity"))))
-     #_(gravity-restart-fn
-         []
-         (println "restart of gravity")
-         #_(time-helper/setup-fall
-             state/field
-             (gravity/create-pull-down-fn change-listener)))])
   (let
-    [gravity-restart-fn (fn [] (println "on start"))]
-    (start-game
-      state/field
-      state/before-save-piece-ch
-      score/show-score!
-      gravity-restart-fn)
-    (game-loop)
-    (setup-key-listener
-      (create-change-listener
+      [tick-ch (chan (dropping-buffer 1))
+       gravity-restart-fn (fn [] (time-helper/setup-fall state/field tick-ch))
+       change-listener
+       (create-change-listener
         state/field
         state/before-save-piece-ch
         v/field-valid?
         score/show-score!
-        (fn [] (time-helper/setup-fall
-                 state/field
-                 (gravity/create-pull-down-fn (create-change-listener
-                                                state/field
-                                                state/before-save-piece-ch
-                                                v/field-valid?
-                                                score/show-score!
-                                                (fn [] (println "inner new game"))))))))
-    #_(time-helper/setup-fall
-        state/field
-        (gravity/create-pull-down-fn change-listener))))
+        gravity-restart-fn)]
+    (start-game
+     state/field
+     state/before-save-piece-ch
+     score/show-score!
+     gravity-restart-fn)
+    (game-loop)
+    (time-loop tick-ch (gravity/create-pull-down-fn change-listener))
+    (setup-key-listener change-listener)))
 
 (-main)
 
