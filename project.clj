@@ -9,7 +9,9 @@
                              [org.clojure/tools.nrepl "0.2.10"]
                              [speclj "3.3.2"]
                              [clojure-future-spec "1.9.0-alpha17"]
-                             [org.clojure/test.check "0.9.0"]]
+                             [org.clojure/test.check "0.9.0"]
+                             [javax.xml.bind/jaxb-api "2.4.0-b180830.0359"] ;; workaround for java 8+
+                             ]
               :plugins [[lein-cljsbuild "1.1.6"]
                         [speclj "3.3.0"]]
               :source-paths ["src" "dev"]
