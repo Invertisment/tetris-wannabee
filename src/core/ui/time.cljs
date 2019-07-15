@@ -16,7 +16,7 @@
   (letfn [(difficulty-increase-fn []
             (let
                 [{:keys [levels] :as state} @field-atom]
-              (println "difficulty increase" (first levels))
+              #_(println "difficulty increase" (first levels))
               (reset! field-atom
                       (assoc state
                              :levels
@@ -26,10 +26,10 @@
                (:timeout (first levels))
                (fn []
                  (let [{:keys [game-state]} @field-atom]
-                   (println "tick time" game-state)
+                   #_(println "tick time" game-state)
                    (if (= game-state :ended)
                      (do
-                       (println "game ended")
+                       #_(println "game ended")
                        (js/clearInterval @fall-progression-interval)
                        (js/clearInterval @level-tick-interval))
                      (go (>! tick-ch "tick"))))))))]

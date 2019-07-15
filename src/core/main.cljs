@@ -27,7 +27,7 @@
 (defn time-loop [time-tick-ch on-tick-listener]
   (go-loop []
     (let [tick (<! time-tick-ch)]
-      (println tick)
+      #_(println tick)
       (on-tick-listener)
       (when tick (recur)))))
 

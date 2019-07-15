@@ -77,13 +77,13 @@
 
 (def gravity-intervals
   (map-indexed
-    (fn [id frames-per-interval]
-      {:id id
-       :timeout (-> frames-per-interval
-                    (* 1000)
-                    (/ 60.0988)
-                    int)})
-    (take 50 gravity-frames-per-second)))
+   (fn [id frames-per-interval]
+     {:id (if (> id 29) "Max" id)
+      :timeout (-> frames-per-interval
+                   (* 1000)
+                   (/ 60.0988)
+                   (+ 500)
+                   int)})
+   gravity-frames-per-second))
 
-(def time-between-levels 10000)
-
+(def time-between-levels 12000)
