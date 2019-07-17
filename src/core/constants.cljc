@@ -68,22 +68,32 @@
 
 "http://harddrop.com/wiki/Tetris_(NES,_Nintendo)"
 (def gravity-frames-per-second
-  (concat [48 43 38 33 28 23 18 13 8 6]
-          (repeat 3 5)
-          (repeat 3 4)
-          (repeat 3 3)
-          (repeat 10 2)
-          (repeat 1)))
+  (take
+   29
+   (concat
+    [48 43 38 33 28 23 18 13 8 6]
+    (repeat 3 5)
+    (repeat 3 4)
+    (repeat 3 3)
+    (repeat 10 2)
+    (repeat 1))))
+
+(defn adjust-gravity-time [frames-per-interval]
+  (-> frames-per-interval
+      (* 1000)
+      (/ 60.0988)
+      (+ 500)
+      int))
 
 (def gravity-intervals
   (map-indexed
    (fn [id frames-per-interval]
-     {:id (if (> id 29) "Max" id)
-      :timeout (-> frames-per-interval
-                   (* 1000)
-                   (/ 60.0988)
-                   (+ 500)
-                   int)})
+     {:id id
+      :timeout (adjust-gravity-time frames-per-interval)})
    gravity-frames-per-second))
+
+(def max-gravity-interval
+  {:id "Max"
+   :timeout (adjust-gravity-time (last gravity-frames-per-second))})
 
 (def time-between-levels 12000)

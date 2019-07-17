@@ -1,4 +1,5 @@
-(ns core.ui.score)
+(ns core.ui.score
+  (:require [core.field-util :as field-util]))
 
 (def html-elem-lines-cleared
   (js/document.getElementById "lines-cleared"))
@@ -21,7 +22,7 @@
   (or (->> field :score :points) 0))
 
 (defn get-level [field]
-  (or (->> field :levels first :id) 0))
+  (:id (field-util/get-current-level field)))
 
 (defn show-score! [field]
   (show!

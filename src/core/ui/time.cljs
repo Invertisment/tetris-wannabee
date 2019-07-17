@@ -1,6 +1,7 @@
 (ns core.ui.time
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [core.constants :refer [time-between-levels]]
+            [core.field-util :as field-util]
             [cljs.core.async :refer [>!]]))
 
 (def fall-progression-interval (atom nil))
@@ -23,7 +24,7 @@
                              (rest levels)))
               (setup-interval!
                level-tick-interval
-               (:timeout (first levels))
+               (:timeout (field-util/get-current-level state))
                (fn []
                  (let [{:keys [game-state]} @field-atom]
                    #_(println "tick time" game-state)
@@ -40,4 +41,17 @@
     (difficulty-increase-fn)))
 
 (defn setup-fall [field-atom tick-ch]
+  ;; Stabilize speed after starting game from :ended to :started
+  (add-watch
+   field-atom
+   :time-tick-restart
+   (fn [key reference old-state new-state]
+     (let [prev-game-state (:game-state old-state)
+           curr-game-state (:game-state new-state)]
+       (when (= curr-game-state :started)
+         (remove-watch field-atom :time-tick-restart))
+       (when (and (= prev-game-state :ended)
+                  (= curr-game-state :started))
+         (setup-fall-progression field-atom tick-ch)))))
+  ;; Set up progression
   (setup-fall-progression field-atom tick-ch))

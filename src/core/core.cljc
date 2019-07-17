@@ -17,23 +17,23 @@
   [state-atom next-state-chan valid? update-score-fn gravity-restart-fn]
   (fn [char-code]
     (send-the-move!
-      next-state-chan
-      (change-listener
-        next-field-state
-        state-atom
-        valid?
-        update-score-fn
-        gravity-restart-fn
-        char-code))))
+     next-state-chan
+     (change-listener
+      next-field-state
+      state-atom
+      valid?
+      update-score-fn
+      gravity-restart-fn
+      char-code))))
 
 (defn start-game [state-atom next-state-chan update-score-fn gravity-restart-fn]
   (send-the-move!
-    next-state-chan
-    (change-listener
-      next-field-state
-      state-atom
-      (constantly true)
-      update-score-fn
-      gravity-restart-fn
-      const/new-game)))
+   next-state-chan
+   (change-listener
+    next-field-state
+    state-atom
+    (constantly true)
+    update-score-fn
+    gravity-restart-fn
+    const/new-game)))
 
