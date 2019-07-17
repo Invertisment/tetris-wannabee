@@ -1,7 +1,7 @@
 (defproject node_test "0.1.0-SNAPSHOT"
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.7.228"] ; 1.9.542 does not work
-                 [org.clojure/core.async "0.3.442"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
+                 [org.clojure/clojurescript "1.10.520"] ; 1.9.542 does not work
+                 [org.clojure/core.async "0.4.500"]
                  [cljsjs/fabric "1.5.0-1"]]
 
   :profiles {:dev
@@ -12,7 +12,7 @@
                              [org.clojure/test.check "0.9.0"]
                              [javax.xml.bind/jaxb-api "2.4.0-b180830.0359"] ;; workaround for java 8+
                              ]
-              :plugins [[lein-cljsbuild "1.1.6"]
+              :plugins [[lein-cljsbuild "1.1.7"]
                         [speclj "3.3.0"]]
               :source-paths ["src" "dev"]
               :test-paths ["spec"]
