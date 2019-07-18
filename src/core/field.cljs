@@ -4,29 +4,71 @@
             [core.constants :as const]))
 
 (def block-size-px 25)
+(def block-highlight-margin 3)
+(def block-roundness 2)
 
 (def main-canvas
-  (new js/fabric.Canvas "game-canvas"))
+  (new js/fabric.StaticCanvas "game-canvas"))
 (def next-piece-canvas
-  (new js/fabric.Canvas "next-piece-canvas"))
+  (new js/fabric.StaticCanvas "next-piece-canvas"))
 
 (defn create-rect [color [x y]]
-  (new
-    js/fabric.Rect
-    (js-obj "left" (* x block-size-px)
-            "top" (* y block-size-px)
-            "fill" color
-            "width" block-size-px
-            "height" block-size-px
-            "selectable" false)))
+  (new js/fabric.Group
+       (array
+        (new
+         js/fabric.Rect
+         (js-obj
+          "fill" color
+          "width" (- block-size-px block-roundness)
+          "height" (- block-size-px block-roundness)
+          "strokeLineJoin" "round"
+          "strokeWidth" block-roundness
+          "stroke" color))
+        (new
+         js/fabric.Rect
+         (js-obj
+          "fill" "transparent"
+          "width" (- block-size-px (/ block-roundness 2))
+          "height" (- block-size-px (/ block-roundness 2))
+          "strokeLineJoin" "round"
+          "strokeWidth" (/ block-roundness 2)
+          "stroke" "rgba(0,0,0,0.2)"))
+        (new
+         js/fabric.Polygon
+         (array
+          (clj->js {"x" 0 "y" 0})
+          (clj->js {"x" 5 "y" 0})
+          (clj->js {"x" 5 "y" 2})
+          (clj->js {"x" 2 "y" 2})
+          (clj->js {"x" 2 "y" 5})
+          (clj->js {"x" 2 "y" 5})
+          (clj->js {"x" 0 "y" 5}))
+         (js-obj
+          "fill" "rgba(200,255,255,0.6)"
+          "left" block-highlight-margin
+          "top" block-highlight-margin))
+        (new
+         js/fabric.Polygon
+         (array
+          (clj->js {"x" 0 "y" 0})
+          (clj->js {"x" 5 "y" 0})
+          (clj->js {"x" 5 "y" 2})
+          (clj->js {"x" 0 "y" 2})
+          (clj->js {"x" 0 "y" 5}))
+         (js-obj
+          "fill" "rgba(200,255,255,0.3)"
+          "left" 0
+          "top" 0)))
+       (clj->js {"left" (* x block-size-px)
+                 "top" (* y block-size-px)})))
 
 (defn create-rect-from-colored-pixel [{:keys [coord color]}]
   (create-rect color coord))
 
 (defn create-rects [li]
   (into {} (map
-             (juxt identity create-rect-from-colored-pixel)
-             li)))
+            (juxt identity create-rect-from-colored-pixel)
+            li)))
 
 (defn get-debug-overlay [state]
   (when
@@ -69,17 +111,17 @@
 
 (defn diff-show-hide [field-pixels state]
   (let
-    [{:keys [show hide]} (get-diff (keys field-pixels) (get-blocks state))
-     keyed-rects-to-show (create-rects show)
-     to-remove (select-keys field-pixels hide)]
+      [{:keys [show hide]} (get-diff (keys field-pixels) (get-blocks state))
+       keyed-rects-to-show (create-rects show)
+       to-remove (select-keys field-pixels hide)]
     {:keyed-rects-to-show keyed-rects-to-show
      :to-remove to-remove}))
 
 (defn get-diff-blocks [field-pixels blocks]
   (let
-    [{:keys [show hide]} (get-diff (keys field-pixels) blocks)
-     keyed-rects-to-show (create-rects show)
-     to-remove-main (select-keys field-pixels hide)]
+      [{:keys [show hide]} (get-diff (keys field-pixels) blocks)
+       keyed-rects-to-show (create-rects show)
+       to-remove-main (select-keys field-pixels hide)]
     {:rects-to-show keyed-rects-to-show
      :rects-to-hide to-remove-main}))
 
