@@ -5,7 +5,7 @@ Playable on browser and controllable with keyboard: https://invertisment.github.
 #### Controls:
     Piece control: w, a, s, d
     Hard-drop the current piece: Space
-    New game: n (doesn't restart piece falling, use reload to do it)
+    New game: n
 
 #### Development
 ##### Tools
