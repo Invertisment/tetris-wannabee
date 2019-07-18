@@ -12,11 +12,8 @@
 
 (defn show! [element data]
   (aset
-    element "innerHTML"
-    data))
-
-(defn get-lines-cleared [field]
-  (or (->> field :score :lines-cleared) 0))
+   element "innerHTML"
+   data))
 
 #_(defn get-points [field]
   (or (->> field :score :points) 0))
@@ -26,13 +23,13 @@
 
 (defn show-score! [field]
   (show!
-    html-elem-lines-cleared
-    (get-lines-cleared field))
+   html-elem-lines-cleared
+   (field-util/get-lines-cleared field))
   #_(show!
-    html-elem-points
-    (get-points field))
+     html-elem-points
+     (get-points field))
   (show!
-    html-elem-level
-    (get-level field))
+   html-elem-level
+   (get-level field))
   field)
 
