@@ -5,18 +5,13 @@
                  [cljsjs/fabric "1.5.0-1"]]
 
   :profiles {:dev
-             {:dependencies [[com.cemerick/piggieback "0.2.1"]
-                             [org.clojure/tools.nrepl "0.2.10"]
-                             [speclj "3.3.2"]
-                             [clojure-future-spec "1.9.0-alpha17"]
-                             [org.clojure/test.check "0.9.0"]
+             {:dependencies [[speclj "3.3.2"]
                              [javax.xml.bind/jaxb-api "2.4.0-b180830.0359"] ;; workaround for java 8+
                              ]
               :plugins [[lein-cljsbuild "1.1.7"]
-                        [speclj "3.3.0"]]
+                        [speclj "3.3.2"]]
               :source-paths ["src" "dev"]
-              :test-paths ["spec"]
-              :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
+              :test-paths ["spec"]}}
   :clean-targets
   [[:cljsbuild :builds 0 :compiler :output-to]
    :target-path
