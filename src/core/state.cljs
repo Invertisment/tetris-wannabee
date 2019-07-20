@@ -10,7 +10,8 @@
                   :next-pieces []}))
 
 (def field-pixels (atom {:field-pixels {}
-                         :next-piece-pixels {}}))
+                         :next-piece-pixels {}
+                         :hold-piece-pixels {}}))
 
 (def before-save-piece-ch (chan (sliding-buffer 1)))
 (def after-save-piece-ch (chan (sliding-buffer 1)))

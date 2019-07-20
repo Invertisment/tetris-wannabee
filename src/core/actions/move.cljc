@@ -34,6 +34,19 @@
       moved
       (stick-and-generate-new-piece valid? update-score-fn gravity-restart-fn state))))
 
+(defn hold [valid? update-score-fn gravity-restart-fn state]
+  (if-let [hold-piece (:hold-piece state)]
+    (let [current (select-keys state (keys hold-piece))]
+      (assoc
+       (merge state hold-piece)
+       :hold-piece current))
+    (when-let [[next-piece & next-pieces] (:next-pieces state)]
+      (let [current (select-keys state (keys (first (:next-pieces state))))]
+        (assoc
+         (merge state next-piece)
+         :hold-piece current
+         :next-pieces next-pieces)))))
+
 (defn rotate [valid? update-score-fn gravity-restart-fn state]
   (rot/rotate-piece-clockwise state))
 
@@ -74,6 +87,7 @@
     const/right #'right
     const/down #'down
     const/bottom #'bottom
+    const/hold #'hold
     const/rotate-clockwise #'rotate
     const/rotate-counter-clockwise #'rotate-counter-clockwise
     const/new-game #'new-game

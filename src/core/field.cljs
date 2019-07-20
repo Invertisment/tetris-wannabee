@@ -11,6 +11,8 @@
   (new js/fabric.StaticCanvas "game-canvas"))
 (def next-piece-canvas
   (new js/fabric.StaticCanvas "next-piece-canvas"))
+(def hold-piece-canvas
+  (new js/fabric.StaticCanvas "hold-piece-canvas"))
 
 (defn create-rect [color [x y]]
   (new js/fabric.Group
@@ -132,9 +134,11 @@
 
 (defn show! [field-pixels-atom state]
   (let
-      [{:keys [field-pixels next-piece-pixels]} @field-pixels-atom
+      [{:keys [field-pixels next-piece-pixels hold-piece-pixels]} @field-pixels-atom
        field-pixels-diff (get-diff-blocks field-pixels (get-blocks state))
-       next-piece-pixels-diff (get-diff-blocks next-piece-pixels (-> state :next-pieces first :piece))]
+       next-piece-pixels-diff (get-diff-blocks next-piece-pixels (-> state :next-pieces first :piece))
+       hold-piece-pixels-diff (get-diff-blocks hold-piece-pixels (-> state :hold-piece :piece))
+       ]
     (reset!
      field-pixels-atom
      (merge
@@ -145,5 +149,7 @@
      field-pixels-diff)
     (show-on-canvas!
      next-piece-canvas
-     next-piece-pixels-diff)))
-
+     next-piece-pixels-diff)
+    (show-on-canvas!
+     hold-piece-canvas
+     hold-piece-pixels-diff)))

@@ -11,6 +11,7 @@
 (def rotate-counter-clockwise "KeyQ")
 (def down "KeyS")
 (def bottom "Space")
+(def hold "KeyR")
 (def new-game "KeyN")
 (def gravity-pull-down "internal_gravity-pull")
 
