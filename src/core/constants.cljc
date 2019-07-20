@@ -54,17 +54,17 @@
                   piece))))
 
 (def pieces
-  "These coordinated specify where tetrominoes
+  "These coordinates specify where tetrominoes
   spawn and their initial rotation"
   (map
-    apply-color
-    [line-piece
-     j-piece
-     l-piece
-     square-piece
-     z-reverse-piece
-     t-piece
-     z-piece]))
+   apply-color
+   [line-piece
+    j-piece
+    l-piece
+    square-piece
+    z-reverse-piece
+    t-piece
+    z-piece]))
 
 "http://harddrop.com/wiki/Tetris_(NES,_Nintendo)"
 (def gravity-frames-per-second

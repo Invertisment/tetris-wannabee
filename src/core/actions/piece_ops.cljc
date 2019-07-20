@@ -22,5 +22,4 @@
            :piece-bounds (coords-op-scalar-piece-bounds x-fn y-fn piece-bounds)))
 
 (defn piece-op-scalar [x-fn y-fn field]
-  (coords-op-scalar x-fn y-fn field ))
-
+  (coords-op-scalar x-fn y-fn field))

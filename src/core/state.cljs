@@ -7,7 +7,7 @@
                   :height field-height
                   :game-state :not-started
                   :levels gravity-intervals
-                  }))
+                  :next-pieces []}))
 
 (def field-pixels (atom {:field-pixels {}
                          :next-piece-pixels {}}))

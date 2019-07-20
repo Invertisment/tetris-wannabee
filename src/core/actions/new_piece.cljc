@@ -1,15 +1,11 @@
-(ns core.actions.new-piece
-  (:require [core.constants :as const]
-            [clojure.set :refer [union]]))
+(ns core.actions.new-piece)
 
-(defn new-piece [valid? new-piece-fn state]
-  (let
-    [new-state (merge
-                 state
-                 (:next-piece state)
-                 {:next-piece (new-piece-fn)})]
-    (if
-      (valid? new-state)
+(defn new-piece [valid? state]
+  (let [[first-piece & remaining-pieces] (:next-pieces state)
+        new-state (merge
+                   state
+                   first-piece
+                   {:next-pieces remaining-pieces})]
+    (if (valid? new-state)
       new-state
       (assoc state :game-state :ended))))
-

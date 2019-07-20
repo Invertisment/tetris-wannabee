@@ -132,18 +132,18 @@
 
 (defn show! [field-pixels-atom state]
   (let
-    [{:keys [field-pixels next-piece-pixels]} @field-pixels-atom
-     field-pixels-diff (get-diff-blocks field-pixels (get-blocks state))
-     next-piece-pixels-diff (get-diff-blocks next-piece-pixels (-> state :next-piece :piece))]
+      [{:keys [field-pixels next-piece-pixels]} @field-pixels-atom
+       field-pixels-diff (get-diff-blocks field-pixels (get-blocks state))
+       next-piece-pixels-diff (get-diff-blocks next-piece-pixels (-> state :next-pieces first :piece))]
     (reset!
-      field-pixels-atom
-      (merge
-        {:field-pixels (update-prev-blocks field-pixels field-pixels-diff)}
-        {:next-piece-pixels (update-prev-blocks next-piece-pixels next-piece-pixels-diff)}))
+     field-pixels-atom
+     (merge
+      {:field-pixels (update-prev-blocks field-pixels field-pixels-diff)}
+      {:next-piece-pixels (update-prev-blocks next-piece-pixels next-piece-pixels-diff)}))
     (show-on-canvas!
-      main-canvas
-      field-pixels-diff)
+     main-canvas
+     field-pixels-diff)
     (show-on-canvas!
-      next-piece-canvas
-      next-piece-pixels-diff)))
+     next-piece-canvas
+     next-piece-pixels-diff)))
 

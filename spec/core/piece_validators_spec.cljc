@@ -46,37 +46,40 @@
       (should-not (v/possible-placement? 1 1 #{{:coord [0 0]}} #{{:coord [0 -2]}}))))
 
 (describe
-  "field-valid?"
-  (it "happy path"
-      (should (v/field-valid? {:width 1 :height 2
-                               :piece #{{:coord [0 1]}}
-                               :field #{{:coord [0 0]}}})))
-  (it "not valid"
-      (should-not (v/field-valid? {:width 1 :height 1
-                                   :piece #{{:coord [0 0]}}
-                                   :field #{{:coord [0 0]}}})))
-  (it "bad coords"
-      (should-not (v/field-valid? {:width 1 :height 1
-                                   :piece #{{:coord [0 0]}}
-                                   :field #{{:coord [0 -2]}}})))
-  (it "nil is not valid :width"
-      (should-not (v/field-valid? {:width nil :height 1
-                                   :piece #{{:coord [0 0]}}
-                                   :field #{{:coord [0 -2]}}})))
-  (it "nil is not valid :height"
-      (should-not (v/field-valid? {:width 1 :height nil
-                                   :piece #{{:coord [0 0]}}
-                                   :field #{{:coord [0 -2]}}})))
-  (it "nil is not valid :piece"
-      (should-not (v/field-valid? {:width 1 :height 1
-                                   :piece nil
-                                   :field #{{:coord [0 -2]}}})))
-  (it "nil is not valid :field"
-      (should-not (v/field-valid? {:width 1 :height 1
-                                   :piece #{{:coord [0 0]}}
-                                   :field nil})))
-  (it "nil is not valid :coord"
-      (should-not (v/field-valid? {:width 1 :height 1
-                                   :piece #{{:coord [0 0]}}
-                                   :field #{{:coord nil}}}))))
-
+ "field-valid?"
+ (it "happy path"
+     (should (v/field-valid? {:width 1 :height 2
+                              :piece #{{:coord [0 1]}}
+                              :field #{{:coord [0 0]}}})))
+ (it "not valid"
+     (should-not (v/field-valid? {:width 1 :height 1
+                                  :piece #{{:coord [0 0]}}
+                                  :field #{{:coord [0 0]}}})))
+ (it "bad coords"
+     (should-not (v/field-valid? {:width 1 :height 1
+                                  :piece #{{:coord [0 0]}}
+                                  :field #{{:coord [0 -2]}}})))
+ (it "nil is not valid :width"
+     (should-not (v/field-valid? {:width nil :height 1
+                                  :piece #{{:coord [0 0]}}
+                                  :field #{{:coord [0 -2]}}})))
+ (it "nil is not valid :height"
+     (should-not (v/field-valid? {:width 1 :height nil
+                                  :piece #{{:coord [0 0]}}
+                                  :field #{{:coord [0 -2]}}})))
+ (it "nil is not valid :piece"
+     (should-not (v/field-valid? {:width 1 :height 1
+                                  :piece nil
+                                  :field #{{:coord [0 -2]}}})))
+ (it "nil is not valid :field"
+     (should-not (v/field-valid? {:width 1 :height 1
+                                  :piece #{{:coord [0 0]}}
+                                  :field nil})))
+ (it "nil is not valid :coord"
+     (should-not (v/field-valid? {:width 1 :height 1
+                                  :piece #{{:coord [0 0]}}
+                                  :field #{{:coord nil}}})))
+ (it "invalid piece"
+     (should-not (v/field-valid? {:width 1 :height 2
+                                  :piece #{{:coord [-1 0]}}
+                                  :field #{{:coord [0 0]}}}))))

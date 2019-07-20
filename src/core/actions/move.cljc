@@ -11,28 +11,28 @@
 
 (defn- stick-and-generate-new-piece [valid? update-score-fn gravity-restart-fn state]
   (new-piece
-    valid?
-    (partial generate-new-piece const/pieces)
-    (update-score-fn
-      (count-score
-        (stick-piece
-          remove-full-lines
-          state)))))
+   valid?
+   (update-score-fn
+    (count-score
+     (stick-piece
+      remove-full-lines
+      state)))))
 
 (defn right [valid? update-score-fn gravity-restart-fn state]
-  (piece-op-scalar inc identity state))
+  (let [moved (piece-op-scalar inc identity state)]
+    (when (valid? moved)
+      moved)))
 
 (defn left [valid? update-score-fn gravity-restart-fn state]
-  (piece-op-scalar dec identity state))
+  (let [moved (piece-op-scalar dec identity state)]
+    (when (valid? moved)
+      moved)))
 
 (defn down [valid? update-score-fn gravity-restart-fn state]
-  (let [new-one
-        (let
-          [new-state (piece-op-scalar identity inc state)]
-          (if (valid? new-state)
-            new-state
-            (stick-and-generate-new-piece valid? update-score-fn gravity-restart-fn state)))]
-    new-one))
+  (let [moved (piece-op-scalar identity inc state)]
+    (if (valid? moved)
+      moved
+      (stick-and-generate-new-piece valid? update-score-fn gravity-restart-fn state))))
 
 (defn rotate [valid? update-score-fn gravity-restart-fn state]
   (rot/rotate-piece-clockwise state))
@@ -41,27 +41,26 @@
   (rot/rotate-piece-counter-clockwise state))
 
 (defn bottom [valid? update-score-fn gravity-restart-fn state]
-  (when
-    (:piece state)
+  (when (:piece state)
     (down
-      valid?
-      update-score-fn
-      gravity-restart-fn
-      (last (take-while
-              valid?
-              (iterate (partial piece-op-scalar identity inc) state))))))
+     valid?
+     update-score-fn
+     gravity-restart-fn
+     (last (take-while
+            valid?
+            (iterate (partial piece-op-scalar identity inc) state))))))
 
 (defn new-game [valid? update-score-fn gravity-restart-fn state]
   (gravity-restart-fn)
   (update-score-fn
-    (merge
-      (assoc state
-             :field #{}
-             :next-piece (generate-new-piece const/pieces)
-             :score {}
-             :levels const/gravity-intervals
-             :game-state :started)
-      (generate-new-piece const/pieces))))
+   (merge
+    (assoc state
+           :field #{}
+           :next-pieces (repeatedly #(generate-new-piece const/pieces))
+           :score {}
+           :levels const/gravity-intervals
+           :game-state :started)
+    (generate-new-piece const/pieces))))
 
 (defn gravity-down [& args]
   (apply down args))

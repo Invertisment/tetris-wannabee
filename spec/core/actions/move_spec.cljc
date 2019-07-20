@@ -25,75 +25,90 @@
       (should= #'core.actions.move/nop (move/direction "anything else"))))
 
 (describe
-  "bottom"
-  (it "should not do infinite loop on no :piece"
-      (should= nil (move/bottom (constantly true) identity identity {}))))
+ "bottom"
+ (it "should not do infinite loop on no :piece"
+     (should= nil (move/bottom (constantly true) identity identity {}))))
+
+(defn limit-next-pieces [state n]
+  (update
+   state
+   :next-pieces
+   (fn [infinite-seq]
+     (take n infinite-seq))))
+
+(defn remove-random-elements [state]
+  (dissoc
+   state
+   :next-pieces
+   :color
+   :piece
+   :piece-bounds))
 
 (describe
-  "new-game"
-  (it "should create :piece"
-      (should= {:field #{}
-                :piece ::new-piece
-                :piece-bounds ::piece-bounds
-                :levels ::levels
-                :next-piece {:piece ::new-piece
-                             :piece-bounds ::piece-bounds}
-                :score {}}
-               (with-redefs
-                 [core.actions.piece-gen/generate-new-piece
-                  (fn [_]
-                    {:piece ::new-piece
-                     :piece-bounds ::piece-bounds})
-                  core.constants/gravity-intervals ::levels]
-                 (move/new-game
-                   (constantly true)
-                   identity
-                   #()
-                   {}))))
-  (it "should generate two distinct pieces"
-      (should-not
-        (let
-          [{:keys [piece next-piece]}
+ "new-game"
+ (it "should create :piece"
+     (should= (sort [:color :field :piece :piece-bounds :levels :next-pieces :score :game-state])
+              (sort (keys (limit-next-pieces
+                           (move/new-game
+                            (constantly true)
+                            identity
+                            #()
+                            {})
+                           1)))))
+ (it "should create :piece"
+     (should= {:field #{}
+               :score {}
+               :levels const/gravity-intervals
+               :game-state :started}
+              (remove-random-elements
+               (limit-next-pieces
+                (move/new-game
+                 (constantly true)
+                 identity
+                 #()
+                 {})
+                1))
+              ))
+ (it "should generate two distinct pieces"
+     (should-not
+      (let
+          [{:keys [piece next-pieces]}
            (with-redefs
              [core.actions.piece-gen/generate-new-piece
               (fn [_]
                 {:piece (gensym "unique_for_testing_")
                  :piece-bounds (gensym "unique_for_testing_")})]
              (move/new-game
-               (constantly true)
-               identity
-               #()
-               {}))]
-          (= piece (:piece next-piece)))))
-  (it "should generate two distinct piece bounds"
-      (should-not
-        (let
-          [{:keys [piece-bounds next-piece]}
+              (constantly true)
+              identity
+              #()
+              {}))]
+        (= piece (:piece (first next-pieces))))))
+ (it "should generate two distinct piece bounds"
+     (should-not
+      (let
+          [{:keys [piece-bounds next-pieces]}
            (with-redefs
              [core.actions.piece-gen/generate-new-piece
               (fn [_]
                 {:piece (gensym "unique_for_testing_")
                  :piece-bounds (gensym "unique_for_testing_")})]
              (move/new-game
-               (constantly true)
-               identity
-               #()
-               {}))
+              (constantly true)
+              identity
+              #()
+              {}))
            ]
-          (= piece-bounds (:piece-bounds next-piece)))))
-  (it "should call gravity-restart-fn"
-      (should= 1
-               (with-redefs
-                 [core.actions.piece-gen/generate-new-piece
-                  (fn [_]
-                    {:piece ::new-piece
-                     :piece-bounds ::piece-bounds})
-                  core.constants/gravity-intervals ::levels]
-                 (count-calls
-                   gravity-fn-call-counter
-                   (move/new-game
-                     (constantly true)
-                     identity
-                     gravity-fn-call-counter
-                     {}))))))
-
+        (= piece-bounds (:piece-bounds (first next-pieces))))))
+ (it "should call gravity-restart-fn"
+     (should= 1
+              (count-calls
+               gravity-fn-call-counter
+               (remove-random-elements
+                (limit-next-pieces
+                 (move/new-game
+                  (constantly true)
+                  identity
+                  gravity-fn-call-counter
+                  {})
+                 1))))))
