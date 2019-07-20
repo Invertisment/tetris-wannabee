@@ -6,11 +6,21 @@
             [core.ai.util :as util]))
 
 (describe
- "pick-best-piece-placement"
- (it "should take first when undecidable"
+ "move-roughness"
+ (it "should return roughness"
      (should=
       [nil nil nil nil nil nil nil]
       (map
-       move-roughness
+       field-roughness
        (moves/find-piece-placements
         (util/new-move util/line-piece))))))
+
+(describe
+ "move-holes"
+ (it "should return holes"
+     (should=
+      [nil nil nil nil nil nil nil nil]
+      (map
+       field-holes
+       (moves/find-piece-placements
+        (util/new-move util/z-piece))))))

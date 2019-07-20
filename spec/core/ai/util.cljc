@@ -7,6 +7,7 @@
 
 (def square-piece (prepare-piece const/square-piece))
 (def line-piece (prepare-piece const/line-piece))
+(def z-piece (prepare-piece const/z-piece))
 (def empty-field
   {:width 10,
    :field #{},
@@ -14,7 +15,8 @@
    :score {:lines-cleared 0}
    :height 22})
 
-(defn new-move [piece]
+(defn new-move [first-piece & other-pieces]
   (placement/new-move
-   empty-field
-   piece))
+   (assoc
+    (merge empty-field first-piece)
+    :next-pieces other-pieces)))

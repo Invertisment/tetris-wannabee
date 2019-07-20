@@ -18,7 +18,12 @@
      (should=
       #{[:right :right :right] [:right :right] [:right]}
       (set (map :path (find-moves-right
-                       (util/new-move (first pieces))))))))
+                       (util/new-move (first pieces)))))))
+ (it "should return three states"
+     (should=
+      #{[:right :right :right] [:right :right] [:right]}
+      (set (map :path (find-moves-right
+                       (apply util/new-move pieces)))))))
 
 (describe
  "drop"
@@ -27,12 +32,18 @@
       #{[:bottom]}
       (set (map :path (find-moves-bottom
                        (util/new-move (first pieces)))))))
- (it "should retain :started status"
+ (it "should return :ended status for single piece"
      (should=
-      #{[:started]}
+      #{:ended}
       (set (map (comp :game-state :state)
                 (find-moves-bottom
-                 (util/new-move (first pieces))))))))
+                 (util/new-move (first pieces)))))))
+ (it "should return :started status for multiple pieces"
+     (should=
+      [:started]
+      (map (comp :game-state :state)
+           (find-moves-bottom
+            (apply util/new-move (repeat 2 (first pieces))))))))
 
 (describe
  "find-piece-placements"

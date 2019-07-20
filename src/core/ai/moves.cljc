@@ -19,6 +19,14 @@
            next
            (cons next all-iterations)))))))
 
+(defn propagate-move-nonrepeatable [move-fn path-key {:keys [path state]}]
+  [{:path (concat path [path-key])
+    :state (move-fn
+            v/field-valid?
+            identity
+            identity
+            state)}])
+
 (defn find-moves-left [move]
   (propagate-move move/left :left move))
 
@@ -26,7 +34,7 @@
   (propagate-move move/right :right move))
 
 (defn find-moves-bottom [move]
-  (propagate-move move/bottom :bottom move))
+  (propagate-move-nonrepeatable move/bottom :bottom move))
 
 (defn find-piece-placements [move]
   (mapcat
