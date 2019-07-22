@@ -18,7 +18,7 @@
 (def debug true)
 (def piece-overlay false)
 
-; Bounds
+                                        ; Bounds
 (def bounds-2x2
   {:x-range [4 6]
    :y-range [0 2]})

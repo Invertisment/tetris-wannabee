@@ -24,5 +24,15 @@
 (defn piece-op-scalar [x-fn y-fn field]
   (coords-op-scalar x-fn y-fn field))
 
-(defn get-piece-height []
-  )
+(defn get-piece-height [piece]
+  (-> piece
+      :piece-bounds
+      :y-range
+      first))
+
+(defn set-piece-height [piece new-height]
+  (let [current-h (get-piece-height piece)]
+    (coords-op-scalar
+     identity
+     #(+ (- % current-h) new-height)
+     piece)))

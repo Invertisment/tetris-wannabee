@@ -1,6 +1,6 @@
 (ns core.actions.move
   (:require [core.constants :as const]
-            [core.actions.piece-ops :refer [piece-op-scalar]]
+            [core.actions.piece-ops :refer [piece-op-scalar get-piece-height set-piece-height]]
             [core.actions.rotate :as rot]
             [core.actions.stick :refer [stick-piece]]
             [core.actions.piece-gen :refer [generate-new-piece]]
@@ -34,18 +34,28 @@
       moved
       (stick-and-generate-new-piece valid? update-score-fn gravity-restart-fn state))))
 
+(defn ensure-hold-from-next [valid? update-score-fn gravity-restart-fn state]
+  (if (:hold-piece state)
+    state
+    (let [[next-piece & next-pieces] (:next-pieces state)
+          current-piece (select-keys state (keys (first (:next-pieces state))))
+          hold-state (assoc
+                      state
+                      :hold-piece next-piece
+                      :next-pieces next-pieces)]
+      (when (valid? hold-state)
+        hold-state))))
+
 (defn hold [valid? update-score-fn gravity-restart-fn state]
-  (if-let [hold-piece (:hold-piece state)]
-    (let [current (select-keys state (keys hold-piece))]
+  (when-let [hold-state (ensure-hold-from-next valid? update-score-fn gravity-restart-fn state)]
+    (let [hold-piece (:hold-piece hold-state)
+          current (select-keys hold-state (keys hold-piece))
+          current-height (get-piece-height current)]
+      hold-state
       (assoc
-       (merge state hold-piece)
-       :hold-piece current))
-    (when-let [[next-piece & next-pieces] (:next-pieces state)]
-      (let [current (select-keys state (keys (first (:next-pieces state))))]
-        (assoc
-         (merge state next-piece)
-         :hold-piece current
-         :next-pieces next-pieces)))))
+       (merge hold-state (set-piece-height hold-piece current-height))
+       :hold-piece (set-piece-height current 0)
+       ))))
 
 (defn rotate [valid? update-score-fn gravity-restart-fn state]
   (rot/rotate-piece-clockwise state))
