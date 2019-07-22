@@ -32,7 +32,7 @@
  "group-coords"
  (it "should return grouped coords"
      (should=
-      {:x
+      {:by-x
        {0 [[0 20]],
         7 [[7 19]],
         1 [[1 20] [1 21]],
@@ -42,14 +42,21 @@
         2 [[2 20] [2 21]],
         9 [[9 17] [9 18]],
         5 [[5 19] [5 20]],
-        8 [[8 17] [8 18] [8 19]]},
-       :y
-       {20 [[0 20] [1 20] [2 20] [3 20] [4 20] [5 20]],
-        21 [[1 21] [2 21]],
-        19 [[5 19] [6 19] [7 19] [8 19]],
-        17 [[8 17] [9 17]],
-        18 [[8 18] [9 18]]}}
-      (group-coords finished-bridge-field))))
+        8 [[8 17] [8 18] [8 19]]}}
+      (group-coords finished-bridge-field)))
+ (it "should return grouped coords"
+     (should=
+      {:by-x
+       {0 [[0 20]],
+        7 [[7 19]],
+        1 [[1 20] [1 21]],
+        4 [[4 0] [4 1] [4 20]],
+        6 [[6 19]],
+        3 [[3 20]],
+        2 [[2 20] [2 21]],
+        5 [[5 0] [5 1] [5 19] [5 20]],
+        8 [[8 19]]}}
+      (group-coords unfinished-bridge-field))))
 
 (describe
  "count-holes"
@@ -83,13 +90,29 @@
  "field-roughness"
  (it "should return roughness"
      (should=
-      2
+      3
       (field-roughness
        (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field)))))
  (it "should return height of the highest column"
      (should=
-      [1 1 1 1 2 2 4 2 2]
+      [3 5 5 3 5 5 5 3 3]
       (map
        (fn [{:keys [state]}]
          (field-roughness (find-heights-from-bottom state (group-coords state))))
-       (moves/find-piece-placements (placement/to-move unfinished-bridge-field))))))
+       (moves/find-piece-placements (placement/to-move unfinished-bridge-field)))))
+ (it "should return height of the highest column"
+     (should=
+      18
+      (field-roughness [1 1 1 1 1 1 10 1 1 1 1])))
+ (it "should return height of the highest column"
+     (should=
+      9
+      (field-roughness [1 10])))
+ (it "should return height of the highest column"
+     (should=
+      27
+      (field-roughness [10 10 10 10 1 10 10 1 1])))
+ (it "should return height of the highest column"
+     (should=
+      9
+      (field-roughness [10 10 10 10 10 1 1 1 1]))))

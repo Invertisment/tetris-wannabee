@@ -47,7 +47,16 @@
 (describe
  "new-game"
  (it "should create :piece"
-     (should= (sort [:color :field :piece :piece-bounds :levels :next-pieces :score :game-state])
+     (should= (sort [:color
+                     :field
+                     :game-state
+                     :height
+                     :levels
+                     :next-pieces
+                     :piece
+                     :piece-bounds
+                     :score
+                     :width])
               (sort (keys (limit-next-pieces
                            (move/new-game
                             (constantly true)
@@ -59,7 +68,9 @@
      (should= {:field #{}
                :score {}
                :levels const/gravity-intervals
-               :game-state :started}
+               :game-state :started
+               :width const/field-width,
+               :height const/field-height}
               (remove-random-elements
                (limit-next-pieces
                 (move/new-game

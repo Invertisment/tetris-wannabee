@@ -38,7 +38,7 @@
 
 (defn find-piece-placements [move]
   (mapcat
-   (partial propagate-move move/bottom :bottom)
+   find-moves-bottom
    (concat (find-moves-left move)
            [move]
            (reverse (find-moves-right move)))))

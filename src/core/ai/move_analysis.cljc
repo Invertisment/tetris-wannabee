@@ -1,11 +1,13 @@
-(ns core.ai.move-analysis)
+(ns core.ai.move-analysis
+  (:require [clojure.set :as set]))
 
 (defn group-coords [state]
   (let [coords (->> (:field state)
                     (map :coord)
                     sort)]
     {:by-x (group-by first coords)
-     :by-y (group-by second coords)}
+     ;;:by-y (group-by second coords)
+     }
     ))
 
 ;; sum of all empty cells underground
@@ -35,7 +37,7 @@
 (defn weighted-height [heights-from-bottom]
   (->> heights-from-bottom
        (map #(* % %))
-       (reduce max))
+       (reduce max 0))
   #_(->> (vals by-x)
          (map (fn [coords]
                 (let [tallest-coord (or (dec (second (first coords))) 0)

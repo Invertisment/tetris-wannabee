@@ -3,7 +3,7 @@
 (def field-width 10)
 (def field-height 22)
 
-; Controls (js)
+;; Controls (js)
 (def left "KeyA")
 (def right "KeyD")
 (def rotate "KeyW")
@@ -18,7 +18,7 @@
 (def debug true)
 (def piece-overlay false)
 
-                                        ; Bounds
+;; Bounds
 (def bounds-2x2
   {:x-range [4 6]
    :y-range [0 2]})
@@ -29,7 +29,7 @@
   {:x-range [3 7]
    :y-range [0 4]})
 
-; Pieces
+;; Pieces
 (def line-piece
   {:piece #{[3 1] [4 1] [5 1] [6 1]} :piece-bounds bounds-4x4 :color "cyan"})
 (def j-piece

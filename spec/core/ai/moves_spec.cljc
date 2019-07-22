@@ -2,7 +2,10 @@
   (:require [core.ai.moves :refer :all]
             [speclj.core :refer :all]
             [core.constants :refer [field-width field-height pieces]]
-            [core.ai.util :as util]))
+            [core.ai.util :as util]
+            [core.actions.move :as move]
+            [core.ai.placement :as placement]
+            [core.piece-validators :as v]))
 
 (describe
  "find-moves-left"
@@ -43,7 +46,25 @@
       [:started]
       (map (comp :game-state :state)
            (find-moves-bottom
-            (apply util/new-move (repeat 2 (first pieces))))))))
+            (apply util/new-move (repeat 2 (first pieces)))))))
+ (it "should return :started status for multiple pieces"
+     (should=
+      [:started]
+      (map (comp :game-state :state)
+           (find-moves-bottom
+            (placement/to-move
+             (merge
+              (move/new-field (repeat 5 util/square-piece))
+              {:field #{{:coord [1 21], :color "gold"} {:coord [0 16], :color "gold"}
+                        {:coord [1 18], :color "gold"} {:coord [1 19], :color "gold"}
+                        {:coord [5 21], :color "gold"} {:coord [1 16], :color "gold"}
+                        {:coord [1 15], :color "gold"} {:coord [0 14], :color "gold"}
+                        {:coord [0 17], :color "gold"} {:coord [4 21], :color "gold"}
+                        {:coord [0 21], :color "gold"} {:coord [0 19], :color "gold"}
+                        {:coord [4 20], :color "gold"} {:coord [0 15], :color "gold"}
+                        {:coord [0 20], :color "gold"} {:coord [0 18], :color "gold"}
+                        {:coord [1 17], :color "gold"} {:coord [5 20], :color "gold"}
+                        {:coord [1 20], :color "gold"} {:coord [1 14], :color "gold"}}})))))))
 
 (describe
  "find-piece-placements"
@@ -57,7 +78,7 @@
         [:right :bottom]
         [:bottom]}
       (set (map :path (find-piece-placements
-                       (util/new-move (first pieces))) ))))
+                       (util/new-move (first pieces)))))))
  (it "should place all pieces onto their fields"
      (should=
       [4 4 4 4 4 4 4]
@@ -69,4 +90,28 @@
      (should=
       [:left :left :left :bottom]
       (:path (first (find-piece-placements
-                     (util/new-move (first pieces))))))))
+                     (util/new-move (first pieces)))))))
+ (it "should support :next-piece"
+     (should=
+      [:left :left :left :bottom]
+      (:path (first (find-piece-placements
+                     (apply
+                      util/new-move
+                      (repeat 5 (first pieces))))))))
+ (it "should support :next-piece"
+     (should=
+      [:left :left :left :left :bottom]
+      (:path (first (find-piece-placements
+                     (placement/to-move
+                      (merge
+                       (move/new-field (repeat 5 util/square-piece))
+                       {:field #{{:coord [1 21], :color "gold"} {:coord [0 16], :color "gold"}
+                                 {:coord [1 18], :color "gold"} {:coord [1 19], :color "gold"}
+                                 {:coord [5 21], :color "gold"} {:coord [1 16], :color "gold"}
+                                 {:coord [1 15], :color "gold"} {:coord [0 14], :color "gold"}
+                                 {:coord [0 17], :color "gold"} {:coord [4 21], :color "gold"}
+                                 {:coord [0 21], :color "gold"} {:coord [0 19], :color "gold"}
+                                 {:coord [4 20], :color "gold"} {:coord [0 15], :color "gold"}
+                                 {:coord [0 20], :color "gold"} {:coord [0 18], :color "gold"}
+                                 {:coord [1 17], :color "gold"} {:coord [5 20], :color "gold"}
+                                 {:coord [1 20], :color "gold"} {:coord [1 14], :color "gold"}}}))))))))
