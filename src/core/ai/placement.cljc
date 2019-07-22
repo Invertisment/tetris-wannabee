@@ -3,12 +3,12 @@
             [core.ai.moves :as moves]
             [core.piece-validators :as v]))
 
-(defn new-move [field]
+(defn to-move [field]
   {:path []
    :state field})
 
 (defn pick-best-piece-placement [genome field]
-  (let [piece-moves (moves/find-piece-placements (new-move field))]
+  (let [piece-moves (moves/find-piece-placements (to-move field))]
     (first piece-moves)))
 
 (defn place-best-piece [genome field]

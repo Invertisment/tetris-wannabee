@@ -26,7 +26,7 @@
    ;; except one outlier (for deepest well)
    :flatness (new-initial-coefficient)
    ;; deepest hole relatively to it's immediate neighbours
-   :deepest-well (new-initial-coefficient)})
+   :deepest-well-depth (new-initial-coefficient)})
 
 (defn create-initial-population [population-size]
   (->> (repeatedly rand)

@@ -41,4 +41,4 @@
    (partial propagate-move move/bottom :bottom)
    (concat (find-moves-left move)
            [move]
-           (find-moves-right move))))
+           (reverse (find-moves-right move)))))

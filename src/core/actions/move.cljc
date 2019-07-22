@@ -68,11 +68,21 @@
   (update-score-fn
    (merge
     (assoc state
-           :field #{}
+           ;;:field #{}
            :next-pieces (repeatedly #(generate-new-piece const/pieces))
            :score {}
            :levels const/gravity-intervals
-           :game-state :started)
+           :game-state :started
+
+           :field #{{:coord [1 21], :color "orangered"} {:coord [8 17], :color "gold"}
+                    {:coord [7 19], :color "cyan"} {:coord [4 20], :color "cyan"}
+                    {:coord [5 19], :color "cyan"} {:coord [6 19], :color "cyan"}
+                    {:coord [2 21], :color "orangered"} {:coord [2 20], :color "cyan"}
+                    {:coord [1 20], :color "orangered"} {:coord [9 18], :color "gold"}
+                    {:coord [0 20], :color "orangered"} {:coord [3 20], :color "cyan"}
+                    {:coord [8 18], :color "gold"} {:coord [5 20], :color "cyan"}
+                    {:coord [8 19], :color "cyan"} {:coord [9 17], :color "gold"}}
+           )
     (generate-new-piece const/pieces))))
 
 (defn gravity-down [& args]
