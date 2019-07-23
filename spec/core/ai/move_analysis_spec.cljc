@@ -66,7 +66,7 @@
       (count-holes finished-bridge-field (group-coords finished-bridge-field))))
  (it "should return holes for many"
      (should=
-      [10 10 10 10 11 10 10 10 13]
+      [10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 11 11 11 11 10 10 10 13 10 10 10 13 10 10 10 13 10 10 10 13]
       (map
        (fn [{:keys [state]}]
          (count-holes state (group-coords state)))
@@ -80,7 +80,8 @@
       (weighted-height (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field)))))
  (it "should return height of the highest column"
      (should=
-      [25 25 25 25 36 36 36 36 36]
+      (concat (repeat 16 25)
+              (repeat 20 36))
       (map
        (fn [{:keys [state]}]
          (weighted-height (find-heights-from-bottom state (group-coords state))))
@@ -95,7 +96,7 @@
        (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field)))))
  (it "should return height of the highest column"
      (should=
-      [3 5 5 3 5 5 5 3 3]
+      [3 5 5 3 3 5 5 3 3 5 5 3 3 5 5 3 5 5 5 5 5 5 3 3 5 5 3 3 5 5 3 3 5 5 3 3]
       (map
        (fn [{:keys [state]}]
          (field-roughness (find-heights-from-bottom state (group-coords state))))

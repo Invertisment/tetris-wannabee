@@ -14,6 +14,7 @@
     :right const/right
     :down const/down
     :bottom const/bottom
+    :rotate const/rotate
     nil))
 
 (defn find-next-piece [state]

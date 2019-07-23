@@ -67,21 +67,56 @@
                         {:coord [1 20], :color "gold"} {:coord [1 14], :color "gold"}}})))))))
 
 (describe
+ "rotate"
+ (it "should return all four states"
+     (should=
+      #{[:rotate :rotate :rotate] [] [:rotate] [:rotate :rotate]}
+      (set (map :path (find-moves-rotate
+                       (util/new-move (first pieces))))))))
+
+(describe
  "find-piece-placements"
  (it "should list possible moves"
      (should=
-      #{[:left :left :left :bottom]
-        [:left :left :bottom]
+      #{[:bottom]
         [:left :bottom]
-        [:right :right :right :bottom]
-        [:right :right :bottom]
+        [:left :left :bottom]
+        [:left :left :left :bottom]
         [:right :bottom]
-        [:bottom]}
+        [:right :right :bottom]
+        [:right :right :right :bottom]
+        [:rotate :bottom]
+        [:rotate :left :bottom]
+        [:rotate :left :left :bottom]
+        [:rotate :left :left :left :bottom]
+        [:rotate :left :left :left :left :bottom]
+        [:rotate :left :left :left :left :left :bottom]
+        [:rotate :right :bottom]
+        [:rotate :right :right :bottom]
+        [:rotate :right :right :right :bottom]
+        [:rotate :right :right :right :right :bottom]
+        [:rotate :rotate :bottom]
+        [:rotate :rotate :left :bottom]
+        [:rotate :rotate :left :left :bottom]
+        [:rotate :rotate :left :left :left :bottom]
+        [:rotate :rotate :right :bottom]
+        [:rotate :rotate :right :right :bottom]
+        [:rotate :rotate :right :right :right :bottom]
+        [:rotate :rotate :rotate :bottom]
+        [:rotate :rotate :rotate :left :bottom]
+        [:rotate :rotate :rotate :left :left :bottom]
+        [:rotate :rotate :rotate :left :left :left :bottom]
+        [:rotate :rotate :rotate :left :left :left :left :bottom]
+        [:rotate :rotate :rotate :right :bottom]
+        [:rotate :rotate :rotate :right :right :bottom]
+        [:rotate :rotate :rotate :right :right :right :bottom]
+        [:rotate :rotate :rotate :right :right :right :right :bottom]
+        [:rotate :rotate :rotate :right :right :right :right :right :bottom]}
       (set (map :path (find-piece-placements
                        (util/new-move (first pieces)))))))
  (it "should place all pieces onto their fields"
      (should=
-      [4 4 4 4 4 4 4]
+      [4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4]
       (map
        (comp count :field :state)
        (find-piece-placements
