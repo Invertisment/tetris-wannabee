@@ -28,21 +28,31 @@
            state)})
 
 (defn propagate-move-nonrepeatable [move-fn path-key move]
-  [(make-single-move move-fn path-key move)])
+  (make-single-move move-fn path-key move))
+
+(defn valid-move? [{:keys [state] :as move}]
+  (when (v/field-valid? state)
+    move))
 
 (defn propagate-move-iterate [move-fn path-key move iterations]
-  (loop [i iterations
-         all-iterations [move]
-         current-move move]
-    (if (<= i 0)
-      all-iterations
-      (let [new-move (make-single-move move-fn path-key current-move)]
-        (recur
-         (dec i)
-         (conj
-          all-iterations
-          new-move)
-         new-move)))))
+  (filter
+   valid-move?
+   (loop [i iterations
+          all-iterations [move]
+          current-move move]
+     (if (<= i 0)
+       all-iterations
+       (let [new-move (make-single-move move-fn path-key current-move)]
+         (if (= :ended (:game-state (:state new-move)))
+           (do
+             (println "(= :ended (:game-state (:state new-move)))")
+             all-iterations)
+           (recur
+            (dec i)
+            (conj
+             all-iterations
+             new-move)
+            new-move)))))))
 
 (defn find-moves-left [move]
   (propagate-move move/left :left move))
@@ -51,12 +61,13 @@
   (propagate-move move/right :right move))
 
 (defn find-moves-bottom [move]
-  (propagate-move-nonrepeatable move/bottom :bottom move))
+  [(propagate-move-nonrepeatable move/bottom :bottom move)])
 
 (defn find-moves-rotate [move]
   (propagate-move-iterate move/rotate :rotate move 3))
 
 (defn find-piece-placements [move]
+  #_(println "find-piece-placements count" (count (:next-pieces (:state move))))
   (let [rotated-moves (find-moves-rotate move)]
     (mapcat
      find-moves-bottom

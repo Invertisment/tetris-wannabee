@@ -55,7 +55,8 @@
         3 [[3 20]],
         2 [[2 20] [2 21]],
         5 [[5 19] [5 20]],
-        8 [[8 19]]}}
+        8 [[8 19]]
+        9 nil}}
       (group-coords unfinished-bridge-field))))
 
 (describe
@@ -76,12 +77,16 @@
  "weighted-height"
  (it "should return height of the highest column"
      (should=
-      36
+      25
       (weighted-height (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field)))))
  (it "should return height of the highest column"
      (should=
-      (concat (repeat 16 25)
-              (repeat 20 36))
+      9
+      (weighted-height (find-heights-from-bottom finished-bridge-field (group-coords unfinished-bridge-field)))))
+ (it "should return height of the highest column"
+     (should=
+      (concat (repeat 16 16)
+              (repeat 20 25))
       (map
        (fn [{:keys [state]}]
          (weighted-height (find-heights-from-bottom state (group-coords state))))
@@ -96,7 +101,7 @@
        (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field)))))
  (it "should return height of the highest column"
      (should=
-      [3 5 5 3 3 5 5 3 3 5 5 3 3 5 5 3 5 5 5 5 5 5 3 3 5 5 3 3 5 5 3 3 5 5 3 3]
+      [7 7 7 5 7 7 7 5 7 7 7 5 7 7 7 5 7 7 7 7 7 7 5 3 7 7 5 3 7 7 5 3 7 7 5 3]
       (map
        (fn [{:keys [state]}]
          (field-roughness (find-heights-from-bottom state (group-coords state))))

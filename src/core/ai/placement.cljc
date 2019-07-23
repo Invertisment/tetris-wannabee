@@ -8,7 +8,11 @@
   {:path []
    :state state})
 
-(defn pick-best-piece-placement [genome state]
+(defn pick-best-piece-placement [genome {:keys [width] :as state}]
+  #_(println "pick-best-piece-placement"
+             :piece (:piece state)
+             :field (:field state)
+             :next-pieces (:next-pieces state))
   (->> (to-move state)
        (moves/find-piece-placements)
        (map (juxt (partial genome/calculate-score genome) identity))

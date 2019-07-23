@@ -64,7 +64,18 @@
                         {:coord [4 20], :color "gold"} {:coord [0 15], :color "gold"}
                         {:coord [0 20], :color "gold"} {:coord [0 18], :color "gold"}
                         {:coord [1 17], :color "gold"} {:coord [5 20], :color "gold"}
-                        {:coord [1 20], :color "gold"} {:coord [1 14], :color "gold"}}})))))))
+                        {:coord [1 20], :color "gold"} {:coord [1 14], :color "gold"}}}))))))
+ (it "should return :started status for multiple pieces"
+     (should=
+      [[:bottom]]
+      (map :path
+           (find-moves-bottom
+            (last
+             (find-moves-rotate
+              (placement/to-move
+               (merge
+                (move/new-field (repeat 5 util/z-piece))
+                {:field #{{:coord [0 17], :color "darkorange"} {:coord [1 9], :color "cyan"} {:coord [0 4], :color "royalblue"} {:coord [3 2], :color "cyan"} {:coord [2 20], :color "gold"} {:coord [1 17], :color "darkorange"} {:coord [0 6], :color "darkorange"} {:coord [0 16], :color "darkorange"} {:coord [0 5], :color "royalblue"} {:coord [1 10], :color "cyan"} {:coord [0 14], :color "gold"} {:coord [1 8], :color "darkorange"} {:coord [0 18], :color "cyan"} {:coord [0 13], :color "gold"} {:coord [4 2], :color "cyan"} {:coord [1 7], :color "darkorange"} {:coord [1 6], :color "darkorange"} {:coord [0 19], :color "cyan"} {:coord [3 21], :color "gold"} {:coord [1 3], :color "royalblue"} {:coord [1 13], :color "gold"} {:coord [0 21], :color "cyan"} {:coord [1 14], :color "gold"} {:coord [1 11], :color "cyan"} {:coord [2 2], :color "cyan"} {:coord [3 20], :color "gold"} {:coord [0 20], :color "cyan"} {:coord [1 12], :color "cyan"} {:coord [2 21], :color "gold"} {:coord [0 3], :color "royalblue"} {:coord [0 15], :color "darkorange"} {:coord [1 2], :color "cyan"}}})))))))))
 
 (describe
  "rotate"
@@ -72,7 +83,15 @@
      (should=
       #{[:rotate :rotate :rotate] [] [:rotate] [:rotate :rotate]}
       (set (map :path (find-moves-rotate
-                       (util/new-move (first pieces))))))))
+                       (util/new-move (first pieces)))))))
+ (it "should not return invalid states"
+     (should=
+      #{[]}
+      (set (map :path (find-moves-rotate
+                       (placement/to-move
+                        (merge
+                         (move/new-field (repeat 5 util/z-piece))
+                         {:field #{{:coord [0 17], :color "darkorange"} {:coord [1 9], :color "cyan"} {:coord [0 4], :color "royalblue"} {:coord [3 2], :color "cyan"} {:coord [2 20], :color "gold"} {:coord [1 17], :color "darkorange"} {:coord [0 6], :color "darkorange"} {:coord [0 16], :color "darkorange"} {:coord [0 5], :color "royalblue"} {:coord [1 10], :color "cyan"} {:coord [0 14], :color "gold"} {:coord [1 8], :color "darkorange"} {:coord [0 18], :color "cyan"} {:coord [0 13], :color "gold"} {:coord [4 2], :color "cyan"} {:coord [1 7], :color "darkorange"} {:coord [1 6], :color "darkorange"} {:coord [0 19], :color "cyan"} {:coord [3 21], :color "gold"} {:coord [1 3], :color "royalblue"} {:coord [1 13], :color "gold"} {:coord [0 21], :color "cyan"} {:coord [1 14], :color "gold"} {:coord [1 11], :color "cyan"} {:coord [2 2], :color "cyan"} {:coord [3 20], :color "gold"} {:coord [0 20], :color "cyan"} {:coord [1 12], :color "cyan"} {:coord [2 21], :color "gold"} {:coord [0 3], :color "royalblue"} {:coord [0 15], :color "darkorange"} {:coord [1 2], :color "cyan"}}}))))))))
 
 (describe
  "find-piece-placements"
@@ -149,4 +168,12 @@
                                  {:coord [4 20], :color "gold"} {:coord [0 15], :color "gold"}
                                  {:coord [0 20], :color "gold"} {:coord [0 18], :color "gold"}
                                  {:coord [1 17], :color "gold"} {:coord [5 20], :color "gold"}
-                                 {:coord [1 20], :color "gold"} {:coord [1 14], :color "gold"}}}))))))))
+                                 {:coord [1 20], :color "gold"} {:coord [1 14], :color "gold"}}})))))))
+ (it "should preserve width at all times"
+     (should
+      (not-any?
+       nil?
+       (map
+        (comp :width :state)
+        (find-piece-placements
+         (util/new-move (first pieces))))))))
