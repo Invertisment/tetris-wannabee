@@ -26,14 +26,15 @@
                level-tick-interval
                (:timeout (field-util/get-current-level state))
                (fn []
-                 (let [{:keys [game-state]} @field-atom]
+                 (let [{:keys [game-state ai-is-on]} @field-atom]
                    #_(println "tick time" game-state)
                    (if (= game-state :ended)
                      (do
-                       #_(println "game ended")
+                       (println "game ended")
                        (js/clearInterval @fall-progression-interval)
                        (js/clearInterval @level-tick-interval))
-                     (go (>! tick-ch "tick"))))))))]
+                     (when-not ai-is-on
+                       (go (>! tick-ch "tick")))))))))]
     (setup-interval!
      fall-progression-interval
      time-between-levels

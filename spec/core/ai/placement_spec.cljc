@@ -54,7 +54,7 @@
          util/line-piece)
         :next-pieces
         (take 2 (repeat util/line-piece))))))
- (it "should clear 20 lines with 10 squares as input"
+ (it "should clear 2 lines with 10 squares as input"
      (should=
       {:lines-cleared 2}
       (:score

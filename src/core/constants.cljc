@@ -13,6 +13,7 @@
 (def bottom "Space")
 (def hold "KeyR")
 (def new-game "KeyN")
+(def toggle-ai "KeyM")
 (def gravity-pull-down "internal_gravity-pull")
 
 (def debug true)

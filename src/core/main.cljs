@@ -1,6 +1,6 @@
 (ns core.main
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
-  (:require [cljs.core.async :refer [timeout <! chan dropping-buffer]]
+  (:require [cljs.core.async :refer [<! chan dropping-buffer]]
             [core.field :as fi]
             [core.core :refer [create-change-listener start-game]]
             [core.keys :refer [setup-key-listener]]
@@ -9,7 +9,8 @@
             [core.constants :as c]
             [core.ui.score :as score]
             [core.ui.time :as time-helper]
-            [core.actions.gravity :as gravity]))
+            [core.actions.gravity :as gravity]
+            [core.ui.ai :as ui.ai]))
 
 (enable-console-print!)
 
@@ -48,6 +49,7 @@
      score/show-score!
      gravity-restart-fn)
     (game-loop)
+    (ui.ai/setup state/field change-listener)
     (time-loop tick-ch (gravity/create-pull-down-fn change-listener))
     (setup-key-listener change-listener)))
 
