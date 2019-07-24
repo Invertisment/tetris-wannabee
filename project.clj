@@ -26,4 +26,5 @@
                {:id "prod"
                 :source-paths ["src"]
                 :compiler {:output-to "index-prod.js"
-                           :optimizations :whitespace}}]})
+                           :optimizations :whitespace}}]}
+  :main core.ai.main)
