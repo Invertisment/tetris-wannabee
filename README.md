@@ -19,3 +19,5 @@ lein cljsbuild auto
 ##### Running tests
 lein spec -a
 
+##### AI mechanism training
+lein run
