@@ -11,25 +11,31 @@
 (def get-score
   (comp :lines-cleared :score second))
 
-(defn train [max-generations population-size tetrominoes-count]
+(defn train [max-generations population-size tetrominoes-count map-fn]
+  (println "Training"population-size
+           "genomes for"max-generations
+           "generations with"tetrominoes-count"pieces each")
   (loop [genomes (genome/create-initial-population population-size)
          generation 0]
     (if (< generation max-generations)
       (let [elites-with-score
             (->> genomes
-                 (pmap (fn [genome]
-                         [genome
-                          (placement/apply-pieces
-                           genome
-                           (move/new-field
-                            (repeatedly
-                             tetrominoes-count
-                             (partial piece-gen/generate-new-piece const/pieces))))]))
+                 (map-fn
+                  (fn [genome]
+                    [genome
+                     (placement/apply-pieces
+                      genome
+                      (move/new-field
+                       (repeatedly
+                        tetrominoes-count
+                        (partial piece-gen/generate-new-piece const/pieces))))]))
                  (sort-by get-score)
                  (reverse)
                  (take (quot population-size 2)))
             elites (map first elites-with-score)]
-        (println (format "Generation: %s\t Best performance: %s\t Genome: %s" generation (get-score (first elites-with-score)) (first elites)))
+        (println "Generation:"generation
+                 "\t Best performance:"(get-score (first elites-with-score))
+                 "\t Genome:"(first elites))
         (recur
          (->> (concat
                elites
@@ -38,4 +44,4 @@
          (inc generation)))
       genomes)))
 
-#_(train 50 50 500)
+#_(train 50 50 500 pmap)

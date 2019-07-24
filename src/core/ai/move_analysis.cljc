@@ -101,3 +101,32 @@
                           rest)))
 
 #_(well-depth-one-px-from-wall [1 2 6 7 8 9])
+
+(defn count-hole-depths [{:keys [height] :as state} block-x-indexes]
+  (let [block-x-set (set block-x-indexes)]
+    (when-not (empty? block-x-set)
+      (->> (map
+            vector
+            (range (first block-x-indexes) height)
+            (range))
+           (remove (fn [[x _]] (block-x-set x)))))))
+
+(defn count-field-hole-depths [{:keys [height] :as state} {:keys [by-x] :as grouped-coords}]
+  (->> (vals by-x)
+       (map #(map second %))
+       (mapcat (partial count-hole-depths state))))
+
+(defn count-reverse-field-hole-depth-sum [{:keys [height] :as state} hole-depths]
+  (->> hole-depths
+       (map (fn [[index depth]] (* (- height index) depth)))
+       (reduce +)))
+
+(defn count-hole-depth-of-first-three-lines [{:keys [height] :as state} hole-depths]
+  (if (empty? hole-depths)
+    0
+    (let [sorted-holes (sort-by first hole-depths)
+          max-line-index (+ 2 (ffirst sorted-holes))]
+      (->> sorted-holes
+           (take-while (fn [[index _]] (< index max-line-index)))
+           (map second)
+           (reduce +)))))

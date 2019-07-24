@@ -122,3 +122,55 @@
      (should=
       9
       (field-roughness [10 10 10 10 10 1 1 1 1]))))
+
+(describe
+ "count-hole-depths"
+ (it "should return depths to each hole"
+     (should=
+      [[19 2] [21 4]]
+      (count-hole-depths finished-bridge-field [17 18 20]))))
+
+(describe
+ "count-field-hole-depths"
+ (it "should return depths to each hole"
+     (should=
+      [[21 1] [20 1] [21 2] [21 1] [20 1] [21 2] [21 1] [19 2] [20 3] [21 4] [21 2] [20 3] [21 4]]
+      (count-field-hole-depths finished-bridge-field (group-coords finished-bridge-field))))
+ (it "should handle nil"
+     (should=
+      []
+      (count-field-hole-depths finished-bridge-field nil)))
+ (it "should ignore non-hole columns"
+     (should=
+      []
+      (count-field-hole-depths finished-bridge-field [15 16 17 18 19 20]))))
+
+(describe
+ "count-reverse-field-hole-depth-sum"
+ (it "should return depths to each hole"
+     (should=
+      39
+      (count-reverse-field-hole-depth-sum
+       finished-bridge-field
+       (count-field-hole-depths finished-bridge-field (group-coords finished-bridge-field)))))
+ (it "should return depths to each hole unfinished bridge"
+     (should=
+      17
+      (count-reverse-field-hole-depth-sum
+       unfinished-bridge-field
+       (count-field-hole-depths unfinished-bridge-field (group-coords unfinished-bridge-field))))))
+
+(describe
+ "count-reverse-field-hole-depth-sum"
+ (it "should return depths to each hole"
+     (should=
+      10
+      (count-hole-depth-of-first-three-lines
+       finished-bridge-field
+       (count-field-hole-depths finished-bridge-field (group-coords finished-bridge-field)))))
+ (it "should return depths to each hole unfinished bridge"
+     (should=
+      14
+      (count-hole-depth-of-first-three-lines
+       unfinished-bridge-field
+       (count-field-hole-depths unfinished-bridge-field (group-coords unfinished-bridge-field))))))
