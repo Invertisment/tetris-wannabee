@@ -5,7 +5,9 @@ Playable on browser and controllable with keyboard: https://invertisment.github.
 #### Controls:
     Piece control: w, a, s, d
     Hard-drop the current piece: Space
+    Hold piece: r
     New game: n
+    Activate AI: m
 
 #### Development
 ##### Tools
@@ -16,3 +18,4 @@ lein cljsbuild auto
 
 ##### Running tests
 lein spec -a
+

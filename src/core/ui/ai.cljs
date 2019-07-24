@@ -6,15 +6,17 @@
             [core.ai.placement :as placement]))
 
 (def ai-loop-state (atom nil))
-(def genome {:cumulative-height -0.37769539770532123,
-             :well-depth-one-px-from-wall 0.29022544227958746,
-             :roughness -0.2233356607529494,
-             :well-depth-at-wall -0.13271801380971515,
-             :holes -0.35681918935343226,
-             :id "genome-0.7950824813506542",
-             :rows-cleared 0.4333810031369997,
-             :flatness -0.209946415288266,
-             :weighted-height -0.46723598006912315})
+(def genome {:cumulative-height -0.1860985621506298
+             :hole-depth-of-first-three-lines 0.12662585467718546
+             :reverse-field-hole-depth-sum -0.04185905968094228
+             :well-depth-one-px-from-wall -0.0717315077561278
+             :roughness -0.20961566272488186
+             :well-depth-at-wall 0.36786013521416194
+             :holes -0.32994373530847765
+             :id "genome-0.9465299650423006"
+             :rows-cleared -0.48332146085228955
+             :flatness 0.1545518084628844
+             :weighted-height -0.045761053610595126})
 
 (defn action-to-key [movement-id]
   (condp = movement-id
