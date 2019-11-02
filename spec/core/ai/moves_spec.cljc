@@ -5,7 +5,8 @@
             [core.ai.util :as util]
             [core.actions.move :as move]
             [core.ai.placement :as placement]
-            [core.piece-validators :as v]))
+            [core.piece-validators :as v]
+            [core.constants :as constants]))
 
 (describe
  "find-moves-left"

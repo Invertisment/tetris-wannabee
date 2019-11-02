@@ -42,7 +42,13 @@
         2 [[2 20] [2 21]],
         9 [[9 17] [9 18]],
         5 [[5 19] [5 20]],
-        8 [[8 17] [8 18] [8 19]]}}
+        8 [[8 17] [8 18] [8 19]]}
+       :by-y
+       {20 [[0 20] [1 20] [2 20] [3 20] [4 20] [5 20]],
+        21 [[1 21] [2 21]],
+        19 [[5 19] [6 19] [7 19] [8 19]],
+        17 [[8 17] [9 17]],
+        18 [[8 18] [9 18]]}}
       (group-coords finished-bridge-field)))
  (it "should return grouped coords"
      (should=
@@ -56,7 +62,11 @@
         2 [[2 20] [2 21]],
         5 [[5 19] [5 20]],
         8 [[8 19]]
-        9 nil}}
+        9 nil}
+       :by-y
+       {20 [[0 20] [1 20] [2 20] [3 20] [4 20] [5 20]],
+        21 [[1 21] [2 21]],
+        19 [[5 19] [6 19] [7 19] [8 19]]}}
       (group-coords unfinished-bridge-field))))
 
 (describe
@@ -77,16 +87,16 @@
  "weighted-height"
  (it "should return height of the highest column"
      (should=
-      25
+      5
       (weighted-height (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field)))))
  (it "should return height of the highest column"
      (should=
-      9
+      3
       (weighted-height (find-heights-from-bottom finished-bridge-field (group-coords unfinished-bridge-field)))))
  (it "should return height of the highest column"
      (should=
-      (concat (repeat 16 16)
-              (repeat 20 25))
+      (concat (repeat 16 4)
+              (repeat 20 5))
       (map
        (fn [{:keys [state]}]
          (weighted-height (find-heights-from-bottom state (group-coords state))))
@@ -131,19 +141,34 @@
       (count-hole-depths finished-bridge-field [17 18 20]))))
 
 (describe
+ "count-horizontal-fullness"
+ (it "should return "
+     (should=
+      (+ (* 6 6)
+         (* 2 2)
+         (* 4 4))
+      (count-horizontal-fullness (group-coords unfinished-bridge-field))))
+ (it "should return "
+     (should=
+      (+ (* 6 6)
+         (* 3 (* 2 2))
+         (* 4 4))
+      (count-horizontal-fullness (group-coords finished-bridge-field)))))
+
+(describe
  "count-field-hole-depths"
  (it "should return depths to each hole"
      (should=
       [[21 1] [20 1] [21 2] [21 1] [20 1] [21 2] [21 1] [19 2] [20 3] [21 4] [21 2] [20 3] [21 4]]
       (count-field-hole-depths finished-bridge-field (group-coords finished-bridge-field))))
+ (it "should ignore non-hole columns"
+     (should=
+      [[21 1] [20 1] [21 2] [21 1] [20 1] [21 2] [21 1] [21 2] [20 1] [21 2]]
+      (count-field-hole-depths finished-bridge-field (group-coords unfinished-bridge-field))))
  (it "should handle nil"
      (should=
       []
-      (count-field-hole-depths finished-bridge-field nil)))
- (it "should ignore non-hole columns"
-     (should=
-      []
-      (count-field-hole-depths finished-bridge-field [15 16 17 18 19 20]))))
+      (count-field-hole-depths finished-bridge-field nil))))
 
 (describe
  "count-reverse-field-hole-depth-sum"
@@ -157,20 +182,5 @@
      (should=
       17
       (count-reverse-field-hole-depth-sum
-       unfinished-bridge-field
-       (count-field-hole-depths unfinished-bridge-field (group-coords unfinished-bridge-field))))))
-
-(describe
- "count-reverse-field-hole-depth-sum"
- (it "should return depths to each hole"
-     (should=
-      10
-      (count-hole-depth-of-first-three-lines
-       finished-bridge-field
-       (count-field-hole-depths finished-bridge-field (group-coords finished-bridge-field)))))
- (it "should return depths to each hole unfinished bridge"
-     (should=
-      14
-      (count-hole-depth-of-first-three-lines
        unfinished-bridge-field
        (count-field-hole-depths unfinished-bridge-field (group-coords unfinished-bridge-field))))))

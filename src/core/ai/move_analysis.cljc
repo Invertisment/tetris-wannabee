@@ -14,9 +14,7 @@
               (assoc group id (group id)))
             (group-by first coords)
             (range 0 width))
-     ;;:by-y (group-by second coords)
-     }
-    ))
+     :by-y (group-by second coords)}))
 
 ;; sum of all empty cells underground
 (defn count-holes [{:keys [height] :as state} {:keys [by-x] :as grouped-coords}]
@@ -44,14 +42,8 @@
 ;; absolute height of the highest column to the power of 2
 (defn weighted-height [heights-from-bottom]
   (->> heights-from-bottom
-       (map #(* % %))
-       (reduce max 0))
-  #_(->> (vals by-x)
-         (map (fn [coords]
-                (let [tallest-coord (or (dec (second (first coords))) 0)
-                      height-from-bottom (- height tallest-coord)]
-                  (* height-from-bottom height-from-bottom))))
-         (reduce max)))
+       #_(map #(* % %))
+       (reduce max 0)))
 
 ;; sum of all block heights
 (defn cumulative-height [heights-from-bottom]
@@ -121,12 +113,8 @@
        (map (fn [[index depth]] (* (- height index) depth)))
        (reduce +)))
 
-(defn count-hole-depth-of-first-three-lines [{:keys [height] :as state} hole-depths]
-  (if (empty? hole-depths)
-    0
-    (let [sorted-holes (sort-by first hole-depths)
-          max-line-index (+ 2 (ffirst sorted-holes))]
-      (->> sorted-holes
-           (take-while (fn [[index _]] (< index max-line-index)))
-           (map second)
-           (reduce +)))))
+;; measure how full the lines are (^2 is needed to counteract placement anywhere)
+(defn count-horizontal-fullness [{:keys [by-y] :as grouped-coords}]
+  (->> by-y
+       (map (comp #(* % %) count second))
+       (reduce +)))

@@ -1,6 +1,5 @@
 (ns core.ai.placement
-  (:require [core.ai.constants :as ai-const]
-            [core.ai.moves :as moves]
+  (:require [core.ai.moves :as moves]
             [core.piece-validators :as v]
             [core.ai.genome :as genome]))
 

@@ -6,17 +6,19 @@
             [core.ai.placement :as placement]))
 
 (def ai-loop-state (atom nil))
-(def genome {:cumulative-height -0.1860985621506298
-             :hole-depth-of-first-three-lines 0.12662585467718546
-             :reverse-field-hole-depth-sum -0.04185905968094228
-             :well-depth-one-px-from-wall -0.0717315077561278
-             :roughness -0.20961566272488186
-             :well-depth-at-wall 0.36786013521416194
-             :holes -0.32994373530847765
-             :id "genome-0.9465299650423006"
-             :rows-cleared -0.48332146085228955
-             :flatness 0.1545518084628844
-             :weighted-height -0.045761053610595126})
+
+(def genome {:cumulative-height -0.05717160118872626
+             :reverse-field-hole-depth-sum -0.09598819455202579
+             :well-depth-one-px-from-wall 0.043078898121832104
+             :roughness -0.4409992086434044
+             :well-depth-at-wall -0.276311397059164
+             :holes -0.40891740510329744
+             :well-depth-at-wall-minus-4 0.2632058000112609
+             :well-depth-one-px-from-wall-minus-4 -0.1895372510208759
+             :id "genome-0.8418455021348965"
+             :rows-cleared -0.1910587220612356
+             :flatness -0.29409208076424287
+             :weighted-height -0.21675795277048074})
 
 (defn action-to-key [movement-id]
   (condp = movement-id
@@ -53,7 +55,7 @@
 
 (defn start-ai-loop [state-atom change-listener]
   (go-loop [prev-state @state-atom]
-    (<! (timeout 500))
+    (<! (timeout 200))
     (when @ai-loop-state
       (<! (deliver-next-state state-atom change-listener))
       (let [new-state @state-atom]

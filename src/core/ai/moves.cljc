@@ -1,6 +1,7 @@
 (ns core.ai.moves
   (:require [core.actions.move :as move]
-            [core.piece-validators :as v]))
+            [core.piece-validators :as v]
+            [core.constants :as constants]))
 
 (defn propagate-move [move-fn path-key move]
   (loop [{:keys [path state]} move
@@ -60,8 +61,14 @@
 (defn find-moves-right [move]
   (propagate-move move/right :right move))
 
+(defn find-move-bottom [move]
+  (propagate-move-nonrepeatable move/bottom :bottom move))
+
+(defn find-move-down [move]
+  (propagate-move-nonrepeatable move/down :bottom move))
+
 (defn find-moves-bottom [move]
-  [(propagate-move-nonrepeatable move/bottom :bottom move)])
+  [(find-move-bottom move)])
 
 (defn find-moves-rotate [move]
   (propagate-move-iterate move/rotate :rotate move 3))
