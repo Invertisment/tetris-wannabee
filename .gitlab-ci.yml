@@ -1,0 +1,9 @@
+image: alpine:latest
+
+pages:
+  script:
+  - ls
+  artifacts:
+    paths:
+    - public
+
