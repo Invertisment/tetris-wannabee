@@ -7,18 +7,19 @@
 
 (def ai-loop-state (atom nil))
 
-(def genome {:cumulative-height -0.05717160118872626
-             :reverse-field-hole-depth-sum -0.09598819455202579
-             :well-depth-one-px-from-wall 0.043078898121832104
-             :roughness -0.4409992086434044
-             :well-depth-at-wall -0.276311397059164
-             :holes -0.40891740510329744
-             :well-depth-at-wall-minus-4 0.2632058000112609
-             :well-depth-one-px-from-wall-minus-4 -0.1895372510208759
-             :id "genome-0.8418455021348965"
-             :rows-cleared -0.1910587220612356
-             :flatness -0.29409208076424287
-             :weighted-height -0.21675795277048074})
+(def genome
+  {:cumulative-height -0.6848274681003712
+   :reverse-field-hole-depth-sum -0.030693240658629287
+   :well-depth-one-px-from-wall -0.11755758114989516
+   :roughness -0.40434315958709477
+   :well-depth-at-wall 0.08686673863050129
+   :holes -0.3111454774699767
+   :well-depth-at-wall-minus-4 0.10154687356369657
+   :well-depth-one-px-from-wall-minus-4 0.2763903396256017
+   :id "genome-0.0064765265286694795"
+   :rows-cleared 0.20274840355787263
+   :flatness -0.38412816041172554
+   :weighted-height -0.18209455903398075})
 
 (defn action-to-key [movement-id]
   (condp = movement-id

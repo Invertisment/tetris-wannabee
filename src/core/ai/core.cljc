@@ -10,12 +10,12 @@
 (def get-score
   (comp :lines-cleared :score second))
 
-(defn train [generation max-generations genomes tetrominoes-count serialize-fn!]
+(defn train [generation max-generations genomes tetrominoes-count serialize-fn! map-fn]
   (let [population-size (count genomes)]
     (println "Training" population-size
              "genomes for" max-generations
-             "generations with" tetrominoes-count "pieces each"
-             "generation:" generation)
+             "generations with" tetrominoes-count "pieces each."
+             "Generation:" generation)
     (loop [genomes genomes
            generation generation]
       (serialize-fn! generation genomes)
@@ -26,7 +26,7 @@
                       (partial piece-gen/generate-new-piece const/pieces)))
               elites-with-score
               (->> genomes
-                   (pmap
+                   (map-fn
                     (fn [genome]
                       [genome
                        (placement/apply-pieces

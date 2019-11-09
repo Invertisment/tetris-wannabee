@@ -41,4 +41,5 @@
      max-generations
      genomes
      max-tetrominoes-count
-     (partial serialize-fn max-generations population-size max-tetrominoes-count))))
+     (partial serialize-fn max-generations population-size max-tetrominoes-count)
+     pmap)))
