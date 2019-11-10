@@ -32,10 +32,10 @@
    (vals by-x)))
 
 (defn find-heights-from-bottom [{:keys [height] :as state} {:keys [by-x] :as grouped-coords}]
-  (->> (vals by-x)
+  (->> by-x
        (sort-by first)
-       (map (fn [coords]
-              (let [tallest-coord (or (second (first coords)) height)
+       (map (fn [[i line]]
+              (let [tallest-coord (reduce min (cons height (map second line)))
                     height-from-bottom (- height tallest-coord)]
                 height-from-bottom)))))
 

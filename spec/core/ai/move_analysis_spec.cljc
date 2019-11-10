@@ -84,6 +84,17 @@
        (moves/find-piece-placements (placement/to-move unfinished-bridge-field))))))
 
 (describe
+ "find-heights-from-bottom"
+ (it "should return height from bottom"
+     (should=
+      [2 2 2 2 2 3 3 3 5 5]
+      (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field))))
+ (it "should return height from bottom"
+     (should=
+      [2 2 2 2 2 3 3 3 3 0]
+      (find-heights-from-bottom unfinished-bridge-field (group-coords unfinished-bridge-field)))))
+
+(describe
  "weighted-height"
  (it "should return height of the highest column"
      (should=
@@ -111,7 +122,7 @@
        (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field)))))
  (it "should return height of the highest column"
      (should=
-      [7 7 7 5 7 7 7 5 7 7 7 5 7 7 7 5 7 7 7 7 7 7 5 3 7 7 5 3 7 7 5 3 7 7 5 3]
+      [6 8 8 6 6 8 8 6 6 8 8 6 6 8 8 6 8 8 8 8 8 8 8 3 8 8 8 3 8 8 8 3 8 8 8 3]
       (map
        (fn [{:keys [state]}]
          (field-roughness (find-heights-from-bottom state (group-coords state))))
