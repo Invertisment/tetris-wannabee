@@ -29,11 +29,12 @@
       (read-string (slurp filename)))))
 
 (defn -main [& args]
+  (println "Version:" (get-git-revision))
   (let [deserialized (deserialize)
         generation (or (:generation deserialized) 0)
         max-generations (or (:max-generations deserialized) 500)
         population-size (or (:population-size deserialized) 50)
-        genomes (or (:genomes deserialized)
+        genomes (or (seq (map genome/ensure-weight-existence (:genomes deserialized)))
                     (genome/create-initial-population population-size))
         max-tetrominoes-count (or (:max-tetrominoes-count deserialized) 1000)]
     (ai-core/train

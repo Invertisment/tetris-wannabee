@@ -11,38 +11,44 @@
 (defn genome-name []
   (str "genome-" (rand)))
 
-;; https://www.youtube.com/watch?v=xLHCMMGuN0Q
-(defn new-initial-genome []
-  {:id (genome-name)
-   ;; rows cleared per piece placement
-   :rows-cleared (new-initial-coefficient)
+;; genome trainable keys (without :id)
+(def genome-keys
+  [;; rows cleared per piece placement
+   :rows-cleared
    ;; absolute height of the highest column to the power of 2
-   :weighted-height (new-initial-coefficient)
+   :weighted-height
    ;; sum of all block heights
-   :cumulative-height (new-initial-coefficient)
+   :cumulative-height
    ;; sum of all empty cells underground
-   :holes (new-initial-coefficient)
+   :holes
    ;; sum of absolute differences between neighbours
    ;; if the game field is empty this is zero
    ;; except one outlier (for deepest well)
-   :roughness (new-initial-coefficient)
+   :roughness
    ;; sum of all flat neighbours
    ;; if the game field is empty this is the width of the map
    ;; except one outlier (for deepest well)
-   :flatness (new-initial-coefficient)
+   :flatness
    ;; deepest side hole near side of the map
-   :well-depth-at-wall (new-initial-coefficient)
+   :well-depth-at-wall
    ;; deepest side hole 1px from sides
-   :well-depth-one-px-from-wall (new-initial-coefficient)
+   :well-depth-one-px-from-wall
    ;; sum of hole depths subtracted from field height (consecutive too)
-   :well-depth-at-wall-minus-4 (new-initial-coefficient)
+   :well-depth-at-wall-minus-4
    ;; deepest side hole 1px from sides
-   :well-depth-one-px-from-wall-minus-4 (new-initial-coefficient)
+   :well-depth-one-px-from-wall-minus-4
    ;;sum of hole depths subtracted from field height (consecutive too)
-   :reverse-field-hole-depth-sum (new-initial-coefficient)
+   :reverse-field-hole-depth-sum
    ;;;; measure how full the lines are (^2 is needed to counteract placement anywhere)
-   ;;:horizontal-fullness (new-initial-coefficient)
-   })
+   :horizontal-fullness])
+
+;; https://www.youtube.com/watch?v=xLHCMMGuN0Q
+(defn new-initial-genome []
+  (merge
+   {:id (genome-name)}
+   (->> genome-keys
+        (map (juxt identity (fn [& _] (new-initial-coefficient))))
+        (into {}))))
 
 ;; What didn't work:
 ;; hole depth of first three lines: it tries to produce holes in the beginning of the game
@@ -70,7 +76,7 @@
      (* (or (:well-depth-at-wall-minus-4  genome) 0) (- (move-analysis/well-depth-at-wall heights-from-bottom) 4))
      (* (or (:well-depth-one-px-from-wall-minus-4 genome) 0) (- (move-analysis/well-depth-one-px-from-wall heights-from-bottom) 4))
      (* (or (:reverse-field-hole-depth-sum genome) 0) (move-analysis/count-reverse-field-hole-depth-sum state hole-depths))
-     #_(* (or (:horizontal-fullness genome) 0) (move-analysis/count-horizontal-fullness grouped-coords)))))
+     (* (or (:horizontal-fullness genome) 0) (move-analysis/count-horizontal-fullness grouped-coords)))))
 
 (defn crossover [mum-genome dad-genome]
   (assoc
@@ -99,3 +105,11 @@
   (mutate
    (crossover (rand-nth elites)
               (rand-nth elites))))
+
+;; make sure every weight key exists in genome
+(defn ensure-weight-existence [genome]
+  (merge {:id (genome-name)}
+         (->> genome-keys
+              (map (juxt identity (constantly 0)))
+              (into {}))
+         genome))
