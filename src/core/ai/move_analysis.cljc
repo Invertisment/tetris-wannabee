@@ -16,21 +16,6 @@
             (range 0 width))
      :by-y (group-by second coords)}))
 
-;; sum of all empty cells underground
-(defn count-holes [{:keys [height] :as state} {:keys [by-x] :as grouped-coords}]
-  (reduce
-   (fn [sum coords]
-     (or
-      (when-let [first-coord (first coords)]
-        (let [[_ from] first-coord]
-          (+ (dec (- height
-                     from
-                     (count (rest coords))))
-             sum)))
-      sum))
-   0
-   (vals by-x)))
-
 (defn find-heights-from-bottom [{:keys [height] :as state} {:keys [by-x] :as grouped-coords}]
   (->> by-x
        (sort-by first)
@@ -39,16 +24,48 @@
                     height-from-bottom (- height tallest-coord)]
                 height-from-bottom)))))
 
+(defn find-holes-x [{:keys [by-x] :as grouped-coords} heights-from-bottom]
+  (->> heights-from-bottom
+       (map-indexed (fn [i height]
+                      (- height (count (by-x i)))))))
+
+(defn remove-lower-holes [line-height x-id-height-tuples]
+  (->> x-id-height-tuples
+       (filter (fn [[i height]]
+                 (< line-height height)
+                 #_(>= height (heights-from-bottom i))))
+       (map first))
+  )
+
+(defn find-holes-y [{:keys [width height] :as state} {:keys [by-y] :as grouped-coords} heights-from-bottom]
+  (let [width-indexes (into #{} (range width))]
+    (->> by-y
+         (sort-by first)
+         (map (fn [[i line]]
+                [i
+                 (dec (- height i))
+                 heights-from-bottom
+                 (let [holes-with-false-positives (remove (into #{} (map first line)) width-indexes)]
+                   holes-with-false-positives
+                   #_(map
+                      (fn [x-index]
+                        (remove-lower-holes (dec (- height i)) (nth heights-from-bottom x-index)))
+                      holes-with-false-positives))])))))
+
+;; sum of all empty cells underground
+(defn count-holes [found-holes]
+  (reduce + found-holes))
+
 ;; absolute height of the highest column to the power of 2
 (defn weighted-height [heights-from-bottom]
-  (->> heights-from-bottom
-       #_(map #(* % %))
-       (reduce max 0)))
+(->> heights-from-bottom
+     #_(map #(* % %))
+     (reduce max 0)))
 
 ;; sum of all block heights
 (defn cumulative-height [heights-from-bottom]
-  (->> heights-from-bottom
-       (reduce + 0)))
+(->> heights-from-bottom
+     (reduce + 0)))
 
 (defn abs [n] (max n (- n)))
 
@@ -116,5 +133,9 @@
 ;; measure how full the lines are (^2 is needed to counteract placement anywhere)
 (defn count-horizontal-fullness [{:keys [by-y] :as grouped-coords}]
   (->> by-y
-       (map (comp #(* % %) count second))
+       (map (comp count second))
        (reduce +)))
+
+;; count lines needed to clear to reach the holes
+(defn count-hole-toxicity [heights-from-bottom {:keys [by-x by-y] :as grouped-coords}]
+  )

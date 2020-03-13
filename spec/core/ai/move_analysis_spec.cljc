@@ -70,17 +70,77 @@
       (group-coords unfinished-bridge-field))))
 
 (describe
+ "find-holes-x"
+ (it "should find-holes-x 1"
+     (should=
+      [1 0 0 1 1 1 2 2 2 3]
+      (find-holes-x
+       (group-coords finished-bridge-field)
+       (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field)))))
+ (it "should find-holes-x 2"
+     (should=
+      [1 0 0 1 1 1 2 2 2 0]
+      (find-holes-x
+       (group-coords unfinished-bridge-field)
+       (find-heights-from-bottom unfinished-bridge-field (group-coords unfinished-bridge-field))))))
+
+(describe
+ "remove-lower-holes"
+ (it "should remove-lower-holes 1"
+     (should=
+      [0 7 4 6 3 9 5 8]
+      (remove-lower-holes 0 [[0 2] [7 3] [4 2] [6 3] [3 2] [9 5] [5 3] [8 5]])))
+ (it "should remove-lower-holes 2"
+     (should=
+      [7 6 9 8]
+      (remove-lower-holes 1 [[7 3] [6 3] [9 5] [8 5]])))
+ (it "should remove-lower-holes 3"
+     (should=
+      [9]
+      (remove-lower-holes 2 [[0 2] [1 2] [4 2] [3 2] [2 2] [9 5]])))
+ (it "should remove-lower-holes 4"
+     (should=
+      ()
+      (remove-lower-holes 3 [[0 2] [7 3] [1 2] [4 2] [6 3] [3 2] [2 2] [5 3]])))
+ (it "should remove-lower-holes 5"
+     (should=
+      ()
+      (remove-lower-holes 4 [[0 2] [7 3] [1 2] [4 2] [6 3] [3 2] [2 2] [5 3]]))))
+
+#_(describe
+ "find-holes-y"
+ (it "should return holes for finished placement"
+     (should=
+      [1 0 0 1 1 1 2 2 2 3]
+      (find-holes-y
+       finished-bridge-field
+       (group-coords finished-bridge-field)
+       (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field)))))
+ #_(it "should return holes for finished placement"
+       (should=
+        [1 0 0 1 1 1 2 2 2 0]
+        (find-holes-y
+         (group-coords unfinished-bridge-field)
+         (find-heights-from-bottom unfinished-bridge-field (group-coords unfinished-bridge-field))))))
+
+(describe
  "count-holes"
  (it "should return holes for finished placement"
      (should=
       13
-      (count-holes finished-bridge-field (group-coords finished-bridge-field))))
+      (count-holes
+       (find-holes-x
+        (group-coords finished-bridge-field)
+        (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field))))))
  (it "should return holes for many"
      (should=
       [10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 11 11 11 11 10 10 10 13 10 10 10 13 10 10 10 13 10 10 10 13]
       (map
        (fn [{:keys [state]}]
-         (count-holes state (group-coords state)))
+         (count-holes
+          (find-holes-x
+           (group-coords state)
+           (find-heights-from-bottom state (group-coords state)))))
        (moves/find-piece-placements (placement/to-move unfinished-bridge-field))))))
 
 (describe
@@ -155,15 +215,11 @@
  "count-horizontal-fullness"
  (it "should return "
      (should=
-      (+ (* 6 6)
-         (* 2 2)
-         (* 4 4))
+      (+ 6 2 4)
       (count-horizontal-fullness (group-coords unfinished-bridge-field))))
  (it "should return "
      (should=
-      (+ (* 6 6)
-         (* 3 (* 2 2))
-         (* 4 4))
+      (+ 6 2 4 2 2)
       (count-horizontal-fullness (group-coords finished-bridge-field)))))
 
 (describe
@@ -195,3 +251,22 @@
       (count-reverse-field-hole-depth-sum
        unfinished-bridge-field
        (count-field-hole-depths unfinished-bridge-field (group-coords unfinished-bridge-field))))))
+
+#_(describe
+ "count-hole-toxicity"
+ (it "should return "
+     (should=
+      (+ (* 6 6)
+         (* 2 2)
+         (* 4 4))
+      (count-hole-toxicity
+       (find-heights-from-bottom unfinished-bridge-field (group-coords unfinished-bridge-field))
+       (group-coords unfinished-bridge-field))))
+ (it "should return "
+     (should=
+      (+ (* 6 6)
+         (* 3 (* 2 2))
+         (* 4 4))
+      (count-hole-toxicity
+       (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field))
+       (group-coords finished-bridge-field)))))

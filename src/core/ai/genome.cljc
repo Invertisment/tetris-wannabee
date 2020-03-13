@@ -63,12 +63,13 @@
   (let [{:keys [score]} state
         grouped-coords (move-analysis/group-coords state)
         heights-from-bottom (move-analysis/find-heights-from-bottom state grouped-coords)
-        hole-depths (move-analysis/count-field-hole-depths state grouped-coords)]
+        hole-depths (move-analysis/count-field-hole-depths state grouped-coords)
+        found-holes (move-analysis/find-holes-x grouped-coords heights-from-bottom)]
     (+
      (* (or (:rows-cleared genome) 0) (or (:lines-cleared score) 0))
      (* (or (:weighted-height genome) 0) (move-analysis/weighted-height heights-from-bottom))
      (* (or (:cumulative-height genome) 0) (move-analysis/cumulative-height heights-from-bottom))
-     (* (or (:holes genome) 0) (move-analysis/count-holes state grouped-coords))
+     (* (or (:holes genome) 0) (move-analysis/count-holes found-holes))
      (* (or (:roughness genome) 0) (move-analysis/field-roughness heights-from-bottom))
      (* (or (:flatness genome) 0) (move-analysis/field-flatness heights-from-bottom))
      (* (or (:well-depth-at-wall  genome) 0) (move-analysis/well-depth-at-wall heights-from-bottom))

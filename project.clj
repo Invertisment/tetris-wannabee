@@ -2,7 +2,8 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.520"] ; 1.9.542 does not work
                  [org.clojure/core.async "0.4.500"]
-                 [cljsjs/fabric "1.5.0-1"]]
+                 [cljsjs/fabric "1.5.0-1"]
+                 [flames "0.4.0"]]
 
   :profiles {:dev
              {:dependencies [[speclj "3.3.2"]
