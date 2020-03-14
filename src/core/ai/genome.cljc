@@ -37,8 +37,8 @@
    :well-depth-at-wall-minus-4
    ;; deepest side hole 1px from sides
    :well-depth-one-px-from-wall-minus-4
-   ;;sum of hole depths subtracted from field height (consecutive too)
-   :reverse-field-hole-depth-sum
+   ;;;;sum of hole depths subtracted from field height (consecutive too)
+   ;;:reverse-field-hole-depth-sum
    ;;;; measure how full the lines are (^2 is needed to counteract placement anywhere)
    :horizontal-fullness])
 
@@ -61,23 +61,23 @@
 
 (defn calculate-score [genome {:keys [state] :as move}]
   (let [{:keys [score]} state
-        grouped-coords (move-analysis/group-coords state)
-        heights-from-bottom (move-analysis/find-heights-from-bottom state grouped-coords)
-        hole-depths (move-analysis/count-field-hole-depths state grouped-coords)
-        found-holes (move-analysis/find-holes-x grouped-coords heights-from-bottom)]
+        heights-from-bottom (move-analysis/find-heights-from-bottom state)
+        ;;hole-depths (move-analysis/count-field-hole-depths state)
+        ;;found-holes (move-analysis/find-holes-x state heights-from-bottom)
+        ]
     (+
      (* (or (:rows-cleared genome) 0) (or (:lines-cleared score) 0))
      (* (or (:weighted-height genome) 0) (move-analysis/weighted-height heights-from-bottom))
      (* (or (:cumulative-height genome) 0) (move-analysis/cumulative-height heights-from-bottom))
-     (* (or (:holes genome) 0) (move-analysis/count-holes found-holes))
+     ;;(* (or (:holes genome) 0) (move-analysis/count-holes found-holes))
      (* (or (:roughness genome) 0) (move-analysis/field-roughness heights-from-bottom))
      (* (or (:flatness genome) 0) (move-analysis/field-flatness heights-from-bottom))
      (* (or (:well-depth-at-wall  genome) 0) (move-analysis/well-depth-at-wall heights-from-bottom))
      (* (or (:well-depth-one-px-from-wall genome) 0) (move-analysis/well-depth-one-px-from-wall heights-from-bottom))
      (* (or (:well-depth-at-wall-minus-4  genome) 0) (- (move-analysis/well-depth-at-wall heights-from-bottom) 4))
      (* (or (:well-depth-one-px-from-wall-minus-4 genome) 0) (- (move-analysis/well-depth-one-px-from-wall heights-from-bottom) 4))
-     (* (or (:reverse-field-hole-depth-sum genome) 0) (move-analysis/count-reverse-field-hole-depth-sum state hole-depths))
-     (* (or (:horizontal-fullness genome) 0) (move-analysis/count-horizontal-fullness grouped-coords)))))
+     #_(* (or (:reverse-field-hole-depth-sum genome) 0) (move-analysis/count-reverse-field-hole-depth-sum state hole-depths))
+     (* (or (:horizontal-fullness genome) 0) (move-analysis/count-horizontal-fullness state)))))
 
 (defn crossover [mum-genome dad-genome]
   (assoc

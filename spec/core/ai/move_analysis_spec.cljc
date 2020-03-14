@@ -29,60 +29,41 @@
     move/right move/right move/right move/right move/bottom]))
 
 (describe
- "group-coords"
- (it "should return grouped coords"
+ "find-heights-from-bottom"
+ (it "find height 1"
      (should=
-      {:by-x
-       {0 [[0 20]],
-        7 [[7 19]],
-        1 [[1 20] [1 21]],
-        4 [[4 20]],
-        6 [[6 19]],
-        3 [[3 20]],
-        2 [[2 20] [2 21]],
-        9 [[9 17] [9 18]],
-        5 [[5 19] [5 20]],
-        8 [[8 17] [8 18] [8 19]]}
-       :by-y
-       {20 [[0 20] [1 20] [2 20] [3 20] [4 20] [5 20]],
-        21 [[1 21] [2 21]],
-        19 [[5 19] [6 19] [7 19] [8 19]],
-        17 [[8 17] [9 17]],
-        18 [[8 18] [9 18]]}}
-      (group-coords finished-bridge-field)))
- (it "should return grouped coords"
+      [2 2 2 2 2 3 3 3 5 5]
+      (find-heights-from-bottom finished-bridge-field)))
+ (it "find height 2"
      (should=
-      {:by-x
-       {0 [[0 20]],
-        7 [[7 19]],
-        1 [[1 20] [1 21]],
-        4 [[4 20]],
-        6 [[6 19]],
-        3 [[3 20]],
-        2 [[2 20] [2 21]],
-        5 [[5 19] [5 20]],
-        8 [[8 19]]
-        9 nil}
-       :by-y
-       {20 [[0 20] [1 20] [2 20] [3 20] [4 20] [5 20]],
-        21 [[1 21] [2 21]],
-        19 [[5 19] [6 19] [7 19] [8 19]]}}
-      (group-coords unfinished-bridge-field))))
+      [2 2 2 2 2 3 3 3 3 0]
+      (find-heights-from-bottom unfinished-bridge-field))))
 
 (describe
+ "find-relative-heights"
+ (it "find relative height 1"
+     (should=
+      [0 0 0 0 0 1 1 1 3 3]
+      (find-relative-heights (find-heights-from-bottom finished-bridge-field))))
+ (it "find relative height 2"
+     (should=
+      [2 2 2 2 2 3 3 3 3 0]
+      (find-relative-heights (find-heights-from-bottom unfinished-bridge-field)))))
+
+#_(describe
  "find-holes-x"
  (it "should find-holes-x 1"
      (should=
       [1 0 0 1 1 1 2 2 2 3]
       (find-holes-x
        (group-coords finished-bridge-field)
-       (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field)))))
+       (find-heights-from-bottom finished-bridge-field))))
  (it "should find-holes-x 2"
      (should=
       [1 0 0 1 1 1 2 2 2 0]
       (find-holes-x
        (group-coords unfinished-bridge-field)
-       (find-heights-from-bottom unfinished-bridge-field (group-coords unfinished-bridge-field))))))
+       (find-heights-from-bottom unfinished-bridge-field)))))
 
 (describe
  "remove-lower-holes"
@@ -123,7 +104,7 @@
          (group-coords unfinished-bridge-field)
          (find-heights-from-bottom unfinished-bridge-field (group-coords unfinished-bridge-field))))))
 
-(describe
+#_(describe
  "count-holes"
  (it "should return holes for finished placement"
      (should=
@@ -144,33 +125,22 @@
        (moves/find-piece-placements (placement/to-move unfinished-bridge-field))))))
 
 (describe
- "find-heights-from-bottom"
- (it "should return height from bottom"
-     (should=
-      [2 2 2 2 2 3 3 3 5 5]
-      (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field))))
- (it "should return height from bottom"
-     (should=
-      [2 2 2 2 2 3 3 3 3 0]
-      (find-heights-from-bottom unfinished-bridge-field (group-coords unfinished-bridge-field)))))
-
-(describe
  "weighted-height"
  (it "should return height of the highest column"
      (should=
       5
-      (weighted-height (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field)))))
+      (weighted-height (find-heights-from-bottom finished-bridge-field))))
  (it "should return height of the highest column"
      (should=
-      3
-      (weighted-height (find-heights-from-bottom finished-bridge-field (group-coords unfinished-bridge-field)))))
+      5
+      (weighted-height (find-heights-from-bottom finished-bridge-field))))
  (it "should return height of the highest column"
      (should=
       (concat (repeat 16 4)
               (repeat 20 5))
       (map
        (fn [{:keys [state]}]
-         (weighted-height (find-heights-from-bottom state (group-coords state))))
+         (weighted-height (find-heights-from-bottom state)))
        (moves/find-piece-placements (placement/to-move unfinished-bridge-field))))))
 
 (describe
@@ -179,13 +149,13 @@
      (should=
       3
       (field-roughness
-       (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field)))))
+       (find-heights-from-bottom finished-bridge-field))))
  (it "should return height of the highest column"
      (should=
       [6 8 8 6 6 8 8 6 6 8 8 6 6 8 8 6 8 8 8 8 8 8 8 3 8 8 8 3 8 8 8 3 8 8 8 3]
       (map
        (fn [{:keys [state]}]
-         (field-roughness (find-heights-from-bottom state (group-coords state))))
+         (field-roughness (find-heights-from-bottom state)))
        (moves/find-piece-placements (placement/to-move unfinished-bridge-field)))))
  (it "should return height of the highest column"
      (should=
@@ -213,16 +183,16 @@
 
 (describe
  "count-horizontal-fullness"
- (it "should return "
+ (it "fullness 1"
      (should=
-      (+ 6 2 4)
-      (count-horizontal-fullness (group-coords unfinished-bridge-field))))
- (it "should return "
+      (/ 30 (+ 6 2 4))
+      (count-horizontal-fullness unfinished-bridge-field)))
+ (it "fullness 2"
      (should=
-      (+ 6 2 4 2 2)
-      (count-horizontal-fullness (group-coords finished-bridge-field)))))
+      (/ 50 (+ 6 2 4 2 2))
+      (count-horizontal-fullness finished-bridge-field))))
 
-(describe
+#_(describe
  "count-field-hole-depths"
  (it "should return depths to each hole"
      (should=
@@ -237,7 +207,7 @@
       []
       (count-field-hole-depths finished-bridge-field nil))))
 
-(describe
+#_(describe
  "count-reverse-field-hole-depth-sum"
  (it "should return depths to each hole"
      (should=

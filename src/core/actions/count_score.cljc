@@ -12,8 +12,7 @@
    {:lines-cleared
     (-> field-with-line-clear-data
         :line-clear-data
-        :full-line-ids
-        count
+        :count
         (+ (or (-> field-with-line-clear-data
                    :score
                    :lines-cleared)

@@ -46,6 +46,12 @@
 (def z-piece
   {:piece #{[3 0] [4 0] [4 1] [5 1]} :piece-bounds bounds-3x3 :color "orangered"})
 
+(def empty-row
+  (vec
+   (map
+    (constantly nil)
+    (range field-width))))
+
 (defn apply-color [{:keys [piece color] :as piece-data}]
   (assoc
     piece-data

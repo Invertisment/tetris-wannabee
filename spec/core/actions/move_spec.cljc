@@ -64,22 +64,6 @@
                             #()
                             {})
                            1)))))
- (it "should create :piece"
-     (should= {:field #{}
-               :score {}
-               :levels const/gravity-intervals
-               :game-state :started
-               :width const/field-width,
-               :height const/field-height}
-              (remove-random-elements
-               (limit-next-pieces
-                (move/new-game
-                 (constantly true)
-                 identity
-                 #()
-                 {})
-                1))
-              ))
  (it "should generate two distinct pieces"
      (should-not
       (let
@@ -122,4 +106,16 @@
                   identity
                   gravity-fn-call-counter
                   {})
-                 1))))))
+                 1)))))
+ (it "should have many nils in :field"
+     (should= {nil 220}
+              (frequencies
+               (reduce
+                concat
+                (:field (limit-next-pieces
+                         (move/new-game
+                          (constantly true)
+                          identity
+                          #()
+                          {})
+                         1)))))))

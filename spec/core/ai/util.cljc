@@ -8,14 +8,16 @@
 
 (def square-piece (prepare-piece const/square-piece))
 (def line-piece (prepare-piece const/line-piece))
+(def l-piece (prepare-piece const/l-piece))
+(def j-piece (prepare-piece const/j-piece))
 (def square-piece (prepare-piece const/square-piece))
 (def z-piece (prepare-piece const/z-piece))
 (def empty-field
   {:width 10,
-   :field #{},
+   :field (vec (repeat const/field-height const/empty-row)),
    :game-state :started,
    :score {:lines-cleared 0}
-   :height 22})
+   :height const/field-height})
 
 (defn new-move [first-piece & other-pieces]
   (placement/to-move

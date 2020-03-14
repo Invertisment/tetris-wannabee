@@ -11,9 +11,9 @@
       [:left :left :left :left :bottom]
       (:path (pick-best-piece-placement
               {}
-              (merge
-               util/empty-field
-               util/square-piece)))))
+              (util/new-field
+               [util/square-piece]
+               [])))))
  (it "should take first when undecidable line"
      (should=
       [:left :left :left :bottom]

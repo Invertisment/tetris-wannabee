@@ -10,22 +10,22 @@
       (<= 0 x)
       (<= 0 y))))
 
-(defn overlay? [shape-a shape-b]
+(defn overlay? [field shape]
   (some
-    (set (map :coord shape-a))
-    (map :coord shape-b)))
+   (fn [coord]
+     (get-in field (reverse coord)))
+   (map :coord shape)))
 
-(defn possible-placement? [map-width map-height shape-a shape-b]
+(defn possible-placement? [map-width map-height field shape]
   (let
     [valid? (partial coord? map-width map-height)]
     (and
-      (every? valid? shape-b)
-      (every? valid? shape-a)
-      (not (overlay? shape-a shape-b)))))
+      (every? valid? shape)
+      (not (overlay? field shape)))))
 
 (defn field-valid? [{:keys [width height piece field] :as state}]
   (when (not-any? nil? [width height piece field])
-    (possible-placement? width height piece field)))
+    (possible-placement? width height field piece)))
 
 (defn validate [valid? field]
   (when (valid? field)

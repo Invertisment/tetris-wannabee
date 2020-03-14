@@ -32,8 +32,7 @@
   (make-single-move move-fn path-key move))
 
 (defn valid-move? [{:keys [state] :as move}]
-  (when (v/field-valid? state)
-    move))
+  (v/field-valid? state))
 
 (defn propagate-move-iterate [move-fn path-key move iterations]
   (filter

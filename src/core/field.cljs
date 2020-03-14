@@ -90,9 +90,17 @@
 
 (defn get-blocks [state]
   (concat
-    (:piece state)
-    (get-debug-overlay state)
-    (:field state)))
+   (:piece state)
+   (get-debug-overlay state)
+   (->> (:field state)
+        (map-indexed (fn [vertical-index line]
+                       (map-indexed
+                        (fn [horizontal-index maybe-color]
+                          (when maybe-color
+                            {:coord [horizontal-index vertical-index] :color maybe-color}))
+                        line)))
+        (reduce concat)
+        (remove nil?))))
 
 (defn get-diff [old-visibles new-visibles]
   (let
@@ -110,14 +118,6 @@
     #(.remove %1 %2)
     canvas
     (vals (:rects-to-hide show-remove-diff))))
-
-(defn diff-show-hide [field-pixels state]
-  (let
-      [{:keys [show hide]} (get-diff (keys field-pixels) (get-blocks state))
-       keyed-rects-to-show (create-rects show)
-       to-remove (select-keys field-pixels hide)]
-    {:keyed-rects-to-show keyed-rects-to-show
-     :to-remove to-remove}))
 
 (defn get-diff-blocks [field-pixels blocks]
   (let

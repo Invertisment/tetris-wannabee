@@ -1,30 +1,26 @@
 (ns core.ai.move-analysis
   (:require [clojure.set :as set]))
 
-(defn group-coords [{:keys [width] :as state}]
-  (when (nil? width)
-    (println "group-coords" (keys state)
-             (:field state)
-             (:piece state)))
-  (let [coords (->> (:field state)
-                    (map :coord)
-                    sort)]
-    {:by-x (reduce
-            (fn [group id]
-              (assoc group id (group id)))
-            (group-by first coords)
-            (range 0 width))
-     :by-y (group-by second coords)}))
+(defn find-heights-from-bottom [{:keys [width height field] :as state}]
+  (->> (first field)
+       (map (constantly (range height)))
+       (map-indexed
+        (fn [width-index height-range]
+          (or (some
+               (fn [height-index]
+                 (when (nth (nth field height-index) width-index)
+                   height-index))
+               height-range)
+              height)))
+       (map #(- height %))))
 
-(defn find-heights-from-bottom [{:keys [height] :as state} {:keys [by-x] :as grouped-coords}]
-  (->> by-x
-       (sort-by first)
-       (map (fn [[i line]]
-              (let [tallest-coord (reduce min (cons height (map second line)))
-                    height-from-bottom (- height tallest-coord)]
-                height-from-bottom)))))
+(defn find-relative-heights [heights-from-bottom]
+  (->> heights-from-bottom
+       ((fn [li]
+          (let [m (reduce min li)]
+            (map #(- % m) li))))))
 
-(defn find-holes-x [{:keys [by-x] :as grouped-coords} heights-from-bottom]
+(defn find-holes-x [{:keys [by-x]} heights-from-bottom]
   (->> heights-from-bottom
        (map-indexed (fn [i height]
                       (- height (count (by-x i)))))))
@@ -58,9 +54,9 @@
 
 ;; absolute height of the highest column to the power of 2
 (defn weighted-height [heights-from-bottom]
-(->> heights-from-bottom
-     #_(map #(* % %))
-     (reduce max 0)))
+  (->> heights-from-bottom
+       #_(map #(* % %))
+       (reduce max 0)))
 
 ;; sum of all block heights
 (defn cumulative-height [heights-from-bottom]
@@ -120,19 +116,24 @@
             (range))
            (remove (fn [[x _]] (block-x-set x)))))))
 
-(defn count-field-hole-depths [{:keys [height] :as state} {:keys [by-x] :as grouped-coords}]
+#_(defn count-field-hole-depths [{:keys [height] :as state} {:keys [by-x] :as grouped-coords}]
   (->> (vals by-x)
        (map #(map second %))
        (mapcat (partial count-hole-depths state))))
 
-(defn count-reverse-field-hole-depth-sum [{:keys [height] :as state} hole-depths]
+#_(defn count-reverse-field-hole-depth-sum [{:keys [height] :as state} hole-depths]
   (->> hole-depths
        (map (fn [[index depth]] (* (- height index) depth)))
        (reduce +)))
 
 ;; measure how full the lines are (^2 is needed to counteract placement anywhere)
-(defn count-horizontal-fullness [{:keys [by-y] :as grouped-coords}]
-  (->> by-y
+(defn count-horizontal-fullness [{:keys [width field]}]
+  (let [items (->> field
+                   (map (partial remove nil?))
+                   (remove empty?))]
+    (/ (* (count items) width)
+       (reduce + (map count items))))
+  #_(->> by-y
        (map (comp count second))
        (reduce +)))
 

@@ -74,7 +74,7 @@
 
 (defn new-field [next-pieces]
   (merge
-   {:field #{}
+   {:field (vec (repeat const/field-height const/empty-row))
     :next-pieces (rest next-pieces)
     :score {}
     :levels const/gravity-intervals

@@ -1,9 +1,11 @@
 (ns core.state
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [cljs.core.async :refer [chan sliding-buffer]]
-            [core.constants :refer [field-width field-height gravity-intervals]]))
+            [core.constants :refer [field-width field-height gravity-intervals empty-row]]))
 
-(def field (atom {:field #{} :width field-width
+;; This initial value is used by initial time mechanism but gets deleted after new game
+(def field (atom {:field (vec (repeat 10 empty-row))
+                  :width field-width
                   :height field-height
                   :game-state :not-started
                   :levels gravity-intervals
