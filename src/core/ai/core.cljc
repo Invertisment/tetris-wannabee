@@ -36,9 +36,9 @@
                    (reverse)
                    (take (quot population-size 2)))
               elites (map first elites-with-score)]
-          (println "Generation:"generation
-                   "\t Best 5 performances:"(map get-score (take 5 elites-with-score))
-                   "\t Genome:"(first elites))
+          (println "Generation:" generation
+                   "\t Best performances:" (map get-score (take 10 elites-with-score))
+                   "\t Genome:" (first elites))
           (recur
            (->> (concat
                  elites
@@ -46,5 +46,3 @@
                 (take population-size))
            (inc generation)))
         genomes))))
-
-#_(train 50 50 500 pmap)

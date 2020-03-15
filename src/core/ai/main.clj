@@ -28,6 +28,18 @@
     (when (.exists (io/file filename))
       (read-string (slurp filename)))))
 
+(defn future-map [f li]
+  (->> li
+       (map #(future (f %)))
+       doall
+       (map deref)
+       #_(map-indexed
+        (fn [i ref]
+          (let [out (deref ref)]
+            (println "Finished" i)
+            out)))))
+#_(fmap inc [1 2 3 4 5])
+
 (defn -main [& args]
   (println "Version:" (get-git-revision))
   (let [deserialized (deserialize)
@@ -43,4 +55,5 @@
      genomes
      max-tetrominoes-count
      (partial serialize-fn max-generations population-size max-tetrominoes-count)
-     pmap)))
+     #_pmap
+     future-map)))

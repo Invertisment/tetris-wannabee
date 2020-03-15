@@ -19,8 +19,8 @@
    :weighted-height
    ;; sum of all block heights
    :cumulative-height
-   ;; sum of all empty cells underground
-   :holes
+   ;;;; sum of all empty cells underground
+   ;;:holes
    ;; sum of absolute differences between neighbours
    ;; if the game field is empty this is zero
    ;; except one outlier (for deepest well)
@@ -40,7 +40,18 @@
    ;;;;sum of hole depths subtracted from field height (consecutive too)
    ;;:reverse-field-hole-depth-sum
    ;;;; measure how full the lines are (^2 is needed to counteract placement anywhere)
-   :horizontal-fullness])
+   :horizontal-fullness
+   ;; Relative steps between two adjacent pixels
+   :step-0
+   :step-1
+   :step-2
+   :step-3
+   :step-4
+   :step-5
+   :step-more
+   ;; fancy hole stuff
+   :hole-setback
+   ])
 
 ;; https://www.youtube.com/watch?v=xLHCMMGuN0Q
 (defn new-initial-genome []
@@ -59,25 +70,51 @@
 (defn create-initial-population [population-size]
   (repeatedly population-size new-initial-genome))
 
+(defn genome-fn-continuous [genome]
+  (fn [genome-key value]
+    (if value
+      (* (or (genome-key genome) 0)
+         value)
+      0)))
+
 (defn calculate-score [genome {:keys [state] :as move}]
-  (let [{:keys [score]} state
+  (let [g (genome-fn-continuous genome)
+        {:keys [score]} state
         heights-from-bottom (move-analysis/find-heights-from-bottom state)
+        relative-heights (move-analysis/find-relative-heights (move-analysis/find-heights-from-bottom state))
+        grouped-stepcounts (move-analysis/count-grouped-step-counts (move-analysis/count-steps heights-from-bottom)
+                                                                    :step-more
+                                                                    :step-0
+                                                                    :step-1
+                                                                    :step-2
+                                                                    :step-3
+                                                                    :step-4
+                                                                    :step-5)
         ;;hole-depths (move-analysis/count-field-hole-depths state)
         ;;found-holes (move-analysis/find-holes-x state heights-from-bottom)
         ]
     (+
-     (* (or (:rows-cleared genome) 0) (or (:lines-cleared score) 0))
-     (* (or (:weighted-height genome) 0) (move-analysis/weighted-height heights-from-bottom))
-     (* (or (:cumulative-height genome) 0) (move-analysis/cumulative-height heights-from-bottom))
+     (g :rows-cleared (* (:lines-cleared score) (:lines-cleared score)))
+     (g :weighted-height (move-analysis/weighted-height relative-heights))
+     (g :cumulative-height (move-analysis/cumulative-height heights-from-bottom))
      ;;(* (or (:holes genome) 0) (move-analysis/count-holes found-holes))
-     (* (or (:roughness genome) 0) (move-analysis/field-roughness heights-from-bottom))
-     (* (or (:flatness genome) 0) (move-analysis/field-flatness heights-from-bottom))
-     (* (or (:well-depth-at-wall  genome) 0) (move-analysis/well-depth-at-wall heights-from-bottom))
-     (* (or (:well-depth-one-px-from-wall genome) 0) (move-analysis/well-depth-one-px-from-wall heights-from-bottom))
-     (* (or (:well-depth-at-wall-minus-4  genome) 0) (- (move-analysis/well-depth-at-wall heights-from-bottom) 4))
-     (* (or (:well-depth-one-px-from-wall-minus-4 genome) 0) (- (move-analysis/well-depth-one-px-from-wall heights-from-bottom) 4))
-     #_(* (or (:reverse-field-hole-depth-sum genome) 0) (move-analysis/count-reverse-field-hole-depth-sum state hole-depths))
-     (* (or (:horizontal-fullness genome) 0) (move-analysis/count-horizontal-fullness state)))))
+     (g :roughness (move-analysis/field-roughness heights-from-bottom))
+     (g :flatness (move-analysis/field-flatness heights-from-bottom))
+     (g :well-depth-at-wall (move-analysis/well-depth-at-wall heights-from-bottom))
+     (g :well-depth-one-px-from-wall (move-analysis/well-depth-one-px-from-wall heights-from-bottom))
+     (g :well-depth-at-wall-minus-4 (- (move-analysis/well-depth-at-wall heights-from-bottom) 4))
+     (g :well-depth-one-px-from-wall-minus-4 (- (move-analysis/well-depth-one-px-from-wall heights-from-bottom) 4))
+     #_(g :reverse-field-hole-depth-sum (move-analysis/count-reverse-field-hole-depth-sum state hole-depths))
+     (g :horizontal-fullness (move-analysis/count-horizontal-space state))
+     (g :hole-setback (move-analysis/count-hole-setback state heights-from-bottom))
+     (reduce + 0
+             (map
+              (fn [stepcount-key]
+                (g stepcount-key (stepcount-key grouped-stepcounts)))
+              (keys grouped-stepcounts))))))
+
+#_(let [g (genome-fn-continuous {:genome-key 1})]
+    (g :genome-key -5))
 
 (defn crossover [mum-genome dad-genome]
   (assoc

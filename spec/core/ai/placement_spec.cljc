@@ -31,29 +31,20 @@
 
 (describe
  "apply-pieces"
- (it "should list possible moves"
+ (it "should apply moves"
      (should=
-      {:width 10,
-       :field
-       #{{:coord [3 21], :color "cyan"} {:coord [3 19], :color "cyan"}
-         {:coord [1 20], :color "cyan"} {:coord [1 21], :color "cyan"}
-         {:coord [0 19], :color "cyan"} {:coord [2 20], :color "cyan"}
-         {:coord [1 19], :color "cyan"} {:coord [0 21], :color "cyan"}
-         {:coord [2 21], :color "cyan"} {:coord [2 19], :color "cyan"}
-         {:coord [3 20], :color "cyan"} {:coord [0 20], :color "cyan"}},
-       :game-state :ended,
-       :score {:lines-cleared 0},
-       :height 22,
-       :color "cyan",
-       :next-pieces nil}
-      (apply-pieces
-       {}
-       (assoc
-        (merge
-         util/empty-field
-         util/line-piece)
-        :next-pieces
-        (take 2 (repeat util/line-piece))))))
+      {nil 208, "cyan" 12}
+      (->> (apply-pieces
+            {}
+            (assoc
+             (merge
+              util/empty-field
+              util/line-piece)
+             :next-pieces
+             (take 2 (repeat util/line-piece))))
+           (:field)
+           (reduce concat)
+           (frequencies))))
  (it "should clear 2 lines with 10 squares as input"
      (should=
       {:lines-cleared 2}

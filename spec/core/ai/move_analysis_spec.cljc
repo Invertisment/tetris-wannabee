@@ -182,15 +182,15 @@
       (count-hole-depths finished-bridge-field [17 18 20]))))
 
 (describe
- "count-horizontal-fullness"
+ "count-horizontal-space"
  (it "fullness 1"
      (should=
-      (/ 30 (+ 6 2 4))
-      (count-horizontal-fullness unfinished-bridge-field)))
+      (/ (+ 6 2 4) 30)
+      (count-horizontal-space unfinished-bridge-field)))
  (it "fullness 2"
      (should=
-      (/ 50 (+ 6 2 4 2 2))
-      (count-horizontal-fullness finished-bridge-field))))
+      (/ (+ 6 2 4 2 2) 50)
+      (count-horizontal-space finished-bridge-field))))
 
 #_(describe
  "count-field-hole-depths"
@@ -240,3 +240,62 @@
       (count-hole-toxicity
        (find-heights-from-bottom finished-bridge-field (group-coords finished-bridge-field))
        (group-coords finished-bridge-field)))))
+
+(describe
+ "count-steps"
+ (it "should return grouped steps"
+     (should=
+      {0 7
+       1 1
+       3 1}
+      (count-steps (find-heights-from-bottom unfinished-bridge-field))))
+ (it "should return grouped steps"
+     (should=
+      {0 7
+       1 1
+       2 1}
+      (count-steps (find-heights-from-bottom finished-bridge-field)))))
+
+(describe
+ "count-grouped-step-counts"
+ (it "should return grouped steps 1"
+     (should=
+      {:more 9}
+      (count-grouped-step-counts (count-steps (find-heights-from-bottom unfinished-bridge-field)) :more)))
+ (it "should return grouped steps 2"
+     (should=
+      {:zero 7
+       :more 2}
+      (count-grouped-step-counts (count-steps (find-heights-from-bottom unfinished-bridge-field)) :more :zero)))
+ (it "should return grouped steps 3"
+     (should=
+      {:zero 7
+       :one 1
+       :more 1}
+      (count-grouped-step-counts (count-steps (find-heights-from-bottom unfinished-bridge-field)) :more :zero :one)))
+ (it "should return grouped steps 4"
+     (should=
+      {:more 9}
+      (count-grouped-step-counts (count-steps (find-heights-from-bottom finished-bridge-field)) :more)))
+ (it "should return grouped steps 5"
+     (should=
+      {:zero 7
+       :more 2}
+      (count-grouped-step-counts (count-steps (find-heights-from-bottom finished-bridge-field)) :more :zero)))
+ (it "should return grouped steps 6"
+     (should=
+      {:zero 7
+       :one 1
+       :more 1}
+      (count-grouped-step-counts (count-steps (find-heights-from-bottom finished-bridge-field)) :more :zero :one))))
+
+(describe
+ "count-hole-setback"
+ (it "should return grouped steps 1"
+     (should=
+      10
+      (count-hole-setback unfinished-bridge-field (find-heights-from-bottom unfinished-bridge-field))))
+ (it "should return grouped steps 4"
+     (should=
+      10
+      (count-hole-setback unfinished-bridge-field (find-heights-from-bottom finished-bridge-field)))))

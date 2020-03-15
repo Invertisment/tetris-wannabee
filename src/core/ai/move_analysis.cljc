@@ -127,12 +127,15 @@
        (reduce +)))
 
 ;; measure how full the lines are (^2 is needed to counteract placement anywhere)
-(defn count-horizontal-fullness [{:keys [width field]}]
-  (let [items (->> field
+(defn count-horizontal-space [{:keys [width field]}]
+  (let [lines (->> field
                    (map (partial remove nil?))
-                   (remove empty?))]
-    (/ (* (count items) width)
-       (reduce + (map count items))))
+                   (remove empty?))
+        squares-used (reduce + (map count lines))]
+    (if (= squares-used 0)
+      0
+      (/ squares-used
+         (* (count lines) width))))
   #_(->> by-y
        (map (comp count second))
        (reduce +)))
@@ -140,3 +143,51 @@
 ;; count lines needed to clear to reach the holes
 (defn count-hole-toxicity [heights-from-bottom {:keys [by-x by-y] :as grouped-coords}]
   )
+
+(defn abs [n]
+  (if (< 0 n)
+    n
+    (- n)))
+#_(abs -1)
+
+;; count steps for all possible three-block windows
+(defn count-steps [any-relative-heights]
+  (->> any-relative-heights
+       (partition 2 1)
+       (map (comp abs (partial apply -)))
+       (frequencies)))
+
+;; count steps for all possible three-block windows
+(defn count-grouped-step-counts [steps more-key & genome-keys]
+  #_(map steps (filter #(>= % (count genome-keys)) (keys steps)))
+  (let [more-size (reduce + (map steps (filter #(>= % (count genome-keys)) (keys steps))))
+        dynamic (into
+                 {}
+                 (map-indexed
+                  (fn [i k]
+                    [k (steps i)])
+                  genome-keys))
+        ]
+    (assoc
+     dynamic
+     more-key more-size)))
+
+;; 1. find all holes
+;; 2. add their heights
+(defn count-hole-setback [{:keys [height field]} heights-from-bottom]
+  (->> field
+       (apply map vector)
+       (map (fn [column]
+              (->> column
+                   (partition 2 1)
+                   (map-indexed
+                    (fn [i [up bottom]]
+                      (if (and up (not bottom))
+                        (dec (- height i))
+                        0))))))
+       (reduce concat)
+       (reduce +)
+       #_(map-indexed
+          (fn [vertical-index n]
+            [vertical-index (partition 2 1 n)]))
+       ))

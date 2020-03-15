@@ -25,7 +25,8 @@
       {:field [[nil nil nil nil nil]
                [nil nil nil nil nil]
                [nil nil nil nil nil]],
-       :height 3}
+       :height 3
+       :line-clear-data {:count 0}}
       (cl/remove-full-lines
        {:field
         [[nil nil nil nil nil]
@@ -39,7 +40,8 @@
         [nil nil nil nil nil nil nil nil nil nil]
         [nil nil nil nil nil nil nil nil nil nil]
         [nil nil nil nil nil]]
-       :height 4}
+       :height 4
+       :line-clear-data {:count 3}}
       (cl/remove-full-lines
        {:field
         [[nil nil nil nil nil]]
@@ -54,7 +56,8 @@
         [nil nil "c" nil nil]
         [nil nil "d" nil nil]
         [nil nil "e" nil nil]]
-       :height 7}
+       :height 7
+       :line-clear-data {:count 3}}
       (cl/remove-full-lines
        {:field
         [[nil nil "b" nil nil]

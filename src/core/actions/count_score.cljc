@@ -6,6 +6,7 @@
     :line-clear-data))
 
 (defn add-cleared-lines [field-with-line-clear-data]
+  field-with-line-clear-data
   (assoc
    field-with-line-clear-data
    :score
@@ -13,6 +14,7 @@
     (-> field-with-line-clear-data
         :line-clear-data
         :count
+        ((fn [i] (or i 0)))
         (+ (or (-> field-with-line-clear-data
                    :score
                    :lines-cleared)
