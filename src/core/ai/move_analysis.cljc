@@ -172,22 +172,21 @@
      dynamic
      more-key more-size)))
 
-;; 1. find all holes
-;; 2. add their heights
-(defn count-hole-setback [{:keys [height field]} heights-from-bottom]
-  (->> field
-       (apply map vector)
-       (map (fn [column]
-              (->> column
-                   (partition 2 1)
-                   (map-indexed
-                    (fn [i [up bottom]]
-                      (if (and up (not bottom))
-                        (dec (- height i))
-                        0))))))
-       (reduce concat)
-       (reduce +)
-       #_(map-indexed
-          (fn [vertical-index n]
-            [vertical-index (partition 2 1 n)]))
-       ))
+(defn find-hole-coords [{:keys [width height field]}]
+  (->> (for [x-index (range width)
+             y-index (range 0 (dec height))
+             :let [y-inc (inc y-index)]
+             :when (and (-> field
+                            (nth y-index)
+                            (nth x-index))
+                        (not (-> field
+                                 (nth y-inc)
+                                 (nth x-index))))]
+         [x-index y-inc])))
+
+(defn count-hole-setback [{:keys [height]} holes-coords]
+  (->> holes-coords
+       (map #(->> %
+                  (second)
+                  ((partial - height))))
+       (reduce + 0)))

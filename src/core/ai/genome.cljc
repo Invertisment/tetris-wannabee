@@ -106,7 +106,7 @@
      (g :well-depth-one-px-from-wall-minus-4 (- (move-analysis/well-depth-one-px-from-wall heights-from-bottom) 4))
      #_(g :reverse-field-hole-depth-sum (move-analysis/count-reverse-field-hole-depth-sum state hole-depths))
      (g :horizontal-fullness (move-analysis/count-horizontal-space state))
-     (g :hole-setback (move-analysis/count-hole-setback state heights-from-bottom))
+     (g :hole-setback (move-analysis/count-hole-setback state (move-analysis/find-hole-coords state)))
      (reduce + 0
              (map
               (fn [stepcount-key]

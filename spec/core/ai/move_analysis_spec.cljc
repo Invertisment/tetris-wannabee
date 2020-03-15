@@ -294,8 +294,8 @@
  (it "should return grouped steps 1"
      (should=
       10
-      (count-hole-setback unfinished-bridge-field (find-heights-from-bottom unfinished-bridge-field))))
+      (count-hole-setback unfinished-bridge-field (find-hole-coords unfinished-bridge-field))))
  (it "should return grouped steps 4"
      (should=
-      10
-      (count-hole-setback unfinished-bridge-field (find-heights-from-bottom finished-bridge-field)))))
+      13
+      (count-hole-setback finished-bridge-field (find-hole-coords finished-bridge-field)))))
