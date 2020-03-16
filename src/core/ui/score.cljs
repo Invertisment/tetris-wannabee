@@ -19,7 +19,7 @@
   (or (->> field :score :points) 0))
 
 (defn get-level [field]
-  (:id (field-util/get-current-level field)))
+  (:id (field-util/get-level-info field)))
 
 (defn show-score! [field]
   (show!

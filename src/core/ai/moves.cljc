@@ -9,7 +9,6 @@
     (let [moved (move-fn
                  v/field-valid?
                  identity
-                 identity
                  state)]
       (if (or (= (:piece moved) (:piece state))
               (nil? moved))
@@ -24,7 +23,6 @@
   {:path (concat path [path-key])
    :state (move-fn
            v/field-valid?
-           identity
            identity
            state)})
 

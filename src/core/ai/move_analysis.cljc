@@ -144,12 +144,6 @@
 (defn count-hole-toxicity [heights-from-bottom {:keys [by-x by-y] :as grouped-coords}]
   )
 
-(defn abs [n]
-  (if (< 0 n)
-    n
-    (- n)))
-#_(abs -1)
-
 ;; count steps for all possible three-block windows
 (defn count-steps [any-relative-heights]
   (->> any-relative-heights

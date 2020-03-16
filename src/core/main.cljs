@@ -1,6 +1,6 @@
 (ns core.main
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
-  (:require [cljs.core.async :refer [<! chan dropping-buffer]]
+  (:require [cljs.core.async :refer [<! >! chan dropping-buffer go]]
             [core.field :as fi]
             [core.core :refer [create-change-listener start-game]]
             [core.keys :refer [setup-key-listener]]
@@ -25,32 +25,33 @@
       (fi/show! state/field-pixels state)
       (when state (recur)))))
 
-(defn time-loop [time-tick-ch on-tick-listener]
+(defn time-reset-loop [game-tick-ch on-tick-listener]
   (go-loop []
-    (let [tick (<! time-tick-ch)]
-      #_(println tick)
-      (on-tick-listener)
-      (when tick (recur)))))
+    (let [state (<! game-tick-ch)]
+      (time-helper/reset-timer! on-tick-listener state)
+      (when state (recur)))))
 
 (defn -main []
   (let
-      [tick-ch (chan (dropping-buffer 1))
-       gravity-restart-fn (fn [] (time-helper/setup-fall state/field tick-ch))
+      [game-tick-ch (chan (dropping-buffer 1))
+       show-score-update-gravity-fn!
+       (fn [state]
+         (go
+           (>! game-tick-ch state))
+         (score/show-score! state))
        change-listener
        (create-change-listener
         state/field
         state/before-save-piece-ch
         v/field-valid?
-        score/show-score!
-        gravity-restart-fn)]
+        show-score-update-gravity-fn!)]
     (start-game
      state/field
      state/before-save-piece-ch
-     score/show-score!
-     gravity-restart-fn)
+     show-score-update-gravity-fn!)
     (game-loop)
     (ui.ai/setup state/field change-listener)
-    (time-loop tick-ch (gravity/create-pull-down-fn change-listener))
+    (time-reset-loop game-tick-ch (gravity/create-pull-down-fn change-listener))
     (setup-key-listener change-listener)))
 
 (-main)

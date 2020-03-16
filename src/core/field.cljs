@@ -137,13 +137,12 @@
       [{:keys [field-pixels next-piece-pixels hold-piece-pixels]} @field-pixels-atom
        field-pixels-diff (get-diff-blocks field-pixels (get-blocks state))
        next-piece-pixels-diff (get-diff-blocks next-piece-pixels (-> state :next-pieces first :piece))
-       hold-piece-pixels-diff (get-diff-blocks hold-piece-pixels (-> state :hold-piece :piece))
-       ]
+       hold-piece-pixels-diff (get-diff-blocks hold-piece-pixels (-> state :hold-piece :piece))]
     (reset!
      field-pixels-atom
-     (merge
-      {:field-pixels (update-prev-blocks field-pixels field-pixels-diff)}
-      {:next-piece-pixels (update-prev-blocks next-piece-pixels next-piece-pixels-diff)}))
+     {:field-pixels (update-prev-blocks field-pixels field-pixels-diff)
+      :next-piece-pixels (update-prev-blocks next-piece-pixels next-piece-pixels-diff)
+      :hold-piece-pixels (update-prev-blocks hold-piece-pixels hold-piece-pixels-diff) })
     (show-on-canvas!
      main-canvas
      field-pixels-diff)

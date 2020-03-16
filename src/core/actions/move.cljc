@@ -9,32 +9,32 @@
             [core.actions.new-piece :refer [new-piece]]
             [core.actions.count-score :refer [count-score]]))
 
-(defn- stick-and-generate-new-piece [valid? update-score-fn gravity-restart-fn state]
+(defn- stick-and-generate-new-piece [valid? update-score-fn state]
   (new-piece
    valid?
-   (update-score-fn
-    (count-score
-     (stick-piece
-      remove-full-lines
-      state)))))
+   (stick-piece
+    remove-full-lines
+    state)))
 
-(defn right [valid? update-score-fn gravity-restart-fn state]
+(defn right [valid? update-score-fn state]
   (let [moved (piece-op-scalar inc identity state)]
     (when (valid? moved)
       moved)))
 
-(defn left [valid? update-score-fn gravity-restart-fn state]
+(defn left [valid? update-score-fn state]
   (let [moved (piece-op-scalar dec identity state)]
     (when (valid? moved)
       moved)))
 
-(defn down [valid? update-score-fn gravity-restart-fn state]
-  (let [moved (piece-op-scalar identity inc state)]
-    (if (valid? moved)
-      moved
-      (stick-and-generate-new-piece valid? update-score-fn gravity-restart-fn state))))
+(defn down [valid? update-score-fn state]
+  (update-score-fn
+   (count-score
+    (let [moved (piece-op-scalar identity inc state)]
+      (if (valid? moved)
+        moved
+        (stick-and-generate-new-piece valid? update-score-fn state))))))
 
-(defn ensure-hold-from-next [valid? update-score-fn gravity-restart-fn state]
+(defn ensure-hold-from-next [valid? update-score-fn state]
   (if (:hold-piece state)
     state
     (let [[next-piece & next-pieces] (:next-pieces state)
@@ -46,8 +46,8 @@
       (when (valid? hold-state)
         hold-state))))
 
-(defn hold [valid? update-score-fn gravity-restart-fn state]
-  (when-let [hold-state (ensure-hold-from-next valid? update-score-fn gravity-restart-fn state)]
+(defn hold [valid? update-score-fn state]
+  (when-let [hold-state (ensure-hold-from-next valid? update-score-fn state)]
     (let [hold-piece (:hold-piece hold-state)
           current (select-keys hold-state (keys hold-piece))
           current-height (get-piece-height current)]
@@ -56,18 +56,17 @@
        (merge hold-state (set-piece-height hold-piece current-height))
        :hold-piece (set-piece-height current 0)))))
 
-(defn rotate [valid? update-score-fn gravity-restart-fn state]
+(defn rotate [valid? update-score-fn state]
   (rot/rotate-piece-clockwise state))
 
-(defn rotate-counter-clockwise [valid? update-score-fn gravity-restart-fn state]
+(defn rotate-counter-clockwise [valid? update-score-fn state]
   (rot/rotate-piece-counter-clockwise state))
 
-(defn bottom [valid? update-score-fn gravity-restart-fn state]
+(defn bottom [valid? update-score-fn state]
   (when (:piece state)
     (down
      valid?
      update-score-fn
-     gravity-restart-fn
      (last (take-while
             valid?
             (iterate (partial piece-op-scalar identity inc) state))))))
@@ -83,8 +82,7 @@
     :height const/field-height}
    (first next-pieces)))
 
-(defn new-game [valid? update-score-fn gravity-restart-fn state]
-  (gravity-restart-fn)
+(defn new-game [valid? update-score-fn state]
   (update-score-fn
    (merge
     state
@@ -109,11 +107,11 @@
     const/gravity-pull-down #'gravity-down
     #'nop))
 
-(defn move [valid? update-score-fn gravity-restart-fn state key-code]
+(defn move [valid? update-score-fn state key-code]
   (validate
    valid?
-   ((direction key-code) valid? update-score-fn gravity-restart-fn state)))
+   ((direction key-code) valid? update-score-fn state)))
 
-(defn next-field-state [valid? update-score-fn gravity-restart-fn state key-code]
-  (move valid? update-score-fn gravity-restart-fn state key-code))
+(defn next-field-state [valid? update-score-fn state key-code]
+  (move valid? update-score-fn state key-code))
 

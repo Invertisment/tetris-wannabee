@@ -76,32 +76,41 @@
 
 "http://harddrop.com/wiki/Tetris_(NES,_Nintendo)"
 (def gravity-frames-per-second
-  (take
-   29
-   (concat
-    [48 43 38 33 28 23 18 13 8 6]
-    (repeat 3 5)
-    (repeat 3 4)
-    (repeat 3 3)
-    (repeat 10 2)
-    (repeat 1))))
+  (->> (concat
+        [48 43 38 33 28 23 18 13 8 6]
+        (repeat 3 5)
+        (repeat 3 4)
+        (repeat 3 3)
+        (repeat 10 2)
+        #_(repeat 1) ;; added in a fn
+        )
+       #_(take 30)))
 
 (defn adjust-gravity-time [frames-per-interval]
   (-> frames-per-interval
       (* 1000)
       (/ 60.0988)
-      (+ 500)
+      (+ 250)
       int))
 
 (def gravity-intervals
-  (map-indexed
-   (fn [id frames-per-interval]
-     {:id id
-      :timeout (adjust-gravity-time frames-per-interval)})
-   gravity-frames-per-second))
+  (->> gravity-frames-per-second
+       (map-indexed
+        (fn [id frames-per-interval]
+          {:id id
+           :timeout (adjust-gravity-time frames-per-interval)}))
+       (vec)))
 
 (def max-gravity-interval
   {:id "Max"
-   :timeout (adjust-gravity-time (last gravity-frames-per-second))})
+   :timeout (adjust-gravity-time 1)})
 
-(def time-between-levels 12000)
+(defn get-current-level [start-level lines-cleared]
+  (let [level (max start-level (quot lines-cleared 10))]
+    (if (contains? gravity-intervals level)
+      (gravity-intervals level)
+      max-gravity-interval)))
+#_(map (partial get-current-level 0)
+       (range 0 1000 1))
+#_(map (partial get-current-level 5)
+       (range 0 1000 1))
