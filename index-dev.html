@@ -30,14 +30,24 @@
                 <section class=margin>
                   <h4>Controls</h4>
                   <p>
-                    Move: w, a, s, d
+                    Move: a, s, d
+                    <br>
+                    Rotate: w, e, q
                     <br>
                     Hard drop: space
                     <br>
+                    Hold: r
+                    <br>
                     New game: n
                     <br>
-                    Activate AI: m
+                    Activate AI: m (doesn't see next pieces)
+                    <br>
+                    I know what I'm doing: =
                   </p>
+                  <div id="ai-vars-area" style="visibility: hidden; display:flex; flex-direction: column;">
+                      <textarea id="ai-vars-data"></textarea>
+                      <button id="ai-vars-data-update-button">Update the genome!</button>
+                  </div>
                 </section>
             </section>
         </div>

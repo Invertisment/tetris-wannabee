@@ -51,6 +51,7 @@
      show-score-update-gravity-fn!)
     (game-loop)
     (ui.ai/setup state/field change-listener)
+    (ui.ai/setup-genome-controls)
     (time-reset-loop game-tick-ch (gravity/create-pull-down-fn change-listener))
     (setup-key-listener change-listener)))
 
