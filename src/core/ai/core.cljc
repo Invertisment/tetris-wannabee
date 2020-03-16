@@ -21,9 +21,10 @@
       (serialize-fn! generation genomes)
       (if (< generation max-generations)
         (let [field (move/new-field
-                     (repeatedly
-                      tetrominoes-count
-                      (partial piece-gen/generate-new-piece const/pieces)))
+                     (doall
+                      (repeatedly
+                       tetrominoes-count
+                       (partial piece-gen/generate-new-piece const/pieces))))
               elites-with-score
               (->> genomes
                    (map-fn
