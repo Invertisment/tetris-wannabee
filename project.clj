@@ -1,7 +1,7 @@
 (defproject node_test "0.1.0-SNAPSHOT"
-  :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.520"] ; 1.9.542 does not work
-                 [org.clojure/core.async "0.4.500"]
+  :dependencies [[org.clojure/clojure "1.10.1"]
+                 [org.clojure/clojurescript "1.10.597"] ; 1.9.542 does not work
+                 [org.clojure/core.async "1.1.582"]
                  [cljsjs/fabric "1.5.0-1"]
                  [flames "0.4.0"]]
 
