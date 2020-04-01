@@ -4,7 +4,8 @@
             [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.java.shell :as sh]
-            [core.ai.genome :as genome]))
+            [core.ai.genome :as genome]
+            [core.ai.compute-utils :as compute]))
 
 (defn get-git-revision []
   (->> (sh/sh "git" "rev-parse" "--short" "HEAD")
@@ -28,17 +29,14 @@
     (when (.exists (io/file filename))
       (read-string (slurp filename)))))
 
-(defn future-map [f li]
-  (->> li
-       (map #(future (f %)))
-       doall
-       (map deref)
-       #_(map-indexed
-        (fn [i ref]
-          (let [out (deref ref)]
-            (println "Finished" i)
-            out)))))
-#_(fmap inc [1 2 3 4 5])
+(defn ensure-genomes [genome-li population-size]
+  (let [genomes (seq (map genome/ensure-weight-existence genome-li))
+        genome-count (count genomes)]
+    (if (< genome-count population-size)
+      (do
+        (printf "Found %s genomes. Capping to %s.\n" genome-count population-size)
+        (concat genomes (genome/create-initial-population (- population-size genome-count))))
+      genomes)))
 
 (defn -main [& args]
   (println "Version:" (get-git-revision))
@@ -46,14 +44,14 @@
         generation (or (:generation deserialized) 0)
         max-generations (or (:max-generations deserialized) 500)
         population-size (or (:population-size deserialized) 50)
-        genomes (or (seq (map genome/ensure-weight-existence (:genomes deserialized)))
-                    (genome/create-initial-population population-size))
+        genomes (ensure-genomes (:genomes deserialized) population-size)
         max-tetrominoes-count (or (:max-tetrominoes-count deserialized) 1000)]
     (ai-core/train
      generation
      max-generations
      genomes
      max-tetrominoes-count
+     population-size
      (partial serialize-fn max-generations population-size max-tetrominoes-count)
-     #_pmap
-     future-map)))
+     #_compute/future-map
+     compute/back-pressure-map)))

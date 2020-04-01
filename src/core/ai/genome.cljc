@@ -3,7 +3,7 @@
 
 (def mutation-rate 0.2)
 ;; 0.1 to both sides (+ or -)
-(def mutation-step 0.1)
+(def mutation-step 0.5)
 
 (defn new-initial-coefficient []
   (- (rand) 0.5))
@@ -151,3 +151,39 @@
               (map (juxt identity (constantly 0)))
               (into {}))
          genome))
+
+(defn abs [a]
+  (if (> a 0)
+    a
+    (- a)))
+#_(abs -1)
+
+(defn similar? [genome-a threshold genome-b]
+  (->> (keys (dissoc genome-a :id))
+       (map (fn [k] (abs (- (genome-a k 0)
+                            (genome-b k 0)))))
+       (reduce +)
+       (> threshold)))
+#_(similar? {:a 123 :b 1} 1 {:a 124})
+#_(similar? {:a 124} 1 {:a 123 :b 1})
+#_(similar? {:a 123 :b 1} 2 {:a 124})
+
+(defn filter-distinct-by-threshold [threshold best-sorted-genomes]
+  (->> best-sorted-genomes
+       (reduce
+        (fn [out genome]
+          (if (some
+               (partial similar? genome threshold)
+               out)
+            out
+            (cons genome out)))
+        [])
+       reverse))
+#_(filter-distinct-by-threshold 1 [{:a 123 :b 1} {:a 124}])
+#_(filter-distinct-by-threshold 1.001 [{:a 123 :b 1} {:a 124}])
+#_(filter-distinct-by-threshold 0.5 [{:a 123 :b 1} {:a 124}])
+
+(defn filter-distinct [best-sorted-genomes]
+  (let [filtered (filter-distinct-by-threshold (/ mutation-step 10) best-sorted-genomes)]
+    (println "Removed" (- (count best-sorted-genomes) (count filtered)) "of similar genomes.")
+    filtered))
