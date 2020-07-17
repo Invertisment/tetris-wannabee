@@ -20,9 +20,10 @@
 (defn back-pressure-map [f li]
   (let [input-ch-li [(to-chan li)]
         f-print (fn [input]
-                  (print ".")
-                  (flush)
-                  (f input))
+                  (let [out (f input)]
+                    (print ".")
+                    (flush)
+                    out))
         output-ch (async/merge
                    (map
                     (fn [_] (async/map f-print input-ch-li))
