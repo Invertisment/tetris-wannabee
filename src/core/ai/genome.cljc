@@ -1,7 +1,7 @@
 (ns core.ai.genome
   (:require [core.ai.move-analysis :as move-analysis]))
 
-(def mutation-rate 0.2)
+(def mutation-rate 0.3)
 ;; 0.1 to both sides (+ or -)
 (def mutation-step 0.5)
 

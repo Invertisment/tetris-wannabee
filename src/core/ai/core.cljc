@@ -22,7 +22,7 @@
       (let [field (move/new-field
                    (doall
                     (repeatedly
-                     (+ 25000 tetrominoes-count)
+                     (+ 100000 tetrominoes-count)
                      (partial piece-gen/generate-new-piece const/pieces))))
             elites-with-state
             (->> genomes
@@ -37,7 +37,7 @@
             elites (->> elites-with-state
                         (map first)
                         (genome/filter-distinct)
-                        (take 2))]
+                        (take (quot population-size 2)))]
         (println "Generation:" generation
                  "\t Best performances:" (map get-score (take 10 elites-with-state))
                  "\t Worst performances:" (map get-score (take 10 (reverse elites-with-state)))
