@@ -86,7 +86,7 @@
   (let [heights-from-bottom (move-analysis/find-heights-from-bottom state)
         relative-heights (move-analysis/find-relative-heights heights-from-bottom)
         pieces-height (move-analysis/weighted-height relative-heights)
-        g (genome-fn-continuous (genome (if (> 8 pieces-height) :safe :risky)))
+        g (genome-fn-continuous (genome (if (> 7 pieces-height) :risky :safe)))
         {:keys [score]} state
         grouped-stepcounts (move-analysis/count-grouped-step-counts (move-analysis/count-steps heights-from-bottom)
                                                                     :step-more
