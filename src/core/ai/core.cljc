@@ -36,7 +36,7 @@
                  (reverse))
             elites (->> elites-with-state
                         (map first)
-                        (genome/filter-distinct)
+                        #_(genome/filter-distinct)
                         (take (quot population-size 2)))]
         (println "Generation:" generation
                  "\t Best performances:" (map get-score (take 10 elites-with-state))

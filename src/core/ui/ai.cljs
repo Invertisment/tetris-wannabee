@@ -10,27 +10,44 @@
 
 (def genome
   (atom
-   {
-    :cumulative-height -0.4976915941285005
-    :step-2 0.3657641104247921
-    :horizontal-fullness -0.44278930807268013
-    :hole-setback -0.42452182606533256
-    :well-depth-one-px-from-wall 0.1451836117897412
-    :step-3 -0.03228608310351462
-    :roughness -0.5771454076295538
-    :step-1 0.2997692405368743
-    :well-depth-at-wall -0.2774787725171084
-    :well-depth-at-wall-minus-4 0.07115600953304244
-    :well-depth-one-px-from-wall-minus-4 0.13811091745754175
-    :id "genome-0.947050499538895"
-    :step-4 -0.27762183341022356
-    :step-more -0.2830121375138149
-    :step-5 -0.298170521250825
-    :rows-cleared 0.1307280264810852
-    :flatness 0.4141519869153653
-    :step-0 -0.2886632442976079
-    :weighted-height -0.02813582067999981
-    }))
+   {:id "genome-0.8505807854718965"
+    :safe {:cumulative-height -0.024038098911618788
+           :step-2 0.035944768289915996
+           :horizontal-fullness -0.25326990909938135
+           :hole-setback -0.5312435918889359
+           :well-depth-one-px-from-wall -0.8930341703571198
+           :step-3 -0.5551106909216612
+           :roughness -0.38251868084339463
+           :step-1 0.4922908961270508
+           :well-depth-at-wall 0.21266873874682818
+           :well-depth-at-wall-minus-4 -0.06975042114852531
+           :well-depth-one-px-from-wall-minus-4 0.043610170176164254
+           :step-4 -0.5145414056030959
+           :step-more -0.6173858334525457
+           :step-5 0.25789715535759256
+           :rows-cleared 0.6635604542066469
+           :flatness -0.028563858532824893
+           :step-0 0.06998516680882605
+           :weighted-height -0.37974579732476177}
+    :risky {:cumulative-height -0.3666055207765345
+            :step-2 -0.16797323189210406
+            :horizontal-fullness 0.06171280250715061
+            :hole-setback 0.19852209202825355
+            :well-depth-one-px-from-wall 0.06256600063050449
+            :step-3 -0.9094637405207648
+            :roughness 0.16944041499042528
+            :step-1 0.012810676977613122
+            :well-depth-at-wall 0.11301006643932737
+            :well-depth-at-wall-minus-4 -0.2001142343018517
+            :well-depth-one-px-from-wall-minus-4 0.5371933771761515
+            :step-4 0.30849432125705806
+            :step-more 0.0756727581676429
+            :step-5 1.1002379750917515
+            :rows-cleared 0.005005396739468648
+            :flatness -0.42319254537175266
+            :step-0 0.3133021681809786
+            :weighted-height -0.01367836174868936}}
+   ))
 
 (defn action-to-key [movement-id]
   (condp = movement-id

@@ -11,7 +11,7 @@
 (defn genome-name []
   (str "genome-" (rand)))
 
-;; genome trainable keys (without :id)
+;; genome trainable keys
 (def genome-keys
   [;; rows cleared per piece placement
    :rows-cleared
@@ -53,13 +53,18 @@
    :hole-setback
    ])
 
+(defn new-initial-genome-var-map []
+  (->> genome-keys
+       (map (juxt identity (fn [& _] (new-initial-coefficient))))
+       (into {})))
+
 ;; https://www.youtube.com/watch?v=xLHCMMGuN0Q
 (defn new-initial-genome []
   (merge
    {:id (genome-name)}
-   (->> genome-keys
-        (map (juxt identity (fn [& _] (new-initial-coefficient))))
-        (into {}))))
+   {:safe (new-initial-genome-var-map)
+    :risky (new-initial-genome-var-map)}))
+#_(new-initial-genome)
 
 ;; What didn't work:
 ;; hole depth of first three lines: it tries to produce holes in the beginning of the game
@@ -70,18 +75,19 @@
 (defn create-initial-population [population-size]
   (repeatedly population-size new-initial-genome))
 
-(defn genome-fn-continuous [genome]
+(defn genome-fn-continuous [genome-vars]
   (fn [genome-key value]
     (if value
-      (* (or (genome-key genome) 0)
+      (* (or (genome-key genome-vars) 0)
          value)
       0)))
 
 (defn calculate-score [genome {:keys [state] :as move}]
-  (let [g (genome-fn-continuous genome)
+  (let [heights-from-bottom (move-analysis/find-heights-from-bottom state)
+        relative-heights (move-analysis/find-relative-heights heights-from-bottom)
+        pieces-height (move-analysis/weighted-height relative-heights)
+        g (genome-fn-continuous (genome (if (> 8 pieces-height) :safe :risky)))
         {:keys [score]} state
-        heights-from-bottom (move-analysis/find-heights-from-bottom state)
-        relative-heights (move-analysis/find-relative-heights (move-analysis/find-heights-from-bottom state))
         grouped-stepcounts (move-analysis/count-grouped-step-counts (move-analysis/count-steps heights-from-bottom)
                                                                     :step-more
                                                                     :step-0
@@ -92,18 +98,20 @@
                                                                     :step-5)
         ;;hole-depths (move-analysis/count-field-hole-depths state)
         ;;found-holes (move-analysis/find-holes-x state heights-from-bottom)
+        well-depth-at-wall (move-analysis/well-depth-at-wall heights-from-bottom)
+        well-depth-one-px-from-wall (move-analysis/well-depth-one-px-from-wall heights-from-bottom)
         ]
     (+
      (g :rows-cleared (* (:lines-cleared score) (:lines-cleared score)))
-     (g :weighted-height (move-analysis/weighted-height relative-heights))
+     (g :weighted-height pieces-height)
      (g :cumulative-height (move-analysis/cumulative-height heights-from-bottom))
      ;;(* (or (:holes genome) 0) (move-analysis/count-holes found-holes))
      (g :roughness (move-analysis/field-roughness heights-from-bottom))
      (g :flatness (move-analysis/field-flatness heights-from-bottom))
-     (g :well-depth-at-wall (move-analysis/well-depth-at-wall heights-from-bottom))
-     (g :well-depth-one-px-from-wall (move-analysis/well-depth-one-px-from-wall heights-from-bottom))
-     (g :well-depth-at-wall-minus-4 (- (move-analysis/well-depth-at-wall heights-from-bottom) 4))
-     (g :well-depth-one-px-from-wall-minus-4 (- (move-analysis/well-depth-one-px-from-wall heights-from-bottom) 4))
+     (g :well-depth-at-wall well-depth-at-wall)
+     (g :well-depth-one-px-from-wall well-depth-one-px-from-wall)
+     (g :well-depth-at-wall-minus-4 (- well-depth-at-wall 4))
+     (g :well-depth-one-px-from-wall-minus-4 (- well-depth-one-px-from-wall 4))
      #_(g :reverse-field-hole-depth-sum (move-analysis/count-reverse-field-hole-depth-sum state hole-depths))
      (g :horizontal-fullness (move-analysis/count-horizontal-space state))
      (g :hole-setback (move-analysis/count-hole-setback state (move-analysis/find-hole-coords state)))
@@ -116,15 +124,13 @@
 #_(let [g (genome-fn-continuous {:genome-key 1})]
     (g :genome-key -5))
 
-(defn crossover [mum-genome dad-genome]
-  (assoc
-   (reduce
-    (fn [child-genome k]
-      (assoc child-genome
-             k (rand-nth [(k mum-genome) (k dad-genome)])))
-    {}
-    (keys mum-genome))
-   :id (genome-name)))
+(defn crossover [mom-genome dad-genome]
+  (reduce
+   (fn [child-genome k]
+     (assoc child-genome
+            k (rand-nth [(k mom-genome) (k dad-genome)])))
+   {}
+   (keys mom-genome)))
 
 (defn mutate-param [param]
   (+ param (* (- (rand) 0.5) mutation-step)))
@@ -136,21 +142,40 @@
        (update genome k mutate-param)
        genome))
    genome
-   (remove #(= :id %)
-           (keys genome))))
+   (keys genome)))
+
+(defn make-child-nested [mom-genome dad-genome]
+  (assoc mom-genome
+         :risky (mutate (crossover (:risky mom-genome)
+                                   (:risky dad-genome)))
+         :safe (mutate (crossover (:safe mom-genome)
+                                  (:safe dad-genome)))))
 
 (defn make-child [elites]
-  (mutate
-   (crossover (rand-nth elites)
-              (rand-nth elites))))
+  (make-child-nested (rand-nth elites)
+                     (rand-nth elites)))
+
+(defn run-genome-val-change-nested [f {:keys [risky safe] :as genome}]
+  (assoc genome
+         :risky (f risky)
+         :safe (f safe)))
+
+;; make sure every weight key exists in genome
+(defn ensure-weight-existence-single [genome-var-map]
+  (merge (->> genome-keys
+              (map (juxt identity (constantly 0)))
+              (into {}))
+         genome-var-map))
 
 ;; make sure every weight key exists in genome
 (defn ensure-weight-existence [genome]
-  (merge {:id (genome-name)}
-         (->> genome-keys
-              (map (juxt identity (constantly 0)))
-              (into {}))
-         genome))
+  (merge
+   genome
+   {:id (genome-name)}
+   (run-genome-val-change-nested
+    ensure-weight-existence-single
+    genome)))
+#_(ensure-weight-existence {})
 
 (defn abs [a]
   (if (> a 0)
@@ -158,15 +183,20 @@
     (- a)))
 #_(abs -1)
 
+(defn genome-vals-similarity [genome-a-vals genome-b-vals]
+  (->> (keys genome-a-vals)
+       (map (fn [k] (abs (- (genome-a-vals k 0)
+                            (genome-b-vals k 0)))))
+       (reduce +)))
+
 (defn similar? [genome-a threshold genome-b]
-  (->> (keys (dissoc genome-a :id))
-       (map (fn [k] (abs (- (genome-a k 0)
-                            (genome-b k 0)))))
-       (reduce +)
-       (> threshold)))
-#_(similar? {:a 123 :b 1} 1 {:a 124})
-#_(similar? {:a 124} 1 {:a 123 :b 1})
-#_(similar? {:a 123 :b 1} 2 {:a 124})
+  (> threshold
+     (+ (genome-vals-similarity (:safe genome-a) (:safe genome-b))
+        (genome-vals-similarity (:risky genome-a) (:risky genome-b)))))
+#_(similar? {:safe {:a 123 :b 1}} 1 {:safe {:a 124}})
+#_(similar? {:risky {:a 123 :b 1}} 1 {:risky {:a 124}})
+#_(similar? {:safe {:a 124}} 1 {:safe {:a 123 :b 1}})
+#_(similar? {:safe {:a 123 :b 1}} 2 {:safe {:a 124}})
 
 (defn filter-distinct-by-threshold [threshold best-sorted-genomes]
   (->> best-sorted-genomes
@@ -184,6 +214,8 @@
 #_(filter-distinct-by-threshold 0.5 [{:a 123 :b 1} {:a 124}])
 
 (defn filter-distinct [best-sorted-genomes]
+  (println "filter-distinct 1")
   (let [filtered (filter-distinct-by-threshold (/ mutation-step 10) best-sorted-genomes)]
+    (println "filter-distinct 2")
     (println "Removed" (- (count best-sorted-genomes) (count filtered)) "of similar genomes.")
     filtered))
