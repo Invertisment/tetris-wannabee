@@ -31,12 +31,12 @@
    :flatness
    ;; deepest side hole near side of the map
    :well-depth-at-wall
-   ;; deepest side hole 1px from sides
-   :well-depth-one-px-from-wall
+   ;;;; deepest side hole 1px from sides
+   ;;:well-depth-one-px-from-wall
    ;; sum of hole depths subtracted from field height (consecutive too)
    :well-depth-at-wall-minus-4
-   ;; deepest side hole 1px from sides
-   :well-depth-one-px-from-wall-minus-4
+   ;;;; deepest side hole 1px from sides
+   ;;:well-depth-one-px-from-wall-minus-4
    ;;;;sum of hole depths subtracted from field height (consecutive too)
    ;;:reverse-field-hole-depth-sum
    ;;;; measure how full the lines are (^2 is needed to counteract placement anywhere)
@@ -99,7 +99,7 @@
         ;;hole-depths (move-analysis/count-field-hole-depths state)
         ;;found-holes (move-analysis/find-holes-x state heights-from-bottom)
         well-depth-at-wall (move-analysis/well-depth-at-wall heights-from-bottom)
-        well-depth-one-px-from-wall (move-analysis/well-depth-one-px-from-wall heights-from-bottom)
+        ;;well-depth-one-px-from-wall (move-analysis/well-depth-one-px-from-wall heights-from-bottom)
         ]
     (+
      (g :rows-cleared (* (:lines-cleared score) (:lines-cleared score)))
@@ -109,9 +109,9 @@
      (g :roughness (move-analysis/field-roughness heights-from-bottom))
      (g :flatness (move-analysis/field-flatness heights-from-bottom))
      (g :well-depth-at-wall well-depth-at-wall)
-     (g :well-depth-one-px-from-wall well-depth-one-px-from-wall)
-     (g :well-depth-at-wall-minus-4 (- well-depth-at-wall 4))
-     (g :well-depth-one-px-from-wall-minus-4 (- well-depth-one-px-from-wall 4))
+     #_(g :well-depth-one-px-from-wall well-depth-one-px-from-wall)
+     (g :well-depth-at-wall-minus-4 (Math/max (- well-depth-at-wall 4) 0))
+     #_(g :well-depth-one-px-from-wall-minus-4 (- well-depth-one-px-from-wall 4))
      #_(g :reverse-field-hole-depth-sum (move-analysis/count-reverse-field-hole-depth-sum state hole-depths))
      (g :horizontal-fullness (move-analysis/count-horizontal-space state))
      (g :hole-setback (move-analysis/count-hole-setback state (move-analysis/find-hole-coords state)))
