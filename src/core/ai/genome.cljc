@@ -87,7 +87,7 @@
         relative-heights (move-analysis/find-relative-heights heights-from-bottom)
         pieces-height (move-analysis/weighted-height relative-heights)
         pixel-count (move-analysis/count-pixels state)
-        g (genome-fn-continuous (genome (if (> pixel-count 81)
+        g (genome-fn-continuous (genome (if (> pixel-count 46)
                                           :safe
                                           :risky)))
         {:keys [score]} state
