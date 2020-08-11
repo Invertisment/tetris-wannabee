@@ -45,7 +45,7 @@
         max-generations (or (:max-generations deserialized) 500)
         population-size (or (:population-size deserialized) 100)
         genomes (ensure-genomes (:genomes deserialized) population-size)
-        max-tetrominoes-count (or (:max-tetrominoes-count deserialized) 10000)]
+        max-tetrominoes-count (or (:max-tetrominoes-count deserialized) 100000)]
     (ai-core/train
      generation
      max-generations

@@ -8,7 +8,29 @@
             [core.actions.piece-gen :as piece-gen]))
 
 (def get-score
-  (comp :lines-cleared :score second))
+  (comp :lines-cleared :score))
+
+(defn mk-n-states [field-count tetrominoes-count]
+  (map
+   (fn [_]
+     (move/new-field
+      (doall
+       (repeatedly
+        tetrominoes-count
+        (partial piece-gen/generate-new-piece const/pieces)))))
+   (range field-count)))
+#_(mk-n-states 10 10)
+
+(defn best-of-n [genome field-count states]
+  (let [results (doall
+                 (map
+                  (partial placement/apply-pieces genome)
+                  states))
+        scores (map get-score results)]
+    {:genome genome
+     :avg-score (quot (reduce + scores) field-count)
+     :scores scores
+     :results results}))
 
 (defn train [generation max-generations genomes tetrominoes-count population-size serialize-fn! map-fn]
   (println "Training" population-size
@@ -19,28 +41,22 @@
          generation generation]
     (serialize-fn! generation genomes)
     (if (< generation max-generations)
-      (let [field (move/new-field
-                   (doall
-                    (repeatedly
-                     (+ 100000 tetrominoes-count)
-                     (partial piece-gen/generate-new-piece const/pieces))))
+      (let [field-count 2
+            states (mk-n-states field-count tetrominoes-count)
             elites-with-state
             (->> genomes
                  (map-fn
                   (fn [genome]
-                    [genome
-                     (placement/apply-pieces
-                      genome
-                      field)]))
-                 (sort-by get-score)
+                    (best-of-n genome field-count states)))
+                 (sort-by :avg-score)
                  (reverse))
             elites (->> elites-with-state
-                        (map first)
+                        (map :genome)
                         #_(genome/filter-distinct)
                         (take (quot population-size 2)))]
         (println "Generation:" generation
-                 "\t Best performances:" (map get-score (take 10 elites-with-state))
-                 "\t Worst performances:" (map get-score (take 10 (reverse elites-with-state)))
+                 "\t Best performances:" (map :scores (take 10 elites-with-state))
+                 "\t Worst performances:" (map :scores (take 10 (reverse elites-with-state)))
                  "\t Genome:" (first elites))
         (recur
          (->> (concat
