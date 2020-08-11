@@ -299,3 +299,14 @@
      (should=
       13
       (count-hole-setback finished-bridge-field (find-hole-coords finished-bridge-field)))))
+
+(describe
+ "count-pixels"
+ (it "should count pixels"
+     (should=
+      12
+      (count-pixels unfinished-bridge-field)))
+ (it "should count pixels 2"
+     (should=
+      16
+      (count-pixels finished-bridge-field))))

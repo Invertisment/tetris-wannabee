@@ -31,7 +31,7 @@
      (direction
       v/field-valid?
       identity
-      identity
+      ;;identity
       field))
    (assoc
     (merge empty-field current-piece)

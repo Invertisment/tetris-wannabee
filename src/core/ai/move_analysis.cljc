@@ -14,6 +14,12 @@
               height)))
        (map #(- height %))))
 
+(defn count-pixels [{:keys [field] :as state}]
+  (->> field
+       (reduce concat)
+       (filter (comp not nil?))
+       count))
+
 (defn find-relative-heights [heights-from-bottom]
   (->> heights-from-bottom
        ((fn [li]
