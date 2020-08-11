@@ -1,9 +1,9 @@
 (ns core.ai.genome
   (:require [core.ai.move-analysis :as move-analysis]))
 
-(def mutation-rate 0.3)
+(def mutation-rate 0.1)
 ;; 0.1 to both sides (+ or -)
-(def mutation-step 0.5)
+(def mutation-step 0.1)
 
 (defn new-initial-coefficient []
   (- (rand) 0.5))
@@ -51,6 +51,8 @@
    :step-more
    ;; fancy hole stuff
    :hole-setback
+   ;; how many lines can be cleared
+   :clearable-line-count
    ])
 
 (defn new-initial-genome-var-map []
@@ -85,7 +87,8 @@
 (defn calculate-score [genome {:keys [state] :as move}]
   (let [heights-from-bottom (move-analysis/find-heights-from-bottom state)
         relative-heights (move-analysis/find-relative-heights heights-from-bottom)
-        pieces-height (move-analysis/weighted-height relative-heights)
+        max-piece-height (move-analysis/height relative-heights)
+        min-piece-height (move-analysis/min-height state relative-heights)
         pixel-count (move-analysis/count-pixels state)
         g (genome-fn-continuous (genome (if (> pixel-count 46)
                                           :safe
@@ -106,7 +109,7 @@
         ]
     (+
      (g :rows-cleared (* (:lines-cleared score) (:lines-cleared score)))
-     (g :weighted-height pieces-height)
+     (g :weighted-height max-piece-height)
      (g :cumulative-height (move-analysis/cumulative-height heights-from-bottom))
      ;;(* (or (:holes genome) 0) (move-analysis/count-holes found-holes))
      (g :roughness (move-analysis/field-roughness heights-from-bottom))
@@ -118,6 +121,7 @@
      #_(g :reverse-field-hole-depth-sum (move-analysis/count-reverse-field-hole-depth-sum state hole-depths))
      (g :horizontal-fullness (move-analysis/count-horizontal-space state))
      (g :hole-setback (move-analysis/count-hole-setback state (move-analysis/find-hole-coords state)))
+     (g :clearable-line-count (move-analysis/find-clearable-line-count state max-piece-height min-piece-height))
      (reduce + 0
              (map
               (fn [stepcount-key]
@@ -138,14 +142,40 @@
 (defn mutate-param [param]
   (+ param (* (- (rand) 0.5) mutation-step)))
 
+(defn abs [a]
+  (if (> a 0)
+    a
+    (- a)))
+#_(abs -1)
+
 (defn mutate [genome]
-  (reduce
+  #_(reduce
    (fn [genome k]
      (if (and (> mutation-rate (rand)) (number? (k genome)))
        (update genome k mutate-param)
        genome))
    genome
-   (keys genome)))
+   (keys genome))
+  (let [mutated-genome-kv-list (map
+                                (fn [[k orig-v]]
+                                  [k (if (> mutation-rate (rand))
+                                       (mutate-param orig-v)
+                                       orig-v)])
+                                genome)
+        max-value (->> mutated-genome-kv-list
+                       (map (comp abs second))
+                       (reduce max 1))]
+    (into
+     {}
+     (if (> max-value 1)
+       (map
+        (fn [[k orig-v]]
+          [k (/ orig-v max-value)])
+        mutated-genome-kv-list)
+       mutated-genome-kv-list))))
+#_(mutate {:hi 50 :hi1 1})
+#_(mutate {:hi 0.50 :hi1 1.02})
+#_(mutate {:hi 0.50 :hi1 -1.02})
 
 (defn make-child-nested [mom-genome dad-genome]
   (assoc mom-genome
@@ -179,12 +209,6 @@
     ensure-weight-existence-single
     genome)))
 #_(ensure-weight-existence {})
-
-(defn abs [a]
-  (if (> a 0)
-    a
-    (- a)))
-#_(abs -1)
 
 (defn genome-vals-similarity [genome-a-vals genome-b-vals]
   (->> (keys genome-a-vals)

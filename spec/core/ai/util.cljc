@@ -10,6 +10,7 @@
 (def line-piece (prepare-piece const/line-piece))
 (def l-piece (prepare-piece const/l-piece))
 (def j-piece (prepare-piece const/j-piece))
+(def t-piece (prepare-piece const/t-piece))
 (def square-piece (prepare-piece const/square-piece))
 (def z-piece (prepare-piece const/z-piece))
 (def empty-field

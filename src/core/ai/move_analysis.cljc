@@ -36,8 +36,7 @@
        (filter (fn [[i height]]
                  (< line-height height)
                  #_(>= height (heights-from-bottom i))))
-       (map first))
-  )
+       (map first)))
 
 (defn find-holes-y [{:keys [width height] :as state} {:keys [by-y] :as grouped-coords} heights-from-bottom]
   (let [width-indexes (into #{} (range width))]
@@ -54,15 +53,48 @@
                         (remove-lower-holes (dec (- height i)) (nth heights-from-bottom x-index)))
                       holes-with-false-positives))])))))
 
+(defn find-clearable-line-count-internal [free-pixel-positions remaining-lines clearable-line-count]
+  (if (seq remaining-lines)
+    (if (= 4 clearable-line-count)
+      clearable-line-count
+      (let [[line & remaining-lines] remaining-lines
+            remaining-pixels (filter
+                              (comp not line)
+                              free-pixel-positions)
+            remaining-pixel-count (count remaining-pixels)]
+        (condp = remaining-pixel-count
+          1 (recur remaining-pixels
+                   remaining-lines
+                   (if (= 9 (count (filter identity line)))
+                     (inc clearable-line-count)
+                     clearable-line-count))
+          0 clearable-line-count
+          (recur remaining-pixels
+                 remaining-lines
+                 clearable-line-count))))
+    clearable-line-count))
+
+(defn find-clearable-line-count [{:keys [field height width] :as state}
+                                 max-piece-height
+                                 min-piece-height]
+  (find-clearable-line-count-internal
+   (range width)
+   (->> field
+        (drop (- height max-piece-height))
+        (take (- max-piece-height min-piece-height)))
+   0))
+
 ;; sum of all empty cells underground
 (defn count-holes [found-holes]
   (reduce + found-holes))
 
-;; absolute height of the highest column to the power of 2
-(defn weighted-height [heights-from-bottom]
-  (->> heights-from-bottom
-       #_(map #(* % %))
-       (reduce max 0)))
+;; height of the highest column
+(defn height [heights-from-bottom]
+  (reduce max 0 heights-from-bottom))
+
+;; height of the lowest column
+(defn min-height [{:keys [height]} heights-from-bottom]
+  (reduce min height heights-from-bottom))
 
 ;; sum of all block heights
 (defn cumulative-height [heights-from-bottom]

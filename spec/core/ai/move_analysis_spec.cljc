@@ -5,7 +5,8 @@
             [core.constants :refer [field-width field-height pieces]]
             [core.ai.util :as util]
             [core.actions.move :as move]
-            [core.ai.placement :as placement]))
+            [core.ai.placement :as placement]
+            [core.constants :as const]))
 
 (def unfinished-bridge-field
   (util/new-field
@@ -27,6 +28,15 @@
     move/left move/bottom
     move/right move/right move/bottom
     move/right move/right move/right move/right move/bottom]))
+
+(def one-clearable-line-field
+  (util/new-field
+   [util/line-piece
+    util/line-piece
+    util/t-piece]
+   [move/left move/left move/left move/bottom
+    move/right move/bottom
+    move/rotate-counter-clockwise move/right move/right move/right move/right move/bottom]))
 
 (describe
  "find-heights-from-bottom"
@@ -125,22 +135,22 @@
        (moves/find-piece-placements (placement/to-move unfinished-bridge-field))))))
 
 (describe
- "weighted-height"
+ "height"
  (it "should return height of the highest column"
      (should=
       5
-      (weighted-height (find-heights-from-bottom finished-bridge-field))))
+      (height (find-heights-from-bottom finished-bridge-field))))
  (it "should return height of the highest column"
      (should=
       5
-      (weighted-height (find-heights-from-bottom finished-bridge-field))))
+      (height (find-heights-from-bottom finished-bridge-field))))
  (it "should return height of the highest column"
      (should=
       (concat (repeat 16 4)
               (repeat 20 5))
       (map
        (fn [{:keys [state]}]
-         (weighted-height (find-heights-from-bottom state)))
+         (height (find-heights-from-bottom state)))
        (moves/find-piece-placements (placement/to-move unfinished-bridge-field))))))
 
 (describe
@@ -310,3 +320,27 @@
      (should=
       16
       (count-pixels finished-bridge-field))))
+
+(describe
+ "find-clearable-line-count"
+ (it "should count 1px clearable lines"
+     (should=
+      0
+      (find-clearable-line-count
+       unfinished-bridge-field
+       (height (find-heights-from-bottom unfinished-bridge-field))
+       (reduce min const/field-height (find-heights-from-bottom unfinished-bridge-field)))))
+ (it "should count 1px clearable lines; no results"
+     (should=
+      0
+      (find-clearable-line-count
+       finished-bridge-field
+       (height (find-heights-from-bottom finished-bridge-field))
+       (reduce min const/field-height (find-heights-from-bottom finished-bridge-field)))))
+ (it "should count 1px clearable lines; no results"
+     (should=
+      1
+      (find-clearable-line-count
+       one-clearable-line-field
+       (height (find-heights-from-bottom one-clearable-line-field))
+       (reduce min const/field-height (find-heights-from-bottom one-clearable-line-field))))))

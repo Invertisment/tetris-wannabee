@@ -34,7 +34,7 @@
 
 (defn train [generation max-generations genomes tetrominoes-count population-size serialize-fn! map-fn]
   (println "Training" population-size "genomes for" max-generations "generations with" tetrominoes-count "pieces each"
-           (format "from generation: %s." generation))
+           (format "from generation %s." generation))
   (loop [genomes genomes
          generation generation]
     (serialize-fn! generation genomes)
