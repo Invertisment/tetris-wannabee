@@ -33,15 +33,14 @@
      :results results}))
 
 (defn train [generation max-generations genomes tetrominoes-count population-size serialize-fn! map-fn]
-  (println "Training" population-size
-           "genomes for" max-generations
-           "generations with" tetrominoes-count "pieces each."
-           "Generation:" generation)
+  (println "Training" population-size "genomes for" max-generations "generations with" tetrominoes-count "pieces each"
+           (format "from generation: %s." generation))
   (loop [genomes genomes
          generation generation]
     (serialize-fn! generation genomes)
     (if (< generation max-generations)
-      (let [field-count 2
+      (let [_ (println (format "Generation %s:" generation))
+            field-count 2
             states (mk-n-states field-count tetrominoes-count)
             elites-with-state
             (->> genomes
@@ -54,10 +53,9 @@
                         (map :genome)
                         #_(genome/filter-distinct)
                         (take (quot population-size 2)))]
-        (println "Generation:" generation
-                 "\t Best performances:" (map :scores (take 10 elites-with-state))
-                 "\t Worst performances:" (map :scores (take 10 (reverse elites-with-state)))
-                 "\t Genome:" (first elites))
+        (println "Best performances:" (map :scores (take 10 elites-with-state))
+                 "\nWorst performances:" (map :scores (take 10 (reverse elites-with-state)))
+                 "\nBest genome:" (first elites))
         (recur
          (->> (concat
                elites
