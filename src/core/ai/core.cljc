@@ -28,7 +28,7 @@
                   states))
         scores (map get-score results)]
     {:genome genome
-     :avg-score (quot (reduce + scores) field-count)
+     :final-score (reduce min (first scores) scores) #_(quot (reduce + scores) field-count)
      :scores scores
      :results results}))
 
@@ -47,7 +47,7 @@
                  (map-fn
                   (fn [genome]
                     (best-of-n genome field-count states)))
-                 (sort-by :avg-score)
+                 (sort-by :final-score)
                  (reverse))
             elites (->> elites-with-state
                         (map :genome)
