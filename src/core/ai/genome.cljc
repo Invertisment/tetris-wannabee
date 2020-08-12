@@ -179,6 +179,7 @@
 
 (defn make-child-nested [mom-genome dad-genome]
   (assoc mom-genome
+         :id (genome-name)
          :risky (mutate (crossover (:risky mom-genome)
                                    (:risky dad-genome)))
          :safe (mutate (crossover (:safe mom-genome)
