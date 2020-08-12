@@ -1,9 +1,9 @@
 (ns core.ai.genome
   (:require [core.ai.move-analysis :as move-analysis]))
 
-(def mutation-rate 0.1)
+(def mutation-rate 0.2)
 ;; 0.1 to both sides (+ or -)
-(def mutation-step 0.1)
+(def mutation-step 0.2)
 
 (defn new-initial-coefficient []
   (- (rand) 0.5))
@@ -184,8 +184,8 @@
          :safe (mutate (crossover (:safe mom-genome)
                                   (:safe dad-genome)))))
 
-(defn make-child [elites]
-  (make-child-nested (rand-nth elites)
+(defn make-child [elites mom-genome]
+  (make-child-nested mom-genome
                      (rand-nth elites)))
 
 (defn run-genome-val-change-nested [f {:keys [risky safe] :as genome}]

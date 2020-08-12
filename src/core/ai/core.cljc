@@ -59,8 +59,7 @@
         (recur
          (->> (concat
                elites
-               (repeatedly (fn [] (genome/make-child elites))))
+               (map (partial genome/make-child elites) (cycle elites)))
               (take population-size))
          (inc generation)))
       genomes)))
-
