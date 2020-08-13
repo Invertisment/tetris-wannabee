@@ -6,8 +6,8 @@
   "add-cleared-lines"
   (it "should add nothing if no :line-clear-data"
       (should=
-        {:score {:lines-cleared 0}}
-        (cs/add-cleared-lines {:score {:lines-cleared 0}})))
+       {:score {:lines-cleared 0}}
+       (cs/add-cleared-lines {:score {:lines-cleared 0}})))
   (it "should add nothing if no lines"
       (should=
         {:score {:lines-cleared 0}

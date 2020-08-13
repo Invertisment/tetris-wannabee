@@ -86,7 +86,8 @@
 
 ;; sum of all empty cells underground
 (defn count-holes [found-holes]
-  (reduce + found-holes))
+  (count found-holes))
+#_(count-holes [1 2 3 4])
 
 ;; height of the highest column
 (defn height [heights-from-bottom]
@@ -197,9 +198,9 @@
                  {}
                  (map-indexed
                   (fn [i k]
-                    [k (steps i)])
-                  genome-keys))
-        ]
+                    (when-let [step (get steps i)]
+                      [k step]))
+                  genome-keys))]
     (assoc
      dynamic
      more-key more-size)))
@@ -220,5 +221,5 @@
   (->> holes-coords
        (map #(->> %
                   (second)
-                  ((partial - height))))
+                  (- height)))
        (reduce + 0)))

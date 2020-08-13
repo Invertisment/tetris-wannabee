@@ -28,7 +28,9 @@
                   states))
         scores (map get-score results)]
     {:genome genome
-     :final-score (reduce min (first scores) scores) #_(quot (reduce + scores) field-count)
+     :final-score (- (reduce + scores)
+                     (quot (reduce min 0 scores) 2))
+     #_(reduce min (first scores) scores) #_(quot (reduce + scores) field-count)
      :scores scores
      :results results}))
 

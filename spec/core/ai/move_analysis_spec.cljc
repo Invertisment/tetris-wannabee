@@ -38,6 +38,22 @@
     move/right move/bottom
     move/rotate-counter-clockwise move/right move/right move/right move/right move/bottom]))
 
+(def three-times-four-hole-field
+  (util/new-field
+   [util/line-piece
+    util/line-piece
+    util/line-piece
+    util/line-piece
+    util/line-piece
+    util/t-piece]
+   [move/rotate-counter-clockwise move/left move/left move/left move/left move/bottom
+    move/left move/left move/left move/bottom
+    move/rotate-counter-clockwise move/left move/left move/left move/left move/bottom
+    move/left move/left move/left move/bottom
+    move/rotate-counter-clockwise move/left move/left move/left move/left move/bottom
+    move/left move/left move/left move/bottom
+    ]))
+
 (describe
  "find-heights-from-bottom"
  (it "find height 1"
@@ -297,7 +313,14 @@
       {:zero 7
        :one 1
        :more 1}
-      (count-grouped-step-counts (count-steps (find-heights-from-bottom finished-bridge-field)) :more :zero :one))))
+      (count-grouped-step-counts (count-steps (find-heights-from-bottom finished-bridge-field)) :more :zero :one)))
+ (it "should return grouped steps; no nil outputs"
+     (should=
+      {:zero 7
+       :one 1
+       :more 0
+       :b 1}
+      (count-grouped-step-counts (count-steps (find-heights-from-bottom unfinished-bridge-field)) :more :zero :one :a :b :c :d :e :f))))
 
 (describe
  "count-hole-setback"
@@ -308,7 +331,13 @@
  (it "should return grouped steps 4"
      (should=
       13
-      (count-hole-setback finished-bridge-field (find-hole-coords finished-bridge-field)))))
+      (count-hole-setback finished-bridge-field (find-hole-coords finished-bridge-field))))
+ (it "should return grouped steps 4"
+     (should=
+      13
+      (count-hole-setback three-times-four-hole-field
+                          (find-hole-coords three-times-four-hole-field))))
+ )
 
 (describe
  "count-pixels"

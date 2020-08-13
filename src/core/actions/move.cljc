@@ -10,11 +10,10 @@
             [core.actions.count-score :refer [count-score]]))
 
 (defn- stick-and-generate-new-piece [valid? update-score-fn state]
-  (new-piece
-   valid?
-   (stick-piece
-    remove-full-lines
-    state)))
+  (->> state
+       stick-piece
+       remove-full-lines
+       (new-piece valid?)))
 
 (defn right [valid? update-score-fn state]
   (let [moved (piece-op-scalar inc identity state)]
@@ -62,6 +61,9 @@
 (defn rotate-counter-clockwise [valid? update-score-fn state]
   (rot/rotate-piece-counter-clockwise state))
 
+(defn down-no-validation [state]
+  (piece-op-scalar identity inc state))
+
 (defn bottom [valid? update-score-fn state]
   (when (:piece state)
     (down
@@ -69,7 +71,7 @@
      update-score-fn
      (last (take-while
             valid?
-            (iterate (partial piece-op-scalar identity inc) state))))))
+            (iterate down-no-validation state))))))
 
 (defn new-field [next-pieces]
   (merge

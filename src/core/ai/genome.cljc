@@ -1,9 +1,10 @@
 (ns core.ai.genome
-  (:require [core.ai.move-analysis :as move-analysis]))
+  (:require [core.ai.move-analysis :as move-analysis]
+            [core.constants :as const]))
 
 (def mutation-rate 0.2)
 ;; 0.1 to both sides (+ or -)
-(def mutation-step 0.2)
+(def mutation-step 0.05)
 
 (defn new-initial-coefficient []
   (- (rand) 0.5))
@@ -19,8 +20,8 @@
    :weighted-height
    ;; sum of all block heights
    :cumulative-height
-   ;;;; sum of all empty cells underground
-   ;;:holes
+   ;; sum of all empty cells underground
+   :hole-count
    ;; sum of absolute differences between neighbours
    ;; if the game field is empty this is zero
    ;; except one outlier (for deepest well)
@@ -79,10 +80,12 @@
 
 (defn genome-fn-continuous [genome-vars]
   (fn [genome-key value]
-    (if value
-      (* (or (genome-key genome-vars) 0)
-         value)
-      0)))
+    #_(when-not (genome-key genome-vars)
+      (println "null" genome-key genome-vars))
+    (* (genome-key genome-vars)
+       value)))
+
+(def max-clearable-lines 4)
 
 (defn calculate-score [genome {:keys [state] :as move}]
   (let [heights-from-bottom (move-analysis/find-heights-from-bottom state)
@@ -105,27 +108,30 @@
         ;;hole-depths (move-analysis/count-field-hole-depths state)
         ;;found-holes (move-analysis/find-holes-x state heights-from-bottom)
         well-depth-at-wall (move-analysis/well-depth-at-wall heights-from-bottom)
+        hole-coords (move-analysis/find-hole-coords state)
         ;;well-depth-one-px-from-wall (move-analysis/well-depth-one-px-from-wall heights-from-bottom)
         ]
-    (+
-     (g :rows-cleared (* (:lines-cleared score) (:lines-cleared score)))
+    (+'
+     (g :rows-cleared (get score :lines-cleared 0))
      (g :weighted-height max-piece-height)
      (g :cumulative-height (move-analysis/cumulative-height heights-from-bottom))
-     ;;(* (or (:holes genome) 0) (move-analysis/count-holes found-holes))
+     (g :hole-count (move-analysis/count-holes hole-coords))
      (g :roughness (move-analysis/field-roughness heights-from-bottom))
      (g :flatness (move-analysis/field-flatness heights-from-bottom))
      (g :well-depth-at-wall well-depth-at-wall)
      #_(g :well-depth-one-px-from-wall well-depth-one-px-from-wall)
-     (g :well-depth-at-wall-minus-4 (Math/max (- well-depth-at-wall 4) 0))
+     (g :well-depth-at-wall-minus-4 (max (- well-depth-at-wall max-clearable-lines) 0))
      #_(g :well-depth-one-px-from-wall-minus-4 (- well-depth-one-px-from-wall 4))
      #_(g :reverse-field-hole-depth-sum (move-analysis/count-reverse-field-hole-depth-sum state hole-depths))
      (g :horizontal-fullness (move-analysis/count-horizontal-space state))
-     (g :hole-setback (move-analysis/count-hole-setback state (move-analysis/find-hole-coords state)))
+     (g :hole-setback (move-analysis/count-hole-setback state hole-coords))
      (g :clearable-line-count (move-analysis/find-clearable-line-count state max-piece-height min-piece-height))
      (reduce + 0
              (map
               (fn [stepcount-key]
-                (g stepcount-key (stepcount-key grouped-stepcounts)))
+                (if-let [v (get grouped-stepcounts stepcount-key)]
+                  (g stepcount-key v)
+                  0))
               (keys grouped-stepcounts))))))
 
 #_(let [g (genome-fn-continuous {:genome-key 1})]
