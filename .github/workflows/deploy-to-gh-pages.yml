@@ -28,9 +28,9 @@ jobs:
 
       - name: Make webDir dir
       - run: | 
-        mkdir -p webDir
-        cp index-prod.js webDir/index-prod.js
-        cp index.html webDir/index.html
+          mkdir -p ./webDir
+          cp index-prod.js ./webDir/index-prod.js
+          cp index.html ./webDir/index.html
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
