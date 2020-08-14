@@ -10,43 +10,43 @@
 
 (def genome
   (atom
-   {:id "genome-0.8505807854718965"
-    :safe {:cumulative-height -0.024038098911618788
-           :step-2 0.035944768289915996
-           :horizontal-fullness -0.25326990909938135
-           :hole-setback -0.5312435918889359
-           :well-depth-one-px-from-wall -0.8930341703571198
-           :step-3 -0.5551106909216612
-           :roughness -0.38251868084339463
-           :step-1 0.4922908961270508
-           :well-depth-at-wall 0.21266873874682818
-           :well-depth-at-wall-minus-4 -0.06975042114852531
-           :well-depth-one-px-from-wall-minus-4 0.043610170176164254
-           :step-4 -0.5145414056030959
-           :step-more -0.6173858334525457
-           :step-5 0.25789715535759256
-           :rows-cleared 0.6635604542066469
-           :flatness -0.028563858532824893
-           :step-0 0.06998516680882605
-           :weighted-height -0.37974579732476177}
-    :risky {:cumulative-height -0.3666055207765345
-            :step-2 -0.16797323189210406
-            :horizontal-fullness 0.06171280250715061
-            :hole-setback 0.19852209202825355
-            :well-depth-one-px-from-wall 0.06256600063050449
-            :step-3 -0.9094637405207648
-            :roughness 0.16944041499042528
-            :step-1 0.012810676977613122
-            :well-depth-at-wall 0.11301006643932737
-            :well-depth-at-wall-minus-4 -0.2001142343018517
-            :well-depth-one-px-from-wall-minus-4 0.5371933771761515
-            :step-4 0.30849432125705806
-            :step-more 0.0756727581676429
-            :step-5 1.1002379750917515
-            :rows-cleared 0.005005396739468648
-            :flatness -0.42319254537175266
-            :step-0 0.3133021681809786
-            :weighted-height -0.01367836174868936}}
+   {:id "genome-0.421483291035446"
+    :safe {:cumulative-height -0.1626325328233435
+           :step-2 0.08743469225893796
+           :hole-count 0.007452094175859871
+           :horizontal-fullness 0.06448506007285768
+           :hole-setback -0.2857056726744087
+           :step-3 0.006709683313794627
+           :roughness -0.42493315415075955
+           :step-1 0.21271473895455548
+           :well-depth-at-wall 0.035142763475174185
+           :well-depth-at-wall-minus-4 -0.2675537504110445
+           :step-4 0.3083784855433973
+           :step-more 0.14285518309742865
+           :step-5 0.08370513425565006
+           :rows-cleared -0.4633444965402063
+           :clearable-line-count -0.03540019351059544
+           :flatness -0.07026889575781578
+           :step-0 0.12709984273395955
+           :weighted-height 0.2242631901150711}
+    :risky {:cumulative-height -0.4116312139641445
+            :step-2 0.17333143272689638
+            :hole-count 0.0348838369138232
+            :horizontal-fullness 0.4711096911156057
+            :hole-setback -0.2717193424614014
+            :step-3 0.12721751227961833
+            :roughness -0.48004977826388906
+            :step-1 0.15557306371426713
+            :well-depth-at-wall 0.22617625984713072
+            :well-depth-at-wall-minus-4 -0.20183676245522528
+            :step-4 0.3728248611117666
+            :step-more -0.1802930877069809
+            :step-5 -0.1722696144905047
+            :rows-cleared 0.4468596856328481
+            :clearable-line-count -0.02056086840043053
+            :flatness -0.25719950983907325
+            :step-0 0.10709578622757268
+            :weighted-height 0.14471643831089054}}
    ))
 
 (defn action-to-key [movement-id]
