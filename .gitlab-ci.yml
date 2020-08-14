@@ -1,0 +1,9 @@
+image: ardoq/leiningen:latest
+
+pages:
+  script:
+  - ls
+  artifacts:
+    paths:
+    - public
+
