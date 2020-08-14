@@ -33,10 +33,10 @@
   (let [genomes (seq (map genome/ensure-weight-existence genome-li))
         genome-count (count genomes)]
     (if (< genome-count population-size)
-      (do
-        (printf "Found %s genomes. Capping to %s.\n" genome-count population-size)
-        (concat genomes (genome/create-initial-population (- population-size genome-count))))
-      genomes)))
+      (do (printf "Found %s genomes. Capping to %s.\n" genome-count population-size)
+          (concat genomes (genome/create-initial-population (- population-size genome-count))))
+      (do (printf "Loaded %s genomes (needed %s).\n" genome-count population-size)
+          genomes))))
 
 (defn -main [& args]
   (println "Version:" (get-git-revision))
