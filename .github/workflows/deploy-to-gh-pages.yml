@@ -20,6 +20,8 @@ jobs:
 
       - name: Set-up Clojure
         uses: DeLaGuardo/setup-clojure@2.0
+        with:
+          lein: 2.9.1
 
       - name: Install and Build 🔧
         run: lein cljsbuild once
