@@ -27,7 +27,7 @@ jobs:
         run: lein cljsbuild once prod
 
       - name: Make webDir dir
-      - run: | 
+        run: |
           mkdir -p ./webDir
           cp index-prod.js ./webDir/index-prod.js
           cp index.html ./webDir/index.html
