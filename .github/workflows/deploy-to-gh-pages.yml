@@ -24,13 +24,19 @@ jobs:
           lein: 2.9.1
 
       - name: Install and Build 🔧
-        run: lein cljsbuild once
+        run: lein cljsbuild once prod
+
+      - name: Make webDir dir
+      - run: | 
+        mkdir -p webDir
+        cp index-prod.js webDir/index-prod.js
+        cp index.html webDir/index.html
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
-          FOLDER: .
+          FOLDER: webDir
 
 
