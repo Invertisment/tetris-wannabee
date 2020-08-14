@@ -1,0 +1,34 @@
+# Guide:
+# https://dev.to/pierresaid/deploy-node-projects-to-github-pages-with-github-actions-4jco
+#
+# Clojure:
+# https://github.com/marketplace/actions/setup-clojure
+#
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false 
+
+      - name: Set-up Clojure
+        uses: DeLaGuardo/setup-clojure@2.0
+
+      - name: Install and Build 🔧
+        run: lein cljsbuild once
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: dist
+
+
