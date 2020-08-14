@@ -26,8 +26,14 @@
   (let [best-piece (pick-best-piece-placement genome state)]
     (:state best-piece)))
 
-(defn apply-pieces [genome state]
+(defn apply-pieces-while [is-game-ended-fn genome state]
   (loop [state state]
-    (if (= (:game-state state) :ended)
+    (if (is-game-ended-fn state)
       state
       (recur (place-best-piece genome state)))))
+
+(defn apply-pieces [genome state]
+  (apply-pieces-while
+   (fn [state] (= (:game-state state) :ended))
+   genome
+   state))

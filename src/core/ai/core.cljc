@@ -5,7 +5,11 @@
             [core.ai.placement :as placement]
             [core.ai.genome :as genome]
             [core.actions.move :as move]
-            [core.actions.piece-gen :as piece-gen]))
+            [core.actions.piece-gen :as piece-gen]
+            [core.ai.move-analysis :as move-analysis]))
+
+;; cljs doesn't have format
+#?(:cljs (def format str))
 
 (def get-score
   (comp :lines-cleared :score))
@@ -21,18 +25,40 @@
    (range field-count)))
 #_(mk-n-states 10 10)
 
-(defn best-of-n [genome field-count states]
-  (let [results (doall
-                 (map
-                  (partial placement/apply-pieces genome)
-                  states))
+(defn is-game-ended [state]
+  (= (:game-state state) :ended))
+
+(defn best-of-n [is-game-ended-fn genome field-count states]
+  (let [results (map
+                 (partial placement/apply-pieces-while is-game-ended-fn genome)
+                 states)
         scores (map get-score results)]
     {:genome genome
-     :final-score (- (reduce + scores)
-                     (quot (reduce min 0 scores) 2))
-     #_(reduce min (first scores) scores) #_(quot (reduce + scores) field-count)
+     ;; Bias towards high-performing but a little risky genome
+     :final-score (+ (reduce + scores)
+                     (reduce max 0 scores))
+     #_(reduce min (first scores) scores)
+     #_(quot (reduce + scores) field-count)
      :scores scores
      :results results}))
+
+(defn train-any [is-game-ended-fn map-fn field-count tetrominoes-count population-size genomes]
+  (let [states (mk-n-states field-count tetrominoes-count)
+        elites-with-state
+        (->> genomes
+             (map-fn
+              (fn [genome]
+                (best-of-n is-game-ended-fn genome field-count states)))
+             (sort-by :final-score)
+             (reverse))]
+    elites-with-state))
+
+(defn train-whole [map-fn field-count tetrominoes-count population-size genomes]
+  (let [elites-with-state (train-any is-game-ended map-fn field-count tetrominoes-count population-size genomes)]
+    (println "Best performances:" (map :scores (take 10 elites-with-state))
+             "\nWorst performances:" (map :scores (take 10 (reverse elites-with-state)))
+             "\nBest genome:" (:genome (first elites-with-state)))
+    elites-with-state))
 
 (defn train [generation max-generations genomes tetrominoes-count population-size serialize-fn! map-fn]
   (println "Training" population-size "genomes for" max-generations "generations with" tetrominoes-count "pieces each"
@@ -43,21 +69,12 @@
     (if (< generation max-generations)
       (let [_ (println (format "Generation %s:" generation))
             field-count 2
-            states (mk-n-states field-count tetrominoes-count)
-            elites-with-state
-            (->> genomes
-                 (map-fn
-                  (fn [genome]
-                    (best-of-n genome field-count states)))
-                 (sort-by :final-score)
-                 (reverse))
+            ;;elites-risky (train-risky map-fn field-count tetrominoes-count population-size genomes)]
+            elites-with-state (train-whole map-fn field-count tetrominoes-count population-size genomes)
             elites (->> elites-with-state
                         (map :genome)
                         #_(genome/filter-distinct)
                         (take (quot population-size 2)))]
-        (println "Best performances:" (map :scores (take 10 elites-with-state))
-                 "\nWorst performances:" (map :scores (take 10 (reverse elites-with-state)))
-                 "\nBest genome:" (first elites))
         (recur
          (->> (concat
                elites

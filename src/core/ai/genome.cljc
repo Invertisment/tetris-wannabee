@@ -9,7 +9,7 @@
 (defn new-initial-coefficient []
   (- (rand) 0.5))
 
-(defn genome-name []
+(defn gen-genome-name []
   (str "genome-" (rand)))
 
 ;; genome trainable keys
@@ -64,7 +64,7 @@
 ;; https://www.youtube.com/watch?v=xLHCMMGuN0Q
 (defn new-initial-genome []
   (merge
-   {:id (genome-name)}
+   {:id (gen-genome-name)}
    {:safe (new-initial-genome-var-map)
     :risky (new-initial-genome-var-map)}))
 #_(new-initial-genome)
@@ -87,15 +87,24 @@
 
 (def max-clearable-lines 4)
 
+;; cljs doesn't have +'
+#?(:cljs (def +' +))
+
+(defn is-many-pixels [state]
+  (let [pixel-count (move-analysis/count-pixels state)]
+    (> pixel-count 46)))
+
+(defn pick-subgenome [state]
+  (if (is-many-pixels state)
+    :safe ;; typo
+    :risky))
+
 (defn calculate-score [genome {:keys [state] :as move}]
   (let [heights-from-bottom (move-analysis/find-heights-from-bottom state)
         relative-heights (move-analysis/find-relative-heights heights-from-bottom)
         max-piece-height (move-analysis/height relative-heights)
         min-piece-height (move-analysis/min-height state relative-heights)
-        pixel-count (move-analysis/count-pixels state)
-        g (genome-fn-continuous (genome (if (> pixel-count 46)
-                                          :safe
-                                          :risky)))
+        g (genome-fn-continuous (genome (pick-subgenome state)))
         {:keys [score]} state
         grouped-stepcounts (move-analysis/count-grouped-step-counts (move-analysis/count-steps heights-from-bottom)
                                                                     :step-more
@@ -183,17 +192,20 @@
 #_(mutate {:hi 0.50 :hi1 1.02})
 #_(mutate {:hi 0.50 :hi1 -1.02})
 
-(defn make-child-nested [mom-genome dad-genome]
-  (assoc mom-genome
-         :id (genome-name)
-         :risky (mutate (crossover (:risky mom-genome)
-                                   (:risky dad-genome)))
-         :safe (mutate (crossover (:safe mom-genome)
-                                  (:safe dad-genome)))))
+(defn make-child-nested [mom-genome dad-genome & subgenome-keys]
+  (reduce (fn [out-genome k]
+            (assoc out-genome
+                   k (mutate (crossover (k mom-genome)
+                                        (k dad-genome)))))
+          (assoc mom-genome
+                 :id (gen-genome-name))
+          subgenome-keys))
+#_(let [a (new-initial-genome)
+        b (new-initial-genome)]
+    [a (make-child-nested a b :risky)])
 
 (defn make-child [elites mom-genome]
-  (make-child-nested mom-genome
-                     (rand-nth elites)))
+  (make-child-nested mom-genome (rand-nth elites) :risky :safe))
 
 (defn run-genome-val-change-nested [f {:keys [risky safe] :as genome}]
   (assoc genome
@@ -211,7 +223,7 @@
 (defn ensure-weight-existence [genome]
   (merge
    genome
-   {:id (genome-name)}
+   {:id (gen-genome-name)}
    (run-genome-val-change-nested
     ensure-weight-existence-single
     genome)))
