@@ -9,8 +9,8 @@
 
 (defn get-git-revision []
   (->> (sh/sh "git" "rev-parse" "--short" "HEAD")
-       (:out)
-       (str/trim)))
+       :out
+       str/trim))
 
 (defn get-filename []
   (str "model-" (get-git-revision) ".edn"))
