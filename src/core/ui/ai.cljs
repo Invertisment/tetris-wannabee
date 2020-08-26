@@ -10,43 +10,43 @@
 
 (def genome
   (atom
-   {:id "genome-0.923081398176457"
-    :safe {:cumulative-height -0.16085964840580294
-           :step-2 0.08980444640654889
-           :hole-count 0.006915099755888278
-           :horizontal-fullness 0.015719425571859784
-           :hole-setback -0.2857056726744087
-           :step-3 0.031075671868679065
-           :roughness -0.45886290384856443
-           :step-1 0.21271473895455548
-           :well-depth-at-wall 0.06259490909419774
-           :well-depth-at-wall-minus-4 -0.2028438489064303
-           :step-4 0.3083784855433973
-           :step-more 0.10653230016029006
-           :step-5 0.06405802836703627
-           :rows-cleared -0.47687320633023855
-           :clearable-line-count 0.019145527888942287
-           :flatness -0.10905697733737865
-           :step-0 0.11190127622432539
-           :weighted-height 0.18089294295340977}
-    :risky {:cumulative-height -0.42671125944429555
-            :step-2 0.17682656191507104
-            :hole-count -0.004257934812928504
-            :horizontal-fullness 0.49124341018519796
-            :hole-setback -0.2717193424614014
-            :step-3 0.1269309716108025
-            :roughness -0.441626423288944
-            :step-1 0.208103958323619
-            :well-depth-at-wall 0.25562993665704126
-            :well-depth-at-wall-minus-4 -0.1987655946857668
-            :step-4 0.0759311066770729
-            :step-more -0.09149299484431775
-            :step-5 -0.1924612570953936
-            :rows-cleared 0.42296495570597065
-            :clearable-line-count -0.09963100870007481
-            :flatness -0.2669424850314774
-            :step-0 0.14790239079245943
-            :weighted-height 0.14471643831089054}}
+    {:id "genome-0.8095255140251257",
+     :safe {:cumulative-height -0.1371869053698236,
+            :step-2 0.2622074481287095,
+            :hole-count -0.011183011388528351,
+            :horizontal-fullness 0.062821382756814,
+            :hole-setback -0.509263168718674,
+            :step-3 0.04262758388006431,
+            :roughness -0.45644767017981636,
+            :step-1 0.13833321097341902,
+            :well-depth-at-wall -0.2287955043275355,
+            :well-depth-at-wall-minus-4 -0.2314182642167281,
+            :step-4 -0.06144270332205016,
+            :step-more -0.1534547194038845,
+            :step-5 0.013040115388539667,
+            :rows-cleared -0.38609509927275426,
+            :clearable-line-count -0.058070630847287794,
+            :flatness -0.11211019584452216,
+            :step-0 0.09131613489638726,
+            :weighted-height 0.20935593919975654},
+     :risky {:cumulative-height -0.4264094046079262,
+             :step-2 0.15325644170512132,
+             :hole-count -0.05169090478077197,
+             :horizontal-fullness 0.3703942287541342,
+             :hole-setback -0.47624848787817536,
+             :step-3 0.12146872232026773,
+             :roughness -0.3800723767777361,
+             :step-1 0.1752159897263349,
+             :well-depth-at-wall 0.2603094016170755,
+             :well-depth-at-wall-minus-4 -0.17368017608395797,
+             :step-4 -0.21313889451350587,
+             :step-more -0.2611418557896902,
+             :step-5 -0.2616621873121907,
+             :rows-cleared 0.405438127821814,
+             :clearable-line-count 0.364711771493039,
+             :flatness -0.31238848258738855,
+             :step-0 0.1696302704135465,
+             :weighted-height 0.10656744220231913}}
 
    ))
 
