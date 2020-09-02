@@ -34,9 +34,11 @@
                  states)
         scores (map get-score results)]
     {:genome genome
-     ;; Bias towards high-performing but a little risky genome
-     :final-score (+ (reduce + scores)
-                     (reduce max 0 scores))
+     ;;;; Bias towards high-performing but a little risky genome
+     ;;:final-score (+ (reduce + scores)
+     ;;                (reduce max 0 scores))
+     ;; Lowest score elimination
+     :final-score (reduce min (first scores) scores)
      #_(reduce min (first scores) scores)
      #_(quot (reduce + scores) field-count)
      :scores scores
@@ -78,7 +80,7 @@
         (recur
          (->> (concat
                elites
-               (map (partial genome/make-child elites) (cycle (take 5 elites))))
+               (map (partial genome/make-child elites) (cycle (take 10 elites))))
               (take population-size))
          (inc generation)))
       genomes)))
