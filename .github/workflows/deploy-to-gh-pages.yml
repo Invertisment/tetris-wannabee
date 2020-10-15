@@ -31,6 +31,7 @@ jobs:
           mkdir -p ./webDir
           cp index-prod.js ./webDir/index-prod.js
           cp index.html ./webDir/index.html
+          cp style.css ./webDir/style.css
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
