@@ -80,7 +80,7 @@
         (recur
          (->> (concat
                elites
-               (map (partial genome/make-child elites) (cycle (take 10 elites))))
+               (map (partial genome/make-child generation elites) (cycle (take 10 elites))))
               (take population-size))
          (inc generation)))
       genomes)))

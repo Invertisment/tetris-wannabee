@@ -3,7 +3,6 @@
             [core.constants :as const]))
 
 (def mutation-rate 0.2)
-;; 0.1 to both sides (+ or -)
 (def mutation-step 0.05)
 
 (defn new-initial-coefficient []
@@ -154,8 +153,13 @@
    {}
    (keys mom-genome)))
 
-(defn mutate-param [param]
-  (+ param (* (- (rand) 0.5) mutation-step)))
+(defn adjust-mutation-param [generation parameter]
+  ;; uses hyperbola to adjust by generation:
+  (/ (* 100 parameter) (+ 80 generation)))
+
+(defn mutate-param [generation param]
+  (+ param (* (- (rand) 0.5)
+              (adjust-mutation-param generation mutation-step))))
 
 (defn abs [a]
   (if (> a 0)
@@ -163,18 +167,19 @@
     (- a)))
 #_(abs -1)
 
-(defn mutate [genome]
+(defn mutate [generation genome]
   #_(reduce
-   (fn [genome k]
-     (if (and (> mutation-rate (rand)) (number? (k genome)))
-       (update genome k mutate-param)
-       genome))
-   genome
-   (keys genome))
-  (let [mutated-genome-kv-list (map
+     (fn [genome k]
+       (if (and (> mutation-rate (rand)) (number? (k genome)))
+         (update genome k mutate-param)
+         genome))
+     genome
+     (keys genome))
+  (let [adjusted-mutation-rate (adjust-mutation-param generation mutation-rate)
+        mutated-genome-kv-list (map
                                 (fn [[k orig-v]]
-                                  [k (if (> mutation-rate (rand))
-                                       (mutate-param orig-v)
+                                  [k (if (> adjusted-mutation-rate (rand))
+                                       (mutate-param generation orig-v)
                                        orig-v)])
                                 genome)
         max-value (->> mutated-genome-kv-list
@@ -188,15 +193,15 @@
           [k (/ orig-v max-value)])
         mutated-genome-kv-list)
        mutated-genome-kv-list))))
-#_(mutate {:hi 50 :hi1 1})
-#_(mutate {:hi 0.50 :hi1 1.02})
-#_(mutate {:hi 0.50 :hi1 -1.02})
+#_(mutate 0 {:hi 50 :hi1 1})
+#_(mutate 0 {:hi 0.50 :hi1 1.02})
+#_(mutate 0 {:hi 0.50 :hi1 -1.02})
 
-(defn make-child-nested [mom-genome dad-genome & subgenome-keys]
+(defn make-child-nested [generation mom-genome dad-genome & subgenome-keys]
   (reduce (fn [out-genome k]
             (assoc out-genome
-                   k (mutate (crossover (k mom-genome)
-                                        (k dad-genome)))))
+                   k (mutate generation (crossover (k mom-genome)
+                                                    (k dad-genome)))))
           (assoc mom-genome
                  :id (gen-genome-name))
           subgenome-keys))
@@ -204,8 +209,8 @@
         b (new-initial-genome)]
     [a (make-child-nested a b :risky)])
 
-(defn make-child [elites mom-genome]
-  (make-child-nested mom-genome (rand-nth elites) :risky :safe))
+(defn make-child [generation elites mom-genome]
+  (make-child-nested generation mom-genome (rand-nth elites) :risky :safe))
 
 (defn run-genome-val-change-nested [f {:keys [risky safe] :as genome}]
   (assoc genome
