@@ -1,76 +1,118 @@
 (ns core.field
-  (:require cljsjs.fabric
-            [clojure.set :refer [difference]]
+  (:require [clojure.set :refer [difference intersection union]]
             [core.constants :as const]))
 
 (def block-size-px 25)
 (def block-highlight-margin 3)
-(def block-roundness 2)
 
-(def main-canvas
-  (new js/fabric.StaticCanvas "game-canvas"))
-(def next-piece-canvas
-  (new js/fabric.StaticCanvas "next-piece-canvas"))
-(def hold-piece-canvas
-  (new js/fabric.StaticCanvas "hold-piece-canvas"))
+(defn get-canvas-context [html-id]
+  (.getContext (.getElementById js/document html-id) "2d"))
 
-(defn create-rect [color [x y]]
-  (new js/fabric.Group
-       (array
-        (new
-         js/fabric.Rect
-         (js-obj
-          "fill" color
-          "width" (- block-size-px block-roundness)
-          "height" (- block-size-px block-roundness)
-          "strokeLineJoin" "round"
-          "strokeWidth" block-roundness
-          "stroke" color))
-        (new
-         js/fabric.Rect
-         (js-obj
-          "fill" "transparent"
-          "width" (- block-size-px (/ block-roundness 2))
-          "height" (- block-size-px (/ block-roundness 2))
-          "strokeLineJoin" "round"
-          "strokeWidth" (/ block-roundness 2)
-          "stroke" "rgba(0,0,0,0.2)"))
-        (new
-         js/fabric.Polygon
-         (array
-          (clj->js {"x" 0 "y" 0})
-          (clj->js {"x" 5 "y" 0})
-          (clj->js {"x" 5 "y" 2})
-          (clj->js {"x" 2 "y" 2})
-          (clj->js {"x" 2 "y" 5})
-          (clj->js {"x" 2 "y" 5})
-          (clj->js {"x" 0 "y" 5}))
-         (js-obj
-          "fill" "rgba(200,255,255,0.6)"
-          "left" block-highlight-margin
-          "top" block-highlight-margin))
-        (new
-         js/fabric.Polygon
-         (array
-          (clj->js {"x" 0 "y" 0})
-          (clj->js {"x" 5 "y" 0})
-          (clj->js {"x" 5 "y" 2})
-          (clj->js {"x" 0 "y" 2})
-          (clj->js {"x" 0 "y" 5}))
-         (js-obj
-          "fill" "rgba(200,255,255,0.3)"
-          "left" 0
-          "top" 0)))
-       (clj->js {"left" (* x block-size-px)
-                 "top" (* y block-size-px)})))
+(def main-canvas-context
+  (get-canvas-context "game-canvas"))
+(def next-piece-canvas-context
+  (get-canvas-context "next-piece-canvas"))
+(def hold-piece-canvas-context
+  (get-canvas-context "hold-piece-canvas"))
 
-(defn create-rect-from-colored-pixel [{:keys [coord color]}]
-  (create-rect color coord))
+(defn calc-square-location [[x y]]
+  [(* x block-size-px)
+   (* y block-size-px)
+   block-size-px
+   block-size-px])
 
-(defn create-rects [li]
-  (into {} (map
-            (juxt identity create-rect-from-colored-pixel)
-            li)))
+;; https://stackoverflow.com/a/13485654/2159808
+(defn border [canvas-ctx stroke-style x y w h tl tr br bl]
+  (aset canvas-ctx "strokeStyle" stroke-style)
+  (aset canvas-ctx "lineWidth" 1)
+  (let [r (+ x w)
+        b (+ y h)]
+    (doto canvas-ctx
+      (.beginPath)
+      (.moveTo (+ x tl) y)
+      (.lineTo (- r tr) y)
+      (.quadraticCurveTo r y r (+ y tr))
+      (.lineTo r (- b br))
+      (.quadraticCurveTo r b (- r br) b)
+      (.lineTo (+ x bl) b)
+      (.quadraticCurveTo x b x (- b bl))
+      (.lineTo x (+ y tl))
+      (.quadraticCurveTo x y (+ x tl) y)
+      (.stroke))))
+
+(defn filled-border [canvas-ctx stroke-style fill-style x y w h tl tr br bl]
+  (aset canvas-ctx "fillStyle" fill-style)
+  (border canvas-ctx stroke-style x y w h tl tr br bl)
+  (.fill canvas-ctx))
+
+(def block-spacing 0.7)
+(def block-spacing-2 (* block-spacing 2))
+
+(defn square [canvas-ctx color x y x-size y-size]
+  (filled-border canvas-ctx
+                 color
+                 color
+                 (+ x block-spacing)
+                 (+ y block-spacing)
+                 (- x-size block-spacing-2)
+                 (- y-size block-spacing-2)
+                 0
+                 0
+                 0
+                 0))
+
+(defn path [canvas-ctx fill-style path-points]
+  (aset canvas-ctx "fillStyle" fill-style)
+  (.beginPath canvas-ctx)
+  (let [[[x y]] path-points]
+    (.moveTo canvas-ctx x y))
+  (reduce
+   (fn [_ [x y]]
+     (.lineTo canvas-ctx x y))
+   nil
+   path-points)
+  (.fill canvas-ctx))
+
+
+(defn highlight [canvas-ctx x y]
+  (path canvas-ctx "rgba(200,255,255,0.6)"
+        (map
+         (fn [[coord-x coord-y]]
+           [(+ x coord-x block-highlight-margin)
+            (+ y coord-y block-highlight-margin)])
+         [[0 0]
+          [5 0]
+          [5 2]
+          [2 2]
+          [2 5]
+          [2 5]
+          [0 5]]))
+  (path canvas-ctx "rgba(200,255,255,0.3)"
+        (map
+         (fn [[coord-x coord-y]]
+           [(+ x coord-x) (+ y coord-y)])
+         [[0 0]
+          [5 0]
+          [5 2]
+          [0 2]
+          [0 5]])))
+
+(defn draw-square [canvas-ctx {:keys [coord color]}]
+  (let [[x y x-size y-size] (calc-square-location coord)]
+    (square canvas-ctx color x y x-size y-size)
+    (border canvas-ctx
+            "rgba(0,0,0,0.02)"
+            (+ x 0.5) (+ y 0.5)
+            (dec x-size) (dec y-size)
+            0
+            0
+            0
+            0)
+    (highlight canvas-ctx x y)))
+
+(defn clear-square [canvas-ctx {:keys [coord color]}]
+  (let [[x y x-size y-size] (calc-square-location coord)]
+    (.clearRect canvas-ctx x y x-size y-size)))
 
 (defn get-debug-overlay [state]
   (when
@@ -102,53 +144,47 @@
         (reduce concat)
         (remove nil?))))
 
-(defn get-diff [old-visibles new-visibles]
-  (let
-    [o-set (set old-visibles)
-     n-set (set new-visibles)]
-    {:show (difference n-set o-set)
-     :hide (difference o-set n-set)}))
+(defn get-diff [in-field-visibles new-visibles]
+  (let [in-field (set in-field-visibles)
+        to-show (set new-visibles)]
+    {:rects-to-hide (difference in-field to-show)
+     :rects-to-show (difference to-show in-field)}))
 
-(defn show-on-canvas! [canvas show-remove-diff]
+(defn show-on-canvas! [canvas-context {:keys [rects-to-show rects-to-hide] :as rects-diff}]
   (reduce
-    #(.add %1 %2)
-    canvas
-    (vals (:rects-to-show show-remove-diff)))
+   (fn [canvas-context block]
+     (clear-square canvas-context block)
+     canvas-context)
+   canvas-context
+   rects-to-hide)
   (reduce
-    #(.remove %1 %2)
-    canvas
-    (vals (:rects-to-hide show-remove-diff))))
+   (fn [canvas-context block]
+     (draw-square canvas-context block)
+     canvas-context)
+   canvas-context
+   rects-to-show))
 
-(defn get-diff-blocks [field-pixels blocks]
-  (let
-      [{:keys [show hide]} (get-diff (keys field-pixels) blocks)
-       keyed-rects-to-show (create-rects show)
-       to-remove-main (select-keys field-pixels hide)]
-    {:rects-to-show keyed-rects-to-show
-     :rects-to-hide to-remove-main}))
-
-(defn update-prev-blocks [old-pixels pixels-diff]
-   (merge
-     (apply dissoc old-pixels (keys (:rects-to-hide pixels-diff)))
-     (:rects-to-show pixels-diff)))
+(defn update-prev-blocks [old-pixels {:keys [rects-to-show rects-to-hide] :as rects-diff}]
+  (-> old-pixels
+      (difference rects-to-hide)
+      (union rects-to-show)))
 
 (defn show! [field-pixels-atom state]
-  (let
-      [{:keys [field-pixels next-piece-pixels hold-piece-pixels]} @field-pixels-atom
-       field-pixels-diff (get-diff-blocks field-pixels (get-blocks state))
-       next-piece-pixels-diff (get-diff-blocks next-piece-pixels (-> state :next-pieces first :piece))
-       hold-piece-pixels-diff (get-diff-blocks hold-piece-pixels (-> state :hold-piece :piece))]
+  (let [{:keys [field-pixels next-piece-pixels hold-piece-pixels]} @field-pixels-atom
+        field-pixels-diff (get-diff field-pixels (get-blocks state))
+        next-piece-pixels-diff (get-diff next-piece-pixels (-> state :next-pieces first :piece))
+        hold-piece-pixels-diff (get-diff hold-piece-pixels (-> state :hold-piece :piece))]
     (reset!
      field-pixels-atom
      {:field-pixels (update-prev-blocks field-pixels field-pixels-diff)
       :next-piece-pixels (update-prev-blocks next-piece-pixels next-piece-pixels-diff)
-      :hold-piece-pixels (update-prev-blocks hold-piece-pixels hold-piece-pixels-diff) })
+      :hold-piece-pixels (update-prev-blocks hold-piece-pixels hold-piece-pixels-diff)})
     (show-on-canvas!
-     main-canvas
+     main-canvas-context
      field-pixels-diff)
     (show-on-canvas!
-     next-piece-canvas
+     next-piece-canvas-context
      next-piece-pixels-diff)
     (show-on-canvas!
-     hold-piece-canvas
+     hold-piece-canvas-context
      hold-piece-pixels-diff)))
