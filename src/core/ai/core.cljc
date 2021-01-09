@@ -30,7 +30,10 @@
 
 (defn best-of-n [is-game-ended-fn genome field-count states]
   (let [results (map
-                 (partial placement/apply-pieces-while is-game-ended-fn genome)
+                 (partial placement/apply-pieces-while
+                          is-game-ended-fn
+                          (partial placement/place-best-look2-piece is-game-ended-fn)
+                          genome)
                  states)
         scores (map get-score results)]
     {:genome genome
