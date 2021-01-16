@@ -64,14 +64,23 @@
 (defn down-no-validation [state]
   (piece-op-scalar identity inc state))
 
+(defn down-no-validation-by-number [state n]
+  (piece-op-scalar identity #(+ % n) state))
+
+(defn- bottom-recursive [valid? update-score-fn state min-found-height max-found-height]
+  (->> (iterate down-no-validation state)
+       (take-while valid?)
+       last))
+
+(defn- bottom-no-check [valid? update-score-fn {:keys [height] :as state}]
+  (down
+   valid?
+   update-score-fn
+   (bottom-recursive valid? update-score-fn state 0 (dec height))))
+
 (defn bottom [valid? update-score-fn state]
   (when (:piece state)
-    (down
-     valid?
-     update-score-fn
-     (last (take-while
-            valid?
-            (iterate down-no-validation state))))))
+    (bottom-no-check valid? update-score-fn state)))
 
 (defn new-field [next-pieces]
   (merge

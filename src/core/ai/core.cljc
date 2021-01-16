@@ -25,13 +25,11 @@
    (range field-count)))
 #_(mk-n-states 10 10)
 
-(defn is-game-ended [state]
-  (= (:game-state state) :ended))
-
 (defn best-of-n [is-game-ended-fn genome field-count states]
   (let [results (map
                  (partial placement/apply-pieces-while
                           is-game-ended-fn
+                          #_(partial placement/place-best-look2-piece is-game-ended-fn)
                           (partial placement/place-best-look2-piece is-game-ended-fn)
                           genome)
                  states)
@@ -59,7 +57,7 @@
     elites-with-state))
 
 (defn train-whole [map-fn field-count tetrominoes-count population-size genomes]
-  (let [elites-with-state (train-any is-game-ended map-fn field-count tetrominoes-count population-size genomes)]
+  (let [elites-with-state (train-any moves/is-game-ended? map-fn field-count tetrominoes-count population-size genomes)]
     (println "Best performances:" (map :scores (take 10 elites-with-state))
              "\nWorst performances:" (map :scores (take 10 (reverse elites-with-state)))
              "\nBest genome:" (:genome (first elites-with-state)))

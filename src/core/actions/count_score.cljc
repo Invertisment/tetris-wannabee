@@ -18,4 +18,7 @@
   (->> field-with-line-clear-data
        add-cleared-lines
        remove-lines-clear-data))
+#_(time (count-score {:line-clear-data {:count 15}}))
+#_(time (count-score {:line-clear-data {:count 15}
+                      :score {:lines-cleared 2}}))
 

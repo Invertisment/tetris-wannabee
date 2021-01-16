@@ -30,14 +30,14 @@
            pick-better-state
            ranked-piece-placements)))
 
-(defn pick-best-piece-placement [genome {:keys [width] :as state}]
+(defn pick-best-1deep-piece-placement [genome {:keys [width] :as state}]
   (->> (find-ranked-piece-placements genome state)
        pick-best-state))
 
 (defn- place-next-piece [is-game-ended-fn genome {:keys [state] :as placement}]
   (if (is-game-ended-fn (:state placement))
     placement
-    (let [next-placement (pick-best-piece-placement genome state)]
+    (let [next-placement (pick-best-1deep-piece-placement genome state)]
       (assoc placement
              :state (:state next-placement)))))
 
@@ -50,8 +50,8 @@
                    (calculate-score-for-single-piece-placement genome))))
        pick-best-state))
 
-(defn place-best-piece [genome state]
-  (:state (pick-best-piece-placement genome state)))
+(defn place-best-look1-piece [genome state]
+  (:state (pick-best-1deep-piece-placement genome state)))
 
 (defn place-best-look2-piece [is-game-ended-fn genome state]
   (:state (pick-best-2deep-piece-placement is-game-ended-fn genome state)))

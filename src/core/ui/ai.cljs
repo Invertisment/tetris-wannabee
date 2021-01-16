@@ -4,6 +4,7 @@
             [core.keys :as keys]
             [core.constants :as const]
             [core.ai.placement :as placement]
+            [core.ai.moves :as moves]
             [cljs.reader :as reader]))
 
 (def ai-loop-state (atom nil))
@@ -61,7 +62,8 @@
     nil))
 
 (defn find-next-piece [state]
-  (placement/pick-best-piece-placement @genome state))
+  (placement/pick-best-1deep-piece-placement @genome state)
+  #_(placement/pick-best-2deep-piece-placement moves/is-game-ended? @genome state))
 
 (defn deliver-next-state [state-atom change-listener]
   (let [prev-state @state-atom
@@ -116,7 +118,7 @@
            curr-game-state (:game-state new-state)]
        (when (= curr-game-state :started)
          (remove-watch state-atom :ai-restart))
-       (when (and (= prev-game-state :ended)
+       (when (and (moves/is-game-ended? prev-game-state)
                   (= curr-game-state :started))
          (setup-toggle state-atom change-listener)))))
   (setup-toggle state-atom change-listener))

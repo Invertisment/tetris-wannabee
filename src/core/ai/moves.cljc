@@ -32,6 +32,9 @@
 (defn valid-move? [{:keys [state] :as move}]
   (v/field-valid? state))
 
+(defn is-game-ended? [state]
+  (= :ended (:game-state state)))
+
 (defn propagate-move-iterate [move-fn path-key move iterations]
   (filter
    valid-move?
@@ -41,9 +44,9 @@
      (if (<= i 0)
        all-iterations
        (let [new-move (make-single-move move-fn path-key current-move)]
-         (if (= :ended (:game-state (:state new-move)))
+         (if (is-game-ended? (:state new-move))
            (do
-             (println "(= :ended (:game-state (:state new-move)))")
+             #_(println "(= :ended (:game-state (:state new-move)))")
              all-iterations)
            (recur
             (dec i)

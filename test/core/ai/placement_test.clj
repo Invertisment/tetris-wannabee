@@ -33,10 +33,10 @@
                 (map first)
                 frequencies)))))
 
-(deftest pick-best-piece-placement-test
+(deftest pick-best-1deep-piece-placement-test
   (testing "should take first when undecidable square"
     (is (= [:left :left :left :left :bottom]
-           (time (:path (sut/pick-best-piece-placement
+           (time (:path (sut/pick-best-1deep-piece-placement
                          noop-genome
                          (util/new-field
                           [util/square-piece]
