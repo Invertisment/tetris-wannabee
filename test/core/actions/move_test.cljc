@@ -94,12 +94,12 @@
             [nil nil nil nil "orangered" "orangered" nil nil nil nil]
             [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]
             [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]]
-           (time (->> (reduce
-                       (fn [field _]
-                         (move/bottom validators/field-valid? identity field))
-                       sample-field
-                       (range 15))
-                      :field)))))
+           (->> (reduce
+                 (fn [field _]
+                   (move/bottom validators/field-valid? identity field))
+                 sample-field
+                 (range 15))
+                :field))))
   (testing "should drop all pieces and end the game"
     (is (nil? (reduce
                (fn [field _]

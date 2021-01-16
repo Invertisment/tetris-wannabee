@@ -36,11 +36,11 @@
 (deftest pick-best-1deep-piece-placement-test
   (testing "should take first when undecidable square"
     (is (= [:left :left :left :left :bottom]
-           (time (:path (sut/pick-best-1deep-piece-placement
-                         noop-genome
-                         (util/new-field
-                          [util/square-piece]
-                          [])))))))
+           (:path (sut/pick-best-1deep-piece-placement
+                   noop-genome
+                   (util/new-field
+                    [util/square-piece]
+                    []))))))
   (testing "should take first when undecidable line"
     (is (= [:left :left :left :bottom]
            (:path (sut/pick-best-1deep-piece-placement
@@ -57,16 +57,16 @@
 (deftest pick-best-2deep-piece-placement-test
   (testing "should find that it's possible to clear a line (without :lines-cleared coeff)"
     (is (= [:rotate :rotate :rotate :right :right :right :right :bottom]
-           (time (:path (sut/pick-best-2deep-piece-placement
-                         (constantly false)
-                         line-clear-genome
-                         clearable-line-in-two-moves-field))))))
+           (:path (sut/pick-best-2deep-piece-placement
+                   (constantly false)
+                   line-clear-genome
+                   clearable-line-in-two-moves-field)))))
   (testing "should return regular next piece if game is ended"
     (is (= [:left :left :left :bottom]
-           (time (:path (sut/pick-best-2deep-piece-placement
-                         (constantly true)
-                         line-clear-genome
-                         clearable-line-in-two-moves-field)))))))
+           (:path (sut/pick-best-2deep-piece-placement
+                   (constantly true)
+                   line-clear-genome
+                   clearable-line-in-two-moves-field))))))
 
 (defn is-game-ended? [state]
   (= :ended (:game-state state)))
