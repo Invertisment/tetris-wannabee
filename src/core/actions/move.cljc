@@ -7,7 +7,8 @@
             [core.piece-validators :refer [validate]]
             [core.actions.clear-lines :refer [remove-full-lines]]
             [core.actions.new-piece :refer [new-piece]]
-            [core.actions.count-score :refer [count-score]]))
+            [core.actions.count-score :refer [count-score]]
+            [core.piece-validators :as v]))
 
 (defn- stick-and-generate-new-piece [valid? update-score-fn state]
   (->> state
@@ -123,6 +124,6 @@
    valid?
    ((direction key-code) valid? update-score-fn state)))
 
-(defn next-field-state [valid? update-score-fn state key-code]
-  (move valid? update-score-fn state key-code))
+(defn next-field-state [update-score-fn state key-code]
+  (move v/field-valid? update-score-fn state key-code))
 

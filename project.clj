@@ -5,13 +5,10 @@
                  [flames "0.4.0"]]
 
   :profiles {:dev
-             {:dependencies [[speclj "3.3.2"]
-                             [javax.xml.bind/jaxb-api "2.4.0-b180830.0359"] ;; workaround for java 8+
+             {:dependencies [[javax.xml.bind/jaxb-api "2.4.0-b180830.0359"] ;; workaround for java 8+
                              ]
-              :plugins [[lein-cljsbuild "1.1.7"]
-                        [speclj "3.3.2"]]
-              :source-paths ["src" "dev"]
-              :test-paths ["spec"]}}
+              :plugins [[lein-cljsbuild "1.1.7"]]
+              :source-paths ["src" "dev"]}}
   :clean-targets
   [[:cljsbuild :builds 0 :compiler :output-to]
    :target-path

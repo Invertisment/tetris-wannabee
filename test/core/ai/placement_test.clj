@@ -40,7 +40,19 @@
                          noop-genome
                          (util/new-field
                           [util/square-piece]
-                          []))))))))
+                          [])))))))
+  (testing "should take first when undecidable line"
+    (is (= [:left :left :left :bottom]
+           (:path (sut/pick-best-1deep-piece-placement
+                   noop-genome
+                   (merge
+                    util/empty-field
+                    util/line-piece))))))
+  (testing "should take first when undecidable (new field created by move package)"
+    (is (= [:left :left :left :left :bottom]
+           (:path (sut/pick-best-1deep-piece-placement
+                   noop-genome
+                   (move/new-field (take 3 (repeat util/square-piece)))))))))
 
 (deftest pick-best-2deep-piece-placement-test
   (testing "should find that it's possible to clear a line (without :lines-cleared coeff)"
@@ -55,3 +67,32 @@
                          (constantly true)
                          line-clear-genome
                          clearable-line-in-two-moves-field)))))))
+
+(defn is-game-ended? [state]
+  (= :ended (:game-state state)))
+
+(deftest apply-pieces-test
+  (testing "should apply moves"
+    (is (= {nil 208, "cyan" 12}
+           (->> (sut/apply-pieces-while
+                 is-game-ended?
+                 sut/place-best-look1-piece
+                 (genome/ensure-weight-existence {})
+                 (assoc
+                  (merge
+                   util/empty-field
+                   util/line-piece)
+                  :next-pieces
+                  (take 2 (repeat util/line-piece))))
+                (:field)
+                (reduce concat)
+                (frequencies)))))
+  (testing "should clear 2 lines with 10 squares as input"
+    (is (= {:lines-cleared 2}
+           (:score
+            (sut/apply-pieces-while
+             is-game-ended?
+             sut/place-best-look1-piece
+             (assoc-in (genome/ensure-weight-existence {})
+                       [:risky :weighted-height] -1)
+             (move/new-field (take 5 (repeat util/square-piece)))))))))

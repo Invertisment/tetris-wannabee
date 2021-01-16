@@ -1,6 +1,5 @@
 (ns core.actions.move-test
-  (:require #_[speclj.core :refer :all]
-            [core.actions.move :as move]
+  (:require [core.actions.move :as move]
             [core.constants :as const]
             [clojure.test :refer :all]
             [core.ai.util :as util]

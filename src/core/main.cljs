@@ -43,7 +43,6 @@
        (create-change-listener
         state/field
         state/before-save-piece-ch
-        v/field-valid?
         show-score-update-gravity-fn!)]
     (start-game
      state/field
