@@ -26,15 +26,26 @@
     (merge empty-field first-piece)
     :next-pieces other-pieces)))
 
+(defn simplify-piece-color [{:keys [piece] :as rich-piece}]
+  (update rich-piece
+          :piece
+          (fn [piece-pixels]
+            (map (fn [{:keys [color] :as pixel}]
+                   (assoc pixel :color (subs color 0 1)))
+                 piece-pixels))
+          #_map
+          #_(fn [px]
+              (assoc px :color "x"))))
+#_((juxt simplify-piece-color identity) line-piece)
+
 (defn new-field [[current-piece & next-pieces] directions]
   (reduce
    (fn [field direction]
      (direction
       v/field-valid?
       identity
-      ;;identity
       field))
    (assoc
-    (merge empty-field current-piece)
-    :next-pieces next-pieces)
+    (merge empty-field (simplify-piece-color current-piece))
+    :next-pieces (map simplify-piece-color next-pieces))
    directions))

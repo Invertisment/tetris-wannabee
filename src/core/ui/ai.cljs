@@ -62,17 +62,20 @@
     nil))
 
 (defn find-next-piece [state]
-  (placement/pick-best-1deep-piece-placement @genome state)
-  #_(placement/pick-best-2deep-piece-placement moves/is-game-ended? @genome state))
+  #_(placement/pick-best-1deep-piece-placement @genome state)
+  #_(placement/pick-best-2deep-piece-placement moves/is-game-ended? @genome state)
+  (placement/pick-best-2deepcheap-piece-placement moves/is-game-ended? @genome state))
 
 (defn deliver-next-state [state-atom change-listener]
-  (let [prev-state @state-atom
-        move (find-next-piece prev-state)]
-    (go-loop [[action & remaining-actions] (:path move)]
-      (<! (timeout 100))
-      (change-listener (action-to-key action))
-      (when remaining-actions
-        (recur remaining-actions)))))
+  (let [prev-state @state-atom]
+    (go (let [min-timeout (timeout 100)
+              path (:path (find-next-piece prev-state))]
+          (loop [[action & remaining-actions] path]
+            (<! min-timeout)
+            (change-listener (action-to-key action))
+            (when remaining-actions
+              (<! (timeout 100))
+              (recur remaining-actions)))))))
 
 (defn toggle-ai-state [state-atom]
   (let [state @state-atom

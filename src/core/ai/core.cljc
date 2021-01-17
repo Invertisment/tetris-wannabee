@@ -30,7 +30,7 @@
                  (partial placement/apply-pieces-while
                           is-game-ended-fn
                           #_(partial placement/place-best-look2-piece is-game-ended-fn)
-                          (partial placement/place-best-look2-piece is-game-ended-fn)
+                          placement/place-best-look1-piece
                           genome)
                  states)
         scores (map get-score results)]

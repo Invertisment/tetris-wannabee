@@ -15,9 +15,42 @@
     util/line-piece]
    [move/left move/left move/left move/bottom
     move/right move/bottom
+    ;; These are the clearing moves:
     ;;move/rotate-counter-clockwise move/right move/right move/right move/right move/bottom
     ;;move/rotate-counter-clockwise move/right move/right move/right move/right move/right move/bottom
     ]))
+
+(def clearable-2-lines-using-next-piece-field
+  (util/new-field
+   [util/line-piece
+    util/line-piece
+    util/line-piece
+    util/line-piece
+    util/t-piece ;; current piece
+    util/square-piece ;; next piece
+    util/square-piece ;; next-next piece
+    util/square-piece
+    ]
+   [move/left move/left move/left move/bottom
+    move/left move/left move/left move/bottom
+    move/right move/bottom
+    move/right move/bottom]))
+
+(def clearable-2-lines-using-first-piece-field
+  (util/new-field
+   [util/line-piece
+    util/line-piece
+    util/line-piece
+    util/line-piece
+    util/square-piece ;; current piece
+    util/t-piece ;; next piece
+    util/square-piece ;; next-next piece
+    util/square-piece
+    ]
+   [move/left move/left move/left move/bottom
+    move/left move/left move/left move/bottom
+    move/right move/bottom
+    move/right move/bottom]))
 
 (def noop-genome (genome/ensure-weight-existence {}))
 (def line-clear-genome (-> (genome/ensure-weight-existence {})
@@ -29,7 +62,7 @@
     (is (= {0 34}
            (->> (sut/find-ranked-piece-placements
                  noop-genome
-                 clearable-line-in-two-moves-field)
+                 (sut/to-move clearable-line-in-two-moves-field))
                 (map first)
                 frequencies)))))
 
@@ -38,21 +71,23 @@
     (is (= [:left :left :left :left :bottom]
            (:path (sut/pick-best-1deep-piece-placement
                    noop-genome
-                   (util/new-field
-                    [util/square-piece]
-                    []))))))
+                   (sut/to-move
+                    (util/new-field
+                     [util/square-piece]
+                     [])))))))
   (testing "should take first when undecidable line"
     (is (= [:left :left :left :bottom]
            (:path (sut/pick-best-1deep-piece-placement
                    noop-genome
-                   (merge
-                    util/empty-field
-                    util/line-piece))))))
+                   (sut/to-move
+                    (merge
+                     util/empty-field
+                     util/line-piece)))))))
   (testing "should take first when undecidable (new field created by move package)"
     (is (= [:left :left :left :left :bottom]
            (:path (sut/pick-best-1deep-piece-placement
                    noop-genome
-                   (move/new-field (take 3 (repeat util/square-piece)))))))))
+                   (sut/to-move (move/new-field (take 3 (repeat util/square-piece))))))))))
 
 (deftest pick-best-2deep-piece-placement-test
   (testing "should find that it's possible to clear a line (without :lines-cleared coeff)"
@@ -67,6 +102,39 @@
                    (constantly true)
                    line-clear-genome
                    clearable-line-in-two-moves-field))))))
+
+(deftest swap-next-piece-test
+  (testing "should find that it's possible to clear two lines instead of one using next piece"
+    (is (= [[{:coord [5 1] :color "g"}
+             {:coord [4 1] :color "g"}
+             {:coord [5 0] :color "g"}
+             {:coord [4 0] :color "g"}]
+            {:piece
+             [{:coord [4 1] :color "r"}
+              {:coord [5 1] :color "r"}
+              {:coord [4 0] :color "r"}
+              {:coord [3 1] :color "r"}]
+             :piece-bounds {:x-range [3 6] :y-range [0 3]}
+             :color "rebeccapurple"}]
+           ((juxt
+             :piece
+             (comp first :next-pieces)) (sut/swap-next-piece
+                                         (constantly false)
+                                         clearable-2-lines-using-next-piece-field))))))
+
+(deftest pick-best-2deepcheap-piece-placement-test
+  (testing "should find that it's possible to clear two lines when planning next piece first"
+    (is (= [:left :left :left :bottom]
+           (:path (sut/pick-best-2deepcheap-piece-placement
+                   (constantly false)
+                   line-clear-genome
+                   clearable-2-lines-using-next-piece-field)))))
+  (testing "should plan first two moves (and give :path for the first move only)"
+    (is (= [:right :right :right :right :bottom]
+           (:path (sut/pick-best-2deepcheap-piece-placement
+                   (constantly false)
+                   line-clear-genome
+                   clearable-2-lines-using-first-piece-field))))))
 
 (defn is-game-ended? [state]
   (= :ended (:game-state state)))

@@ -68,16 +68,16 @@
 (defn down-no-validation-by-number [state n]
   (piece-op-scalar identity #(+ % n) state))
 
-(defn- bottom-recursive [valid? update-score-fn state min-found-height max-found-height]
+(defn- bottom-iterative [update-score-fn state min-found-height max-found-height]
   (->> (iterate down-no-validation state)
-       (take-while valid?)
+       (take-while v/cheaper-field-valid?)
        last))
 
 (defn- bottom-no-check [valid? update-score-fn {:keys [height] :as state}]
   (down
    valid?
    update-score-fn
-   (bottom-recursive valid? update-score-fn state 0 (dec height))))
+   (bottom-iterative update-score-fn state 0 (dec height))))
 
 (defn bottom [valid? update-score-fn state]
   (when (:piece state)

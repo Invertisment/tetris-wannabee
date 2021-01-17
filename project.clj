@@ -2,7 +2,8 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/clojurescript "1.10.597"] ; 1.9.542 does not work
                  [org.clojure/core.async "1.1.582"]
-                 [flames "0.4.0"]]
+                 [flames "0.4.0"]
+                 [net.cgrand/xforms "0.19.2"]]
 
   :profiles {:dev
              {:dependencies [[javax.xml.bind/jaxb-api "2.4.0-b180830.0359"] ;; workaround for java 8+

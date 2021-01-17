@@ -118,14 +118,15 @@
         well-depth-at-wall (move-analysis/well-depth-at-wall heights-from-bottom)
         hole-coords (move-analysis/find-hole-coords state)
         ;;well-depth-one-px-from-wall (move-analysis/well-depth-one-px-from-wall heights-from-bottom)
+        [roughness flatness] (move-analysis/field-roughness-flatness heights-from-bottom)
         ]
     (+'
      (g :rows-cleared (get score :lines-cleared 0))
      (g :weighted-height max-piece-height)
      (g :cumulative-height (move-analysis/cumulative-height heights-from-bottom))
      (g :hole-count (move-analysis/count-holes hole-coords))
-     (g :roughness (move-analysis/field-roughness heights-from-bottom))
-     (g :flatness (move-analysis/field-flatness heights-from-bottom))
+     (g :roughness roughness)
+     (g :flatness flatness)
      (g :well-depth-at-wall well-depth-at-wall)
      #_(g :well-depth-one-px-from-wall well-depth-one-px-from-wall)
      (g :well-depth-at-wall-minus-4 (max (- well-depth-at-wall max-clearable-lines) 0))

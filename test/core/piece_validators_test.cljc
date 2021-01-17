@@ -26,7 +26,7 @@
                    [[nil nil nil]
                     [nil "a" nil]
                     [nil nil nil]]
-                   #{{:coord [2 2]}}))))
+                   [{:coord [2 2]}]))))
   (testing "happy path"
       (is (v/overlay?
                [[nil nil nil]
@@ -102,10 +102,6 @@
      (is (not (v/field-valid? {:width 1 :height 1
                                   :piece #{{:coord [0 0]}}
                                   :field nil}))))
- (testing "nil is not valid :coord"
-     (is (not (v/field-valid? {:width 1 :height 1
-                                  :piece #{{:coord nil}}
-                                  :field [[nil nil]]}))))
  (testing "invalid piece"
      (is (not (v/field-valid? {:width 1 :height 2
                                   :piece #{{:coord [-1 0]}}

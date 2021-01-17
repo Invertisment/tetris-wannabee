@@ -144,30 +144,6 @@
               (sut/height (sut/find-heights-from-bottom state)))
             (moves/find-piece-placements (placement/to-move unfinished-bridge-field)))))))
 
-(deftest field-roughness-test
-  (testing "should return roughness"
-    (is (= 3
-           (sut/field-roughness
-            (sut/find-heights-from-bottom finished-bridge-field)))))
-  (testing "should return height of the highest column"
-    (is (= [6 8 8 6 6 8 8 6 6 8 8 6 6 8 8 6 8 8 8 8 8 8 8 3 8 8 8 3 8 8 8 3 8 8 8 3]
-           (map
-            (fn [{:keys [state]}]
-              (sut/field-roughness (sut/find-heights-from-bottom state)))
-            (moves/find-piece-placements (placement/to-move unfinished-bridge-field))))))
-  (testing "should return height of the highest column"
-    (is (= 18
-           (sut/field-roughness [1 1 1 1 1 1 10 1 1 1 1]))))
-  (testing "should return height of the highest column"
-    (is (= 9
-           (sut/field-roughness [1 10]))))
-  (testing "should return height of the highest column"
-    (is (= 27
-           (sut/field-roughness [10 10 10 10 1 10 10 1 1]))))
-  (testing "should return height of the highest column"
-    (is (= 9
-           (sut/field-roughness [10 10 10 10 10 1 1 1 1])))))
-
 (deftest count-hole-depths-test
   (testing "should return depths to each hole"
     (is (= [[19 2] [21 4]]
@@ -268,13 +244,20 @@
   (testing "should return grouped steps 1"
     (is (= 10
            (sut/count-hole-setback unfinished-bridge-field (sut/find-hole-coords unfinished-bridge-field)))))
-  (testing "should return grouped steps 4"
+  (testing "should return grouped steps 2"
     (is (= 13
            (sut/count-hole-setback finished-bridge-field (sut/find-hole-coords finished-bridge-field)))))
-  (testing "should return grouped steps 4"
+  (testing "should return grouped steps 3"
     (is (= 67
            (sut/count-hole-setback three-times-four-hole-field
-                                   (sut/find-hole-coords three-times-four-hole-field))))))
+                                   (sut/find-hole-coords three-times-four-hole-field)))))
+  #_(testing "should be fast"
+      (is (time (loop [i 0]
+                  (if (>= i 100000)
+                    :done
+                    (do (sut/count-hole-setback three-times-four-hole-field
+                                                (sut/find-hole-coords three-times-four-hole-field))
+                        (recur (inc i)))))))))
 
 (deftest count-pixels-test
   (testing "should count pixels"
@@ -283,6 +266,39 @@
   (testing "should count pixels 2"
     (is (= 16
            (sut/count-pixels finished-bridge-field)))))
+
+(deftest field-roughness-flatness-test
+  (testing "should count pixels"
+    (is (= [4 7]
+           (sut/field-roughness-flatness (sut/find-heights-from-bottom unfinished-bridge-field)))))
+  (testing "should count pixels 2"
+    (is (= [3 7]
+           (sut/field-roughness-flatness (sut/find-heights-from-bottom finished-bridge-field)))))
+  (testing "should count pixels 2"
+    (is (= [17 5]
+           (sut/field-roughness-flatness (sut/find-heights-from-bottom three-times-four-hole-field)))))
+  (testing "should return roughness"
+    (is (= [3 7]
+           (sut/field-roughness-flatness
+            (sut/find-heights-from-bottom finished-bridge-field)))))
+  (testing "should return height of the highest column"
+    (is (= [[6 8 8 6 6 8 8 6 6 8 8 6 6 8 8 6 8 8 8 8 8 8 8 3 8 8 8 3 8 8 8 3 8 8 8 3]
+            [6 5 5 6 6 5 5 6 6 5 5 6 6 5 5 6 6 6 6 6 6 5 6 7 6 5 6 7 6 5 6 7 6 5 6 7]]
+           (->> (moves/find-piece-placements (placement/to-move unfinished-bridge-field))
+                (map (fn [{:keys [state]}] (sut/field-roughness-flatness (sut/find-heights-from-bottom state))))
+                (apply map vector)))))
+  (testing "should return height of the highest column"
+    (is (= [18 8]
+           (sut/field-roughness-flatness [1 1 1 1 1 1 10 1 1 1 1]))))
+  (testing "should return height of the highest column"
+    (is (= [9 0]
+           (sut/field-roughness-flatness [1 10]))))
+  (testing "should return height of the highest column"
+    (is (= [27 5]
+           (sut/field-roughness-flatness [10 10 10 10 1 10 10 1 1]))))
+  (testing "should return height of the highest column"
+    (is (= [9 7]
+           (sut/field-roughness-flatness [10 10 10 10 10 1 1 1 1])))))
 
 (deftest find-clearable-line-count-test
   (testing "should count 1px clearable lines"
@@ -303,3 +319,14 @@
             one-clearable-line-field
             (sut/height (sut/find-heights-from-bottom one-clearable-line-field))
             (reduce min const/field-height (sut/find-heights-from-bottom one-clearable-line-field)))))))
+
+(deftest well-depth-at-wall-test
+  (testing "should count 1px clearable lines"
+    (is (= 3
+           (sut/well-depth-at-wall (sut/find-heights-from-bottom unfinished-bridge-field)))))
+  (testing "should count 1px clearable lines; no results"
+    (is (= 0
+           (sut/well-depth-at-wall (sut/find-heights-from-bottom finished-bridge-field)))))
+  (testing "should count 1px clearable lines; no results"
+    (is (= 3
+           (sut/well-depth-at-wall (sut/find-heights-from-bottom one-clearable-line-field))))))

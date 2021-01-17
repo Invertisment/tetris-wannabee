@@ -52,18 +52,18 @@
   (testing "should not do infinite loop on no :piece"
     (is (= nil (move/bottom (constantly true) identity {}))))
   (testing "should put piece to bottom of the field"
-    (is (= [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]
+    (is (= [nil nil nil "c" "c" "c" "c" nil nil nil]
            (->> sample-field
                 (move/bottom validators/field-valid? identity)
                 :field
                 last))))
   (testing "should all pieces to bottom of the field"
     (is (= [[nil nil nil nil nil nil nil nil nil nil]
-            [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]
-            [nil nil nil "orangered" "orangered" nil nil nil nil nil]
-            [nil nil nil nil "orangered" "orangered" nil nil nil nil]
-            [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]
-            [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]]
+            [nil nil nil "c" "c" "c" "c" nil nil nil]
+            [nil nil nil "o" "o" nil nil nil nil nil]
+            [nil nil nil nil "o" "o" nil nil nil nil]
+            [nil nil nil "c" "c" "c" "c" nil nil nil]
+            [nil nil nil "c" "c" "c" "c" nil nil nil]]
            (->> sample-field
                 (move/bottom validators/field-valid? identity)
                 (move/bottom validators/field-valid? identity)
@@ -73,27 +73,27 @@
                 (take-last 6)))))
   (testing "should drop all pieces"
     (is (= [[nil nil nil nil nil nil nil nil nil nil]
-            [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]
-            [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]
-            [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]
-            [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]
-            [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]
-            [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]
-            [nil nil nil "orangered" "orangered" nil nil nil nil nil]
-            [nil nil nil nil "orangered" "orangered" nil nil nil nil]
-            [nil nil nil "orangered" "orangered" nil nil nil nil nil]
-            [nil nil nil nil "orangered" "orangered" nil nil nil nil]
-            [nil nil nil "orangered" "orangered" nil nil nil nil nil]
-            [nil nil nil nil "orangered" "orangered" nil nil nil nil]
-            [nil nil nil "orangered" "orangered" nil nil nil nil nil]
-            [nil nil nil nil "orangered" "orangered" nil nil nil nil]
-            [nil nil nil "orangered" "orangered" nil nil nil nil nil]
-            [nil nil nil nil "orangered" "orangered" nil nil nil nil]
-            [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]
-            [nil nil nil "orangered" "orangered" nil nil nil nil nil]
-            [nil nil nil nil "orangered" "orangered" nil nil nil nil]
-            [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]
-            [nil nil nil "cyan" "cyan" "cyan" "cyan" nil nil nil]]
+            [nil nil nil "c" "c" "c" "c" nil nil nil]
+            [nil nil nil "c" "c" "c" "c" nil nil nil]
+            [nil nil nil "c" "c" "c" "c" nil nil nil]
+            [nil nil nil "c" "c" "c" "c" nil nil nil]
+            [nil nil nil "c" "c" "c" "c" nil nil nil]
+            [nil nil nil "c" "c" "c" "c" nil nil nil]
+            [nil nil nil "o" "o" nil nil nil nil nil]
+            [nil nil nil nil "o" "o" nil nil nil nil]
+            [nil nil nil "o" "o" nil nil nil nil nil]
+            [nil nil nil nil "o" "o" nil nil nil nil]
+            [nil nil nil "o" "o" nil nil nil nil nil]
+            [nil nil nil nil "o" "o" nil nil nil nil]
+            [nil nil nil "o" "o" nil nil nil nil nil]
+            [nil nil nil nil "o" "o" nil nil nil nil]
+            [nil nil nil "o" "o" nil nil nil nil nil]
+            [nil nil nil nil "o" "o" nil nil nil nil]
+            [nil nil nil "c" "c" "c" "c" nil nil nil]
+            [nil nil nil "o" "o" nil nil nil nil nil]
+            [nil nil nil nil "o" "o" nil nil nil nil]
+            [nil nil nil "c" "c" "c" "c" nil nil nil]
+            [nil nil nil "c" "c" "c" "c" nil nil nil]]
            (->> (reduce
                  (fn [field _]
                    (move/bottom validators/field-valid? identity field))
@@ -168,17 +168,6 @@
                  {}))
               ]
            (= piece-bounds (:piece-bounds (first next-pieces)))))))
-  #_(testing "should call gravity-restart-fn"
-      (is (= 1
-             (count-calls
-              gravity-fn-call-counter
-              (remove-random-elements
-               (limit-next-pieces
-                (move/new-game
-                 (constantly true)
-                 gravity-fn-call-counter
-                 {})
-                1))) )))
   (testing "should have many nils in :field"
     (is (= {nil 220}
            (frequencies

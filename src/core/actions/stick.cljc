@@ -11,9 +11,9 @@
     (transient field)
     piece)))
 
-(defn stick-piece [{:keys [field piece] :as state}]
+(defn stick-piece [{:keys [field piece piece-path] :as state}]
   (assoc
-   (dissoc state :piece :piece-bounds)
+   (dissoc state :piece :piece-bounds :piece-path)
    :field
-   (put-piece field piece)))
-
+   (put-piece field piece)
+   :prev-piece-path (into piece-path piece)))

@@ -34,7 +34,8 @@
 
 ;; https://github.com/jstepien/flames
 ;; http://localhost:54321/flames.svg
-#_(def flames (flames/start! {:port 54321, :host "localhost"}))
+#_(def flames (flames/start! {:port 54321, :host "localhost" :dt 5 :load 0.05}))
+#_(def flames (flames/start! {:port 54321, :host "localhost" :dt 2 :load 0.1}))
 #_(flames/stop! flames)
 
 #_(profile)

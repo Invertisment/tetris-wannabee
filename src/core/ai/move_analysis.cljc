@@ -1,5 +1,6 @@
 (ns core.ai.move-analysis
-  (:require [clojure.set :as set]))
+  (:require [clojure.set :as set]
+            [net.cgrand.xforms :as x]))
 
 (defn find-heights-from-bottom [{:keys [width height field] :as state}]
   (->> (first field)
@@ -14,11 +15,17 @@
               height)))
        (map #(- height %))))
 
+(def reducer-count
+  (completing
+   (fn [number _]
+     (inc number))))
+
 (defn count-pixels [{:keys [field] :as state}]
-  (->> field
-       (reduce concat)
-       (filter (comp not nil?))
-       count))
+  (transduce (comp (mapcat identity)
+                   (remove nil?))
+             reducer-count
+             0
+             field))
 
 (defn find-relative-heights [heights-from-bottom]
   (->> heights-from-bottom
@@ -65,7 +72,9 @@
         (condp = remaining-pixel-count
           1 (recur remaining-pixels
                    remaining-lines
-                   (if (= 9 (count (filter identity line)))
+                   (if (= 1 (->> (filter nil? line)
+                                 (take 2)
+                                 count))
                      (inc clearable-line-count)
                      clearable-line-count))
           0 clearable-line-count
@@ -104,37 +113,51 @@
 
 (defn abs [n] (max n (- n)))
 
-;; sum of absolute differences between neighbours
-;; if the game field is empty this is zero
-;; except one outlier (for deepest well)
-(defn field-roughness [heights-from-bottom]
-  #_(let #_[min-height (reduce min heights-from-bottom)]
-         (->> heights-from-bottom
-              #_(remove #(= min-height %))
-              (partition 2 1)
-              (map (fn [[a b]] (abs (- a b))))
-              (reduce +)))
-  (->> heights-from-bottom
-       (partition 2 1)
-       (map (fn [[a b]] (abs (- a b))))
-       (reduce +)))
+(defn- field-flatness-imperative [roughness-counter flatness-counter heights-from-bottom]
+  (loop [roughness-counter roughness-counter
+         flatness-counter flatness-counter
+         last-height (first heights-from-bottom)
+         [current-height & remaining-heights] (rest heights-from-bottom)]
+    (if-not current-height
+      [roughness-counter flatness-counter]
+      (recur (+ roughness-counter (abs (- last-height current-height)))
+             ((if (= last-height current-height)
+                inc
+                identity)
+              flatness-counter)
+             current-height remaining-heights))))
 
+;; Flatness:
 ;; sum of all flat neighbours
 ;; if the game field is empty this is the width of the map
 ;; except one outlier (for deepest well)
-(defn field-flatness [heights-from-bottom]
-  (->> heights-from-bottom
+;;
+;; Roughness:
+;; sum of absolute differences between neighbours
+;; if the game field is empty this is zero
+;; except one outlier (for deepest well)
+(defn field-roughness-flatness [heights-from-bottom]
+  (field-flatness-imperative 0 0 heights-from-bottom)
+  #_(transduce
+   (comp
+    (x/partition 2 1 (x/into []))
+    (filter (fn [[a b]] (= a b))))
+   reducer-count
+   0
+   heights-from-bottom
+   #_(partition 2 1 heights-from-bottom))
+  #_(->> heights-from-bottom
        (partition 2 1)
        (filter #(apply = %))
        count))
 
-(defn calc-difference [h1 h2]
+(defn calc-difference [[h1 h2]]
   (abs (- h1 h2)))
 
 ;; deepest side hole near side of the map
 (defn well-depth-at-wall [heights-from-bottom]
-  (max (apply calc-difference (take 2 heights-from-bottom))
-       (apply calc-difference (reverse (take-last 2 heights-from-bottom)))))
+  (max (calc-difference (take 2 heights-from-bottom))
+       (calc-difference (take-last 2 heights-from-bottom))))
 
 #_(well-depth-at-wall [1 5 6 7 8 9])
 
@@ -206,20 +229,20 @@
      more-key more-size)))
 
 (defn find-hole-coords [{:keys [width height field]}]
-  (->> (for [x-index (range width)
-             y-index (range 0 (dec height))
-             :let [y-inc (inc y-index)]
-             :when (and (-> field
-                            (nth y-index)
-                            (nth x-index))
-                        (not (-> field
-                                 (nth y-inc)
-                                 (nth x-index))))]
-         [x-index y-inc])))
+  (for [x-index (range width)
+        y-index (range 0 (dec height))
+        :when (and (-> field
+                       (nth y-index)
+                       (nth x-index))
+                   (not (-> field
+                            (nth (inc y-index))
+                            (nth x-index))))]
+    [x-index (inc y-index)]))
 
 (defn count-hole-setback [{:keys [height]} holes-coords]
-  (->> holes-coords
-       (map #(->> %
-                  (second)
-                  (- height)))
-       (reduce + 0)))
+  (transduce (map #(->> %
+                        (second)
+                        (- height)))
+             +
+             0
+             holes-coords))
