@@ -66,15 +66,17 @@
   #_(placement/pick-best-2deep-piece-placement moves/is-game-ended? @genome state)
   (placement/pick-best-2deepcheap-piece-placement moves/is-game-ended? @genome state))
 
+(defonce inter-piece-timeout 100)
+
 (defn deliver-next-state [state-atom change-listener]
   (let [prev-state @state-atom]
-    (go (let [min-timeout (timeout 100)
+    (go (let [min-timeout (timeout inter-piece-timeout)
               path (:path (find-next-piece prev-state))]
           (loop [[action & remaining-actions] path]
             (<! min-timeout)
             (change-listener (action-to-key action))
             (when remaining-actions
-              (<! (timeout 100))
+              (<! (timeout inter-piece-timeout))
               (recur remaining-actions)))))))
 
 (defn toggle-ai-state [state-atom]

@@ -29,7 +29,8 @@
 (defn pick-best-state [ranked-piece-placements]
   (second (reduce
            pick-better-state
-           ranked-piece-placements)))
+           (first ranked-piece-placements)
+           (rest ranked-piece-placements))))
 
 (defn pick-best-1deep-piece-placement [genome placement]
   (->> placement
@@ -57,19 +58,21 @@
   (let [[next-piece] next-pieces
         piece-keys (keys next-piece)
         current-piece (select-keys state piece-keys)]
-    (assoc (merge state next-piece)
+    (assoc (new-piece/new-piece v/field-valid? state)
            :next-pieces (cons current-piece next-pieces))))
 
 ;; 2N
 (defn- place-two-pieces-returning-first-piece-coord-path [is-game-ended-fn genome placement first-move-placements]
   (if (is-game-ended-fn (:state placement))
     placement
-    (let [first-placement (->> first-move-placements
-                               (calculate-scores genome)
-                               pick-best-state)]
+    (let [first-placement (or (->> first-move-placements
+                                   (calculate-scores genome)
+                                   pick-best-state)
+                              placement)]
       (if (is-game-ended-fn (:state first-placement))
         first-placement
-        (assoc (assoc-in (pick-best-1deep-piece-placement genome first-placement)
+        (assoc (assoc-in (or (pick-best-1deep-piece-placement genome first-placement)
+                             first-placement)
                          [:state :prev-piece-path]
                          (:prev-piece-path (:state first-placement)))
                :path (:path first-placement))))))
@@ -125,6 +128,11 @@
 
 (defn place-best-look2-piece [is-game-ended-fn genome state]
   (:state (pick-best-2deep-piece-placement is-game-ended-fn genome state)))
+
+(defn place-best-2deepcheap-piece [is-game-ended-fn genome state]
+  (let [state (:state (pick-best-2deepcheap-piece-placement is-game-ended-fn genome state))]
+    (println (:score state))
+    state))
 
 (defn apply-pieces-while [is-game-ended-fn place-best-piece-fn genome state]
   (loop [state state]
