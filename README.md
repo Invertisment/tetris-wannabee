@@ -1,5 +1,5 @@
 # ClojureScript tetris
-Compiles to JavaScript.
+Compiles to JavaScript (for playing in browser) and Java (for headless training).
 Playable on browser and controllable with keyboard: https://invertisment.github.io/cljs-tetris/
 
 #### Controls:
@@ -11,13 +11,13 @@ Playable on browser and controllable with keyboard: https://invertisment.github.
 
 #### Development
 ##### Tools
-lein, cljs, speclj
+lein, cljs, clojure test
 
 ##### Auto build
 lein cljsbuild auto
 
 ##### Running tests
-lein spec -a
+lein test
 
 ##### AI mechanism training
 lein run
