@@ -7,7 +7,17 @@
             [core.ai.moves :as moves]
             [cljs.reader :as reader]))
 
-(def ai-loop-state (atom nil))
+(def ai-regular-speed {:type :regular
+                       :piece-move-timeout 100
+                       :inter-piece-timeout 200
+                       :should-stop false})
+
+(def ai-fast-speed {:type :fast
+                    :piece-move-timeout 0
+                    :inter-piece-timeout 1
+                    :should-stop false})
+
+(def ai-loop-state (atom ai-regular-speed))
 
 (def genome
   (atom
@@ -66,45 +76,58 @@
   #_(placement/pick-best-2deep-piece-placement moves/is-game-ended? @genome state)
   (placement/pick-best-2deepcheap-piece-placement moves/is-game-ended? @genome state))
 
-(defonce inter-piece-timeout 100)
-
 (defn deliver-next-state [state-atom change-listener]
-  (let [prev-state @state-atom]
-    (go (let [min-timeout (timeout inter-piece-timeout)
+  (let [inter-piece-timeout (:inter-piece-timeout @ai-loop-state)
+        piece-move-timeout (:piece-move-timeout @ai-loop-state)]
+    (go (let [_ (<! (timeout inter-piece-timeout))
+              prev-state @state-atom
+              min-timeout (timeout piece-move-timeout)
               path (:path (find-next-piece prev-state))]
           (loop [[action & remaining-actions] path]
             (<! min-timeout)
             (change-listener (action-to-key action))
             (when remaining-actions
-              (<! (timeout inter-piece-timeout))
+              (<! (timeout piece-move-timeout))
               (recur remaining-actions)))))))
 
-(defn toggle-ai-state [state-atom]
+(defn ai-fast? []
+  (= :fast (:type @ai-loop-state)))
+
+(defn set-ai-speed! [value]
+  (reset! ai-loop-state value))
+
+(defn toggle-ai-UI-visibility! [should-show]
+  (let [box-style (.-style (js/document.getElementById "show-when-ai"))]
+    (if should-show
+      (set! (.-display box-style) "initial")
+      (set! (.-display box-style) "none"))))
+
+(defn toggle-ai-state! [state-atom]
   (let [state @state-atom
-        new-state (not (:ai-is-on state))]
+        should-start-ai-loop (not (:ai-running @state-atom))]
+    (toggle-ai-UI-visibility! should-start-ai-loop)
     (reset!
      state-atom
      (assoc
       state
-      :time-freeze new-state
-      :ai-is-on new-state))
-    (reset! ai-loop-state new-state)
-    new-state))
+      :ai-running should-start-ai-loop))
+    (reset! ai-loop-state (assoc ai-regular-speed
+                                 :should-stop (not should-start-ai-loop)))
+    should-start-ai-loop))
 
 (defn start-ai-loop [state-atom change-listener]
   (go-loop [prev-state @state-atom]
-    (<! (timeout 200))
-    (when @ai-loop-state
+    (when-not (:should-stop @ai-loop-state)
       (<! (deliver-next-state state-atom change-listener))
       (let [new-state @state-atom]
         (if (= prev-state new-state)
-          (toggle-ai-state state-atom)
+          (toggle-ai-state! state-atom)
           (recur new-state))))))
 
 (defn create-ai-toggle [state-atom change-listener]
   (fn []
-    (let [new-state (toggle-ai-state state-atom)]
-      (when new-state
+    (let [should-start-ai-loop (toggle-ai-state! state-atom)]
+      (when should-start-ai-loop
         (start-ai-loop state-atom change-listener)))))
 
 (defn setup-toggle [state-atom change-listener]
@@ -134,13 +157,18 @@
 (defn setup-genome-controls []
   (keys/setup-key-listener
    (fn [char-code]
-     (when (= char-code const/toggle-ai-controls)
-       (let [box-style (.-style (js/document.getElementById "ai-vars-area"))]
-         #_(println (.-visibility box-style))
-         (if (= "hidden" (.-visibility box-style))
-           (set! (.-visibility box-style) "visible")
-           (set! (.-visibility box-style) "hidden")))
-       (let [vars-data (js/document.getElementById "ai-vars-data")
-             update-button (js/document.getElementById "ai-vars-data-update-button")]
-         (set! (.-value vars-data) @genome)
-         (set! (.-onclick update-button) #(update-genome (.-value vars-data))))))))
+     (cond (= char-code const/toggle-ai-speed) (set-ai-speed!
+                                                (if (ai-fast?)
+                                                  ai-regular-speed
+                                                  ai-fast-speed))
+           (= char-code const/toggle-ai-controls)
+           (do (let [box-style (.-style (js/document.getElementById "ai-vars-area"))]
+                 #_(println (.-visibility box-style))
+                 (if (= "hidden" (.-visibility box-style))
+                   (set! (.-visibility box-style) "visible")
+                   (set! (.-visibility box-style) "hidden")))
+               (let [vars-data (js/document.getElementById "ai-vars-data")
+                     update-button (js/document.getElementById "ai-vars-data-update-button")]
+                 (set! (.-value vars-data) @genome)
+                 (set! (.-onclick update-button) #(update-genome (.-value vars-data)))))
+           :else nil))))

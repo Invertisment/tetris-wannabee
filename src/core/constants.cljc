@@ -14,6 +14,7 @@
 (def hold "KeyR")
 (def new-game "KeyN")
 (def toggle-ai "KeyM")
+(def toggle-ai-speed "Minus")
 (def toggle-ai-controls "Equal")
 (def gravity-pull-down "internal_gravity-pull")
 
