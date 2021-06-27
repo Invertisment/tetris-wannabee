@@ -31,4 +31,4 @@
     next-field-state
     state-atom
     update-score-fn
-    const/new-game)))
+    (first const/new-game))))

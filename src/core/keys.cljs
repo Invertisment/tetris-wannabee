@@ -7,4 +7,4 @@
 (defn setup-key-listener [on-key-fn]
   (-> js/document
       (.getElementById "doc-body")
-      (.addEventListener "keypress" (produce-keypress-fn on-key-fn))))
+      (.addEventListener "keydown" (produce-keypress-fn on-key-fn))))

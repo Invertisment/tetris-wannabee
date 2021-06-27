@@ -64,11 +64,11 @@
 
 (defn action-to-key [movement-id]
   (condp = movement-id
-    :left const/left
-    :right const/right
-    :down const/down
-    :bottom const/bottom
-    :rotate const/rotate
+    :left (first const/left)
+    :right (first const/right)
+    :down (first const/down)
+    :bottom (first const/bottom)
+    :rotate (first const/rotate-clockwise)
     nil))
 
 (defn find-next-piece [state]
@@ -134,7 +134,7 @@
   (let [ai-toggle (create-ai-toggle state-atom change-listener)]
     (keys/setup-key-listener
      (fn [char-code]
-       (when (= char-code const/toggle-ai)
+       (when (const/toggle-ai char-code)
          (ai-toggle))))))
 
 (defn setup [state-atom change-listener]
@@ -157,18 +157,20 @@
 (defn setup-genome-controls []
   (keys/setup-key-listener
    (fn [char-code]
-     (cond (= char-code const/toggle-ai-speed) (set-ai-speed!
-                                                (if (ai-fast?)
-                                                  ai-regular-speed
-                                                  ai-fast-speed))
-           (= char-code const/toggle-ai-controls)
-           (do (let [box-style (.-style (js/document.getElementById "ai-vars-area"))]
-                 #_(println (.-visibility box-style))
-                 (if (= "hidden" (.-visibility box-style))
-                   (set! (.-visibility box-style) "visible")
-                   (set! (.-visibility box-style) "hidden")))
-               (let [vars-data (js/document.getElementById "ai-vars-data")
-                     update-button (js/document.getElementById "ai-vars-data-update-button")]
-                 (set! (.-value vars-data) @genome)
-                 (set! (.-onclick update-button) #(update-genome (.-value vars-data)))))
-           :else nil))))
+     (condp (fn [expected const-value]
+              (expected const-value)) char-code
+       const/toggle-ai-speed (set-ai-speed!
+                              (if (ai-fast?)
+                                ai-regular-speed
+                                ai-fast-speed))
+       const/toggle-ai-controls
+       (do (let [box-style (.-style (js/document.getElementById "ai-vars-area"))]
+             #_(println (.-visibility box-style))
+             (if (= "hidden" (.-visibility box-style))
+               (set! (.-visibility box-style) "visible")
+               (set! (.-visibility box-style) "hidden")))
+           (let [vars-data (js/document.getElementById "ai-vars-data")
+                 update-button (js/document.getElementById "ai-vars-data-update-button")]
+             (set! (.-value vars-data) @genome)
+             (set! (.-onclick update-button) #(update-genome (.-value vars-data)))))
+       nil))))

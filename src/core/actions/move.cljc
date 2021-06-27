@@ -106,14 +106,14 @@
 (defn nop [& args])
 
 (defn direction [const-value]
-  (condp = const-value
-    const/rotate #'rotate
+  (condp (fn [expected const-value]
+           (expected const-value)) const-value
+    const/rotate-clockwise #'rotate
     const/left #'left
     const/right #'right
     const/down #'down
     const/bottom #'bottom
     const/hold #'hold
-    const/rotate-clockwise #'rotate
     const/rotate-counter-clockwise #'rotate-counter-clockwise
     const/new-game #'new-game
     const/gravity-pull-down #'gravity-down
