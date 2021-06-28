@@ -1,6 +1,7 @@
 (ns core.ui.ai
+  (:require-macros [cljs.core.async.macros :refer [go-loop go]])
   (:require [core.ui.time :as time]
-            [cljs.core.async :refer [go <! timeout chan dropping-buffer go-loop]]
+            [cljs.core.async :refer [<! timeout chan] :as async]
             [core.keys :as keys]
             [core.constants :as const]
             [core.ai.placement :as placement]
@@ -76,18 +77,25 @@
   #_(placement/pick-best-2deep-piece-placement moves/is-game-ended? @genome state)
   (placement/pick-best-2deepcheap-piece-placement moves/is-game-ended? @genome state))
 
+(defn mk-piece-timeout-fn! [timeout-ms]
+  (if (= 0 timeout-ms)
+    (let [closed-ch (doto (chan)
+                      (async/close!))]
+      (constantly closed-ch))
+    (fn []
+      (timeout timeout-ms))))
+
 (defn deliver-next-state [state-atom change-listener]
-  (let [inter-piece-timeout (:inter-piece-timeout @ai-loop-state)
-        piece-move-timeout (:piece-move-timeout @ai-loop-state)]
-    (go (let [_ (<! (timeout inter-piece-timeout))
+  (let [calculation-timeout-fn (mk-piece-timeout-fn! (:inter-piece-timeout @ai-loop-state))
+        piece-move-timeout-fn (mk-piece-timeout-fn! (:piece-move-timeout @ai-loop-state))]
+    (go (let [calculation-timeout (calculation-timeout-fn)
               prev-state @state-atom
-              min-timeout (timeout piece-move-timeout)
               path (:path (find-next-piece prev-state))]
+          (<! calculation-timeout)
           (loop [[action & remaining-actions] path]
-            (<! min-timeout)
-            (change-listener (action-to-key action))
+            (<! (piece-move-timeout-fn))
+            (<! (change-listener (action-to-key action)))
             (when remaining-actions
-              (<! (timeout piece-move-timeout))
               (recur remaining-actions)))))))
 
 (defn ai-fast? []
