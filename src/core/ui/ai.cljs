@@ -93,8 +93,10 @@
               path (:path (find-next-piece prev-state))]
           (<! calculation-timeout)
           (loop [[action & remaining-actions] path]
-            (<! (piece-move-timeout-fn))
-            (<! (change-listener (action-to-key action)))
+            (let [piece-timeout (piece-move-timeout-fn)
+                  change-timeout (change-listener (action-to-key action))]
+              (<! piece-timeout)
+              (<! change-timeout))
             (when remaining-actions
               (recur remaining-actions)))))))
 
