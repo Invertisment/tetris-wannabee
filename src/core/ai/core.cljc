@@ -86,4 +86,5 @@
                (map (partial genome/make-child generation elites) (cycle (take 10 elites))))
               (take population-size))
          (inc generation)))
-      genomes)))
+      (do (println "Max generations reached. Exiting.")
+          genomes))))
